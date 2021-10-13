@@ -1,4 +1,4 @@
-from lib import Point
+from lib import Point, Vector
 
 from . import motions
 
@@ -33,3 +33,6 @@ class Object:
 
     def opacity(self) -> float:
         return self._opacity
+
+    # def translate(self, vector: Vector) -> None:
+    #     self.center.

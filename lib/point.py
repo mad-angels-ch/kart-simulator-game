@@ -41,6 +41,10 @@ class Point:
     def __str__(self) -> str:
         return f"Point({self._x}, {self._y})"
 
+    def translate(self, vector: "Vector") -> None:
+        for i in range(len(self)):
+            self[i] += vector[i]
+
     def x(self) -> float:
         "Obsolète, utiliser self[0] ou self['x']"
         return self._x
