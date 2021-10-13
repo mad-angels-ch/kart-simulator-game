@@ -61,4 +61,6 @@ class Object:
 
     def updateReferences(self, deltaTime: float) -> None:
         self._angle = self.angle(deltaTime)
+        self._center = self.center(deltaTime)
         self.angularMotion.updateReferences(deltaTime)
+        self.vectorialMotion.updateReferences(deltaTime)

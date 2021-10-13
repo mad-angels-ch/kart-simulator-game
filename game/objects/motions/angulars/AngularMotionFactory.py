@@ -27,7 +27,9 @@ class AngularMotionFactory:
         type = jsonObject["type"]
         kwargs = {}
         if type in ["uacm"]:
-            kwargs["center"] = Point(*jsonObject["center"])
+            kwargs["center"] = Point(
+                float(jsonObject["center"]["x"]), float(jsonObject["center"]["y"])
+            )
             kwargs["initialSpeed"] = jsonObject["velocity"]
 
         return self.__call__(type=type, **kwargs)
