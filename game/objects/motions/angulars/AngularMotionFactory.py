@@ -30,7 +30,7 @@ class AngularMotionFactory:
             kwargs["center"] = Point(*jsonObject["center"])
             kwargs["initialSpeed"] = jsonObject["velocity"]
 
-        return self.__call__(type, kwargs)
+        return self.__call__(type=type, **kwargs)
 
 
 createAngularMotion = AngularMotionFactory()

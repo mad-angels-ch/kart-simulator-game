@@ -26,7 +26,7 @@ class UniformlyAcceleratedCircularMotion(AngularMotion):
         return self._center
 
     def relativeAngle(self, deltaTime: float = 0) -> float:
-        return self._acceleration * (deltaTime ** 2 / 2) + self._speed
+        return self._acceleration * (deltaTime ** 2 / 2) + self._speed * deltaTime
 
     def speed(self, deltaTime: float = 0) -> float:
         return self._acceleration * deltaTime + self._speed

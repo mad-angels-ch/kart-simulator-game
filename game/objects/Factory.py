@@ -57,7 +57,7 @@ class Factory:
                 fill = fabricObject["fill"]
 
                 friction = fabricObject["lge"]["friction"]
-                mass = fabricObject["mass"]["mass"]
+                mass = fabricObject["lge"]["mass"]
                 angularMotion = motions.angulars.createAngularMotion.fromFabric(
                     fabricObject["lge"]["motion"]["angle"]
                 )
@@ -69,7 +69,17 @@ class Factory:
                 if type == "circle":
                     kwargs["radius"] = fabricObject["radius"] * scaleX
 
-                objects.append(self.__call__(type, name, center, angle, fill, **kwargs))
+                objects.append(
+                    self.__call__(
+                        type=type,
+                        name=name,
+                        center=center,
+                        angle=angle,
+                        angularMotion=angularMotion,
+                        fill=fill,
+                        **kwargs,
+                    )
+                )
 
         return objects
 
