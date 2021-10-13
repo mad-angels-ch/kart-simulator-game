@@ -56,6 +56,12 @@ class Factory:
                 angle = fabricObject["angle"]
                 fill = fabricObject["fill"]
 
+                friction = fabricObject["lge"]["friction"]
+                mass = fabricObject["mass"]["mass"]
+                angularMotion = motions.angulars.createAngularMotion.fromFabric(
+                    fabricObject["lge"]["motion"]["angle"]
+                )
+
                 scaleX, scaleY = fabricObject["scaleX"], fabricObject["scaleY"]
                 flipX, flipY = fabricObject["flipX"], fabricObject["flipY"]
 

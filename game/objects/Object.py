@@ -22,11 +22,30 @@ class Object:
     def name(self) -> str:
         return self._name
 
-    def center(self) -> Point:
-        return self._center
+    def center(self, deltaTime: float = 0) -> Point:
+        if not deltaTime:
+            return self._center
+        return Point(*(Vector(*self.center()) + self.relativePosition(deltaTime)))
 
-    def angle(self) -> float:
-        return self._angle
+    def relativePosition(self, deltaTime: float) -> Vector:
+        fromRotationCenterBefore = Vector.fromPoints(
+            self.angularMotion.rotationCenter(), self.center()
+        )
+        fromRotationCenterAfter = Vector(*fromRotationCenterBefore)
+        fromRotationCenterAfter.rotate(self.angularMotion.relativeAngle(deltaTime))
+        return (
+            self.vectorialMotion.relativePosition(deltaTime)
+            - fromRotationCenterBefore
+            + fromRotationCenterAfter
+        )
+
+    def angle(self, deltaTime: float = 0) -> float:
+        if not deltaTime:
+            return self._angle
+        return self._angle + self.relativeAngle(deltaTime)
+
+    def relativeAngle(self, deltaTime: float) -> float:
+        return self.angularMotion.relativeAngle(deltaTime)
 
     def fill(self) -> str:
         return self._fill
@@ -34,5 +53,12 @@ class Object:
     def opacity(self) -> float:
         return self._opacity
 
-    # def translate(self, vector: Vector) -> None:
-    #     self.center.
+    def translate(self, vector: Vector) -> None:
+        self._center.translate(vector)
+
+    def rotate(self, angle: float) -> None:
+        self._angle += angle
+
+    def updateReferences(self, deltaTime: float) -> None:
+        self._angle = self.angle(deltaTime)
+        self.angularMotion.updateReferences(deltaTime)

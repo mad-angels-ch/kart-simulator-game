@@ -34,7 +34,9 @@ class Game:
         pass
 
     def simulatePhysics(self, elapsedTime: float) -> None:
-        pass
+        for object in self._objects:
+            # object.
+            pass
 
     def callOutput(self) -> None:
         self._output(self._objects)
