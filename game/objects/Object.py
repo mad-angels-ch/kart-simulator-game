@@ -8,6 +8,9 @@ class Object:
     _center: Point
     _angle: float
 
+    _fill: str
+    _opacity: float
+
     def formID(self) -> int:
         return self._formID
 
@@ -19,3 +22,9 @@ class Object:
 
     def angle(self) -> float:
         return self._angle
+
+    def fill(self) -> str:
+        return self._fill
+
+    def opacity(self) -> float:
+        return self._opacity

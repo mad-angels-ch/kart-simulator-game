@@ -15,6 +15,8 @@ class Factory:
         name: str = None,
         center: Point = Point(0, 0),
         angle: float = 0,
+        fill: str = "#000000",
+        opacity: float = 1,
         **kwargs,
     ) -> Object:
         if type == "circle":
@@ -26,6 +28,8 @@ class Factory:
         newObject._formID = Factory.objectsCreatedCount
         newObject._center = center
         newObject._angle = angle
+        newObject._fill = fill
+        newObject._opacity = opacity
 
         Factory.objectsCreatedCount += 1
         return newObject
@@ -45,6 +49,7 @@ class Factory:
                 name = fabricObject["lge"].get("name")
                 center = Point(fabricObject["left"], fabricObject["top"])
                 angle = fabricObject["angle"]
+                fill = fabricObject["fill"]
 
                 scaleX, scaleY = fabricObject["scaleX"], fabricObject["scaleY"]
                 flipX, flipY = fabricObject["flipX"], fabricObject["flipY"]
@@ -53,7 +58,7 @@ class Factory:
                 if type == "circle":
                     kwargs["radius"] = fabricObject["radius"] * scaleX
 
-                objects.append(self.__call__(type, name, center, angle, **kwargs))
+                objects.append(self.__call__(type, name, center, angle, fill, **kwargs))
 
         return objects
 
