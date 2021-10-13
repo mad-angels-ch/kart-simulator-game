@@ -1,5 +1,7 @@
 from lib import Point
 
+from . import motions
+
 
 class Object:
     _name: str = None
@@ -7,6 +9,9 @@ class Object:
 
     _center: Point
     _angle: float
+
+    angularMotion: motions.angulars.AngularMotion
+    vectorialMotion: motions.vectorials.VectorialMotion
 
     _fill: str
     _opacity: float

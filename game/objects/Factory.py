@@ -4,6 +4,7 @@ from lib.point import Point
 
 from .Object import Object
 from .Circle import Circle
+from . import motions
 
 
 class Factory:
@@ -15,7 +16,9 @@ class Factory:
         name: str = None,
         center: Point = Point(0, 0),
         angle: float = 0,
-        fill: str = "#000000",
+        angularMotion=motions.angulars.AngularMotion(),
+        vectorialMotion=motions.vectorials.VectorialMotion(),
+        fill="#000000",
         opacity: float = 1,
         **kwargs,
     ) -> Object:
@@ -28,6 +31,8 @@ class Factory:
         newObject._formID = Factory.objectsCreatedCount
         newObject._center = center
         newObject._angle = angle
+        newObject.angularMotion = angularMotion
+        newObject.vectorialMotion = vectorialMotion
         newObject._fill = fill
         newObject._opacity = opacity
 
