@@ -1,4 +1,5 @@
 from typing import List
+import json
 
 from .events.Event import Event
 from . import objects
@@ -16,7 +17,8 @@ class Game:
         self._events = events
         self._output = output
 
-        self._objects = list()
+        with open(dataUrl, "r") as data:
+            self._objects = objects.create.fromFabric(json.load(data))
 
     def nextFrame(self, elapsedTime: float) -> None:
         # 1: traiter les events

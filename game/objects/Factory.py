@@ -38,6 +38,7 @@ class Factory:
         return newObject
 
     def fromFabric(self, jsonObject) -> List[Object]:
+        objects = []
         if jsonObject.get("version") == "4.4.0":
             for fabricObject in jsonObject.get("objects"):
                 type = fabricObject["type"]
@@ -52,7 +53,9 @@ class Factory:
                 if type == "circle":
                     kwargs["radius"] = fabricObject["radius"] * scaleX
 
-                self.__call__(type, name, center, angle, **kwargs)
+                objects.append(self.__call__(type, name, center, angle, **kwargs))
+
+        return objects
 
 
 create = Factory()
