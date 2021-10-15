@@ -61,6 +61,9 @@ class Factory:
                 angularMotion = motions.angulars.createAngularMotion.fromFabric(
                     fabricObject["lge"]["motion"]["angle"]
                 )
+                vectorialMotion = motions.vectorials.createVectorialMotion.fromFabric(
+                    fabricObject["lge"]["motion"]["vector"]
+                )
 
                 scaleX, scaleY = fabricObject["scaleX"], fabricObject["scaleY"]
                 flipX, flipY = fabricObject["flipX"], fabricObject["flipY"]
@@ -76,6 +79,7 @@ class Factory:
                         center=center,
                         angle=angle,
                         angularMotion=angularMotion,
+                        vectorialMotion=vectorialMotion,
                         fill=fill,
                         **kwargs,
                     )

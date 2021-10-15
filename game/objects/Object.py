@@ -60,7 +60,13 @@ class Object:
         self._angle += angle
 
     def updateReferences(self, deltaTime: float) -> None:
+        # mise à jour de la vitesse angulaire
         self._angle = self.angle(deltaTime)
-        self._center = self.center(deltaTime)
         self.angularMotion.updateReferences(deltaTime)
+        rotationCenter = Point(*self.angularMotion.rotationCenter())
+        rotationCenter.translate(self.vectorialMotion.relativePosition(deltaTime))
+        self.angularMotion.set_rotationCenter(rotationCenter)
+
+        # mise à jour de la vitesse vectorielle
+        self._center = self.center(deltaTime)
         self.vectorialMotion.updateReferences(deltaTime)

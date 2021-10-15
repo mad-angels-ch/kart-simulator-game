@@ -20,8 +20,9 @@ class AngularMotionFactory:
     ) -> UniformlyAcceleratedCircularMotion:
         center = kwargs.get("center", Point(0, 0))
         initialSpeed = kwargs.get("initialSpeed", 0)
+        acceleration = kwargs.get("acceleration", 0)
 
-        return UniformlyAcceleratedCircularMotion(center, initialSpeed)
+        return UniformlyAcceleratedCircularMotion(center, initialSpeed, acceleration)
 
     def fromFabric(self, jsonObject) -> AngularMotion:
         type = jsonObject["type"]
