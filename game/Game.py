@@ -47,10 +47,8 @@ class Game:
         pass
 
     def simulatePhysics(self, elapsedTime: float) -> None:
-        # for object in self._objects:
-        #     object.updateReferences(elapsedTime)
-        pass
+        for object in self._objects:
+            object.updateReferences(elapsedTime)        
 
     def callOutput(self) -> None:
         self._output(self._objects)
-        pass
