@@ -41,7 +41,7 @@ class Game:
         self.simulatePhysics(elapsedTime)
 
         # 3: appeler output
-        self.callOutput()
+        self.callOutput(elapsedTime)
 
     def handleEvents(self) -> None:
         pass
@@ -50,5 +50,5 @@ class Game:
         for object in self._objects:
             object.updateReferences(elapsedTime)        
 
-    def callOutput(self) -> None:
-        self._output(self._objects)
+    def callOutput(self, elapsedTime: float) -> None:
+        self._output(elapsedTime, self._objects)
