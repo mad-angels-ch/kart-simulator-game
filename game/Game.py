@@ -48,7 +48,12 @@ class Game:
 
     def simulatePhysics(self, elapsedTime: float) -> None:
         for object in self._objects:
-            object.updateReferences(elapsedTime)        
+            object.updateReferences(elapsedTime)
+            
+        for i in range(len(self._objects) - 1):
+            for ii in range(i + 1, len(self._objects)):
+                if self._objects[i].collides(self._objects[ii]):
+                    print(f"Collision entre {self._objects[i].formID()} et {self._objects[ii].formID()}")
 
     def callOutput(self, elapsedTime: float) -> None:
         self._output(elapsedTime, self._objects)
