@@ -70,3 +70,6 @@ class Object:
         # mise à jour de la vitesse vectorielle
         self._center = self.center(deltaTime)
         self.vectorialMotion.updateReferences(deltaTime)
+
+    def collides(self, object: "Object") -> bool:
+        return False
