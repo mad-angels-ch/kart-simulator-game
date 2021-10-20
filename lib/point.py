@@ -1,3 +1,6 @@
+import math
+
+
 class Point:
     _x: float
     _y: float
@@ -44,6 +47,10 @@ class Point:
     def translate(self, vector: "Vector") -> None:
         for i in range(len(self)):
             self[i] += vector[i]
+
+    def distanceOf(self, point: "Point") -> float:
+        """Retourne la distance séparent les deux points"""
+        return math.hypot(*[self[i] - point[i] for i in range(len(self))])
 
     def x(self) -> float:
         "Obsolète, utiliser self[0] ou self['x']"
