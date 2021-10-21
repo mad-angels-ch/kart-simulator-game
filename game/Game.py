@@ -49,6 +49,7 @@ class Game:
     def simulatePhysics(self, elapsedTime: float) -> None:
         for object in self._objects:
             object.updateReferences(elapsedTime)
+            object._fill = "#000000"
             
         for i in range(len(self._objects) - 1):
             for ii in range(i + 1, len(self._objects)):
