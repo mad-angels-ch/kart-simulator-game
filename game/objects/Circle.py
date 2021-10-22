@@ -9,11 +9,9 @@ class Circle(Object):
 
     def collides(self, object: "Object") -> bool:
         if isinstance(object, Circle):
-            if self.center().distanceOf(object.center()) < self.radius() + object.radius():
-                self._fill = "#ff0000"
-                object._fill = "#ff0000"
-                return True
-            else:
-                return False
+            return (
+                self.center().distanceOf(object.center())
+                < self.radius() + object.radius()
+            )
         else:
             return object.collides(self)

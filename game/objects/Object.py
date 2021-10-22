@@ -50,6 +50,9 @@ class Object:
     def fill(self) -> str:
         return self._fill
 
+    def set_fill(self, color: str) -> None:
+        self._fill = color
+
     def opacity(self) -> float:
         return self._opacity
 

@@ -3,22 +3,26 @@ import json
 
 from .events.Event import Event
 from . import objects
+from .CollisionsZone import CollisionsZone
 
 from kivy.core.window import Window
 
 
 class Game:
 
-    from user_actions import keyboard_closed, on_keyboard_down, on_touch_up, on_keyboard_up, on_touch_down
-
-
-
+    from user_actions import (
+        keyboard_closed,
+        on_keyboard_down,
+        on_touch_up,
+        on_keyboard_up,
+        on_touch_down,
+    )
 
     _events: List[Event]
     _output: "function"
     _dataUrl: str
     _objects: List[objects.Object]
-    
+
     def __init__(self, dataUrl: str, events: List[Event], output: "function") -> None:
         self._dataUrl = dataUrl
         self._events = events
@@ -26,7 +30,6 @@ class Game:
 
         with open(dataUrl, "r") as data:
             self._objects = objects.create.fromFabric(json.load(data))
-
 
         self._keyboard = Window.request_keyboard(self.keyboard_closed, self)
         self._keyboard.bind(on_key_down=self.on_keyboard_down)
@@ -47,14 +50,11 @@ class Game:
         pass
 
     def simulatePhysics(self, elapsedTime: float) -> None:
+        print(elapsedTime)
+        collisionsZone = CollisionsZone()
         for object in self._objects:
-            object.updateReferences(elapsedTime)
-            object._fill = "#000000"
-            
-        for i in range(len(self._objects) - 1):
-            for ii in range(i + 1, len(self._objects)):
-                if self._objects[i].collides(self._objects[ii]):
-                    print(f"Collision entre {self._objects[i].formID()} et {self._objects[ii].formID()}")
+            collisionsZone += object
+        collisionsZone.run(elapsedTime)
 
     def callOutput(self, elapsedTime: float) -> None:
         self._output(elapsedTime, self._objects)
