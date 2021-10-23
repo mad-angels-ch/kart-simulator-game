@@ -76,3 +76,9 @@ class Object:
 
     def collides(self, object: "Object") -> bool:
         return False
+
+    def collisionPoint(self, object: "Object") -> Point:
+        return object.center()
+
+    def collisionTangent(self, object: "Object") -> Vector:
+        return Vector(0, 0)
