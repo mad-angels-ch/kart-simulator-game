@@ -1,4 +1,6 @@
-from typing import List
+from typing import List, Tuple
+import os
+import time
 
 from lib import Point, Vector
 
@@ -20,25 +22,45 @@ class CollisionsZone:
         self._objects.append(objectToAdd)
         return self
 
-    def _solveFirst(self, timeInterval: float) -> List[objects.Object]:
-        transformations = [
-            (obj.relativeAngle(timeInterval), obj.relativePosition(timeInterval))
-            for obj in self._objects
-        ]
-        for i in range(len(self._objects)):
-            self._objects[i].rotate(transformations[i][0])
-            self._objects[i].translate(transformations[i][1])
+    def _solveFirst(self, timeInterval: float) -> float:
+        # recherche du moment de la collision
+        checkedInterval = 0
+        halfWorkingInterval = timeInterval
+        while halfWorkingInterval > self.timePrecision:
+            transformations = [
+                (
+                    ob.relativeAngle(halfWorkingInterval),
+                    ob.relativePosition(halfWorkingInterval),
+                )
+                for ob in self._objects
+            ]
+            for i in range(len(self._objects)):
+                self._objects[i].rotate(transformations[i][0])
+                self._objects[i].translate(transformations[i][1])
 
-        for object in self._objects:
-            object.updateReferences(self._timeInterval)
-            object.set_fill("#000000")
-            
-        for first in range(len(self._objects) - 1):
-            for second in range(first + 1, len(self._objects)):
-                if self._objects[first].collides(self._objects[second]):
-                    self._objects[first].set_fill("#ff0000")
-                    self._objects[second].set_fill("#ff0000")
-        
+            def getCollidedObjects(objects: List[objects.Object]):
+                for first in range(len(objects) - 1):
+                    for second in range(first + 1, len(objects)):
+                        if objects[first].collides(objects[second]):
+                            return (objects[first], objects[second])
+                return None
+
+            collidedObjects = getCollidedObjects(self._objects)
+
+            if collidedObjects:
+                for i in range(len(self._objects)):
+                    self._objects[i].rotate(-transformations[i][0])
+                    self._objects[i].translate(-transformations[i][1])
+                halfWorkingInterval /= 2
+            else:
+                if halfWorkingInterval == timeInterval:
+                    # il n'y a aucune collision dans l'intervalle donnée à la fonction
+                    return timeInterval
+                checkedInterval += halfWorkingInterval
+                halfWorkingInterval /= 2
+
+        # gestion de la collision
+        pass
 
     def resolve(self) -> None:
         self._solveFirst(self._timeInterval)
