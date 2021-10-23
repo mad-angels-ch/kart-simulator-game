@@ -1,9 +1,4 @@
-from logging import info
-from typing import List, Callable, Any, Iterable, Mapping
-from threading import Thread
-from multiprocessing import Process
-import time
-
+from typing import List
 
 from lib import Point, Vector
 
@@ -15,6 +10,7 @@ class CollisionsZone:
     _objects: List[objects.Object]
 
     def __init__(self, timeInterval: float) -> None:
+        super().__init__()
         self._timeInterval = timeInterval
         self._objects = list()
 
@@ -22,7 +18,7 @@ class CollisionsZone:
         self._objects.append(objectToAdd)
         return self
 
-    def run(self) -> None:
+    def resolve(self) -> None:
         for object in self._objects:
             object.updateReferences(self._timeInterval)
             object.set_fill("#000000")
