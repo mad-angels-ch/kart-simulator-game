@@ -4,7 +4,7 @@ from . import motions
 
 
 class Object:
-    _name: str = None
+    _name: str
     _formID: int
 
     _center: Point

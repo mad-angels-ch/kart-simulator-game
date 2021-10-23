@@ -2,7 +2,11 @@ from .Object import Object
 
 
 class Circle(Object):
-    _radius: float = 0
+    _radius: float
+
+    def __init__(self) -> None:
+        super().__init__()
+        self._radius = 0
 
     def radius(self) -> float:
         return self._radius

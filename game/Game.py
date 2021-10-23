@@ -1,5 +1,7 @@
+from logging import error
 from typing import List
 import json
+import time
 
 from .events.Event import Event
 from . import objects
@@ -50,11 +52,19 @@ class Game:
         pass
 
     def simulatePhysics(self, elapsedTime: float) -> None:
-        print(elapsedTime)
-        collisionsZone = CollisionsZone()
+        collisionsZone = CollisionsZone(elapsedTime)
         for object in self._objects:
             collisionsZone += object
-        collisionsZone.run(elapsedTime)
+        collisionsZone.run()
+
+        # for object in self._objects:
+        #     object.updateReferences(elapsedTime)
+        #     object._fill = "#000000"
+
+        # for i in range(len(self._objects) - 1):
+        #     for ii in range(i + 1, len(self._objects)):
+        #         if self._objects[i].collides(self._objects[ii]):
+        #             pass
 
     def callOutput(self, elapsedTime: float) -> None:
         self._output(elapsedTime, self._objects)
