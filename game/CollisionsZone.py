@@ -1,6 +1,7 @@
 from typing import List, Tuple
 import os
 import time
+import math
 
 from lib import Point, Vector
 
@@ -26,6 +27,7 @@ class CollisionsZone:
         # recherche du moment de la collision
         checkedInterval = 0
         halfWorkingInterval = timeInterval
+        lastCollidedObjects = None
         while halfWorkingInterval > self.timePrecision:
             transformations = [
                 (
@@ -48,19 +50,66 @@ class CollisionsZone:
             collidedObjects = getCollidedObjects(self._objects)
 
             if collidedObjects:
+                lastCollidedObjects = collidedObjects
                 for i in range(len(self._objects)):
                     self._objects[i].rotate(-transformations[i][0])
                     self._objects[i].translate(-transformations[i][1])
-                halfWorkingInterval /= 2
             else:
-                if halfWorkingInterval == timeInterval:
+                if not lastCollidedObjects:
                     # il n'y a aucune collision dans l'intervalle donnée à la fonction
+                    for obj in self._objects:
+                        obj.updateReferences(timeInterval)
                     return timeInterval
                 checkedInterval += halfWorkingInterval
-                halfWorkingInterval /= 2
+            halfWorkingInterval /= 2
 
         # gestion de la collision
-        pass
+        for obj in self._objects:
+            obj.updateReferences(checkedInterval)
+        point = lastCollidedObjects[0].collisionPoint(lastCollidedObjects[1])
+        tangent = lastCollidedObjects[0].collisionTangent(lastCollidedObjects[1])
+        angle = tangent.direction()
+
+        masses = [obj.mass() for obj in lastCollidedObjects]
+        objSpeeds = [obj.vectorialMotion.speed() for obj in lastCollidedObjects]
+        pointSpeeds = [obj.speedAtPoint(point) for obj in lastCollidedObjects]
+        speedsBefore = objSpeeds.copy()
+        speedsBefore.extend(pointSpeeds)
+        for speed in speedsBefore:
+            speed.rotate(-angle)
+        speedsAfter = [Vector(*speed) for speed in objSpeeds]
+
+        other = len(masses) - 1
+        for current in range(len(masses)):
+            m1 = masses[current]
+            m2 = masses[other]
+            v1 = objSpeeds[current][1]
+            v2 = pointSpeeds[other][1]
+
+            if m1:
+                if m2:
+                    speedsAfter[current][1] = 2 * (m1 * v1 + m2 * v2) / (m1 + m2) - v1
+                else:
+                    speedsAfter[current][1] = 2 * v2 - v1
+            else:
+                if m2:
+                    speedsAfter[current][1] = v1
+                else:
+                    raise "Collision between two fixed objects"
+
+            other = current
+
+        for current in range(len(masses)):
+            speedsAfter[current].rotate(angle)
+            speedsAfter[current] *= (1 - lastCollidedObjects[current].friction()) * (
+                1 - lastCollidedObjects[other].friction()
+            )
+            lastCollidedObjects[current].vectorialMotion.set_speed(speedsAfter[current])
+
+            other = current
+
+        return checkedInterval
 
     def resolve(self) -> None:
-        self._solveFirst(self._timeInterval)
+        while self._timeInterval > 0:
+            self._timeInterval -= self._solveFirst(self._timeInterval)
