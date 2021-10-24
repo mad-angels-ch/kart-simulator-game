@@ -20,6 +20,8 @@ class Factory:
         vectorialMotion=motions.vectorials.VectorialMotion(),
         fill="#000000",
         opacity: float = 1,
+        mass=0,
+        friction=0,
         **kwargs,
     ) -> Object:
         if type == "circle":
@@ -35,6 +37,8 @@ class Factory:
         newObject.vectorialMotion = vectorialMotion
         newObject._fill = fill
         newObject._opacity = opacity
+        newObject._mass = mass
+        newObject._friction = friction
 
         Factory.objectsCreatedCount += 1
         return newObject
@@ -55,6 +59,7 @@ class Factory:
                 center = Point(fabricObject["left"], fabricObject["top"])
                 angle = fabricObject["angle"]
                 fill = fabricObject["fill"]
+                opacity = fabricObject["opacity"]
 
                 friction = fabricObject["lge"]["friction"]
                 mass = fabricObject["lge"]["mass"]
@@ -81,6 +86,9 @@ class Factory:
                         angularMotion=angularMotion,
                         vectorialMotion=vectorialMotion,
                         fill=fill,
+                        opacity=opacity,
+                        mass=mass,
+                        friction=friction,
                         **kwargs,
                     )
                 )

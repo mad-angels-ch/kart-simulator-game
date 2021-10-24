@@ -15,6 +15,8 @@ class Object:
 
     _fill: str
     _opacity: float
+    _mass: float
+    _friction: float
 
     def formID(self) -> int:
         return self._formID
@@ -56,6 +58,12 @@ class Object:
     def opacity(self) -> float:
         return self._opacity
 
+    def mass(self) -> float:
+        return self._mass
+
+    def friction(self) -> float:
+        return self._friction
+
     def translate(self, vector: Vector) -> None:
         self._center.translate(vector)
 
@@ -82,3 +90,8 @@ class Object:
 
     def collisionTangent(self, object: "Object") -> Vector:
         return Vector(0, 0)
+
+    def speedAtPoint(self, point: Point, deltaTime: float = 0) -> Vector:
+        return self.angularMotion.speedAtPoint(
+            point, deltaTime
+        ) + self.vectorialMotion.speed(deltaTime)
