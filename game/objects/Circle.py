@@ -25,12 +25,10 @@ class Circle(Object):
 
     def collisionPoint(self, object: "Object") -> Point:
         if isinstance(object, Circle):
-            collisionPoint = Point(self.center())
-            collisionPoint.translate(
-                Vector.fromPoints(self.center(), object.center()).set_norm(
-                    self.radius()
-                )
-            )
+            translation = Vector.fromPoints(self.center(), object.center())
+            translation.set_norm(self.radius())
+            collisionPoint = Point(*self.center())
+            collisionPoint.translate(translation)
             return collisionPoint
 
         else:
