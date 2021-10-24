@@ -4,10 +4,10 @@ from .VectorialMotion import VectorialMotion
 
 
 class UniformlyAcceleratedMotion(VectorialMotion):
-    _speed: Vector
     _acceleration: Vector
 
     def __init__(self, initialSpeed=Vector(0, 0), acceleration=Vector(0, 0)) -> None:
+        super().__init__()
         self._speed = initialSpeed
         self._acceleration = acceleration
 
