@@ -3,6 +3,11 @@ from lib.vector import Vector
 
 
 class AngularMotion:
+    _speed: float
+
+    def __init__(self) -> None:
+        self._speed = 0
+
     def updateReferences(self, deltaTime: float) -> None:
         pass
 
@@ -13,10 +18,13 @@ class AngularMotion:
         pass
 
     def relativeAngle(self, deltaTime: float = 0) -> float:
-        return 0
+        return self._speed * deltaTime
 
     def speed(self, deltaTime: float = 0) -> float:
-        return 0
+        return self._speed
+
+    def set_speed(self, newSpeed: float) -> None:
+        self._speed = newSpeed
 
     def speedAtPoint(self, point: Point, deltaTime: float = 0) -> Vector:
         normal = Vector.fromPoints(self.rotationCenter(), point)

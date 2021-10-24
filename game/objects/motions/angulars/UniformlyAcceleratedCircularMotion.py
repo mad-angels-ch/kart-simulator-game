@@ -5,7 +5,6 @@ from .AngularMotion import AngularMotion
 
 class UniformlyAcceleratedCircularMotion(AngularMotion):
     _center: Point
-    _speed: float
     _acceleration: float
 
     def __init__(
