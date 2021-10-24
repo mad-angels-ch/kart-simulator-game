@@ -5,7 +5,7 @@ class Point:
     _x: float
     _y: float
 
-    def __init__(self, x: float = 0, y: float = 0) -> None:
+    def __init__(self, x: float, y: float) -> None:
         self._x = x
         self._y = y
 
