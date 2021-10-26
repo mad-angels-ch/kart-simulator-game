@@ -1,3 +1,4 @@
+from logging import warning
 import math
 
 
@@ -53,17 +54,17 @@ class Point:
         return math.hypot(*[self[i] - point[i] for i in range(len(self))])
 
     def x(self) -> float:
-        "Obsolète, utiliser self[0] ou self['x']"
+        warning(f"{__name__}.x() is deprecated, use [0] or ['x'] instead")
         return self._x
 
     def y(self) -> float:
-        "Obsolète, utiliser self[1] ou self['y']"
+        warning(f"{__name__}.y() is deprecated, use [1] or ['y'] instead")
         return self._y
 
     def get_x(self) -> float:
-        "Obsolète, utiliser self[0] ou self['x']"
+        warning(f"{__name__}.get_x() is deprecated, use [0] or ['x'] instead")
         return self._x
 
     def get_y(self) -> float:
-        "Obsolète, utiliser self[1] ou self['y']"
+        warning(f"{__name__}.get_y() is deprecated, use [1] or ['y'] instead")
         return self._y

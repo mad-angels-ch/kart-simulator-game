@@ -1,3 +1,4 @@
+from logging import warning
 import math
 
 
@@ -71,9 +72,12 @@ class Vector:
         return math.hypot(*self)
 
     def set_norm(self, newNorm: float) -> None:
-        newVector = self * (newNorm / self.norm())
-        for i in range(len(self)):
-            self[i] = newVector[i]
+        try:
+            factor = newNorm / self.norm()
+        except ZeroDivisionError:
+            return
+        else:
+            self *= factor
 
     def scalarProduct(self, other: "Vector") -> float:
         return self._x * other._x + self._y * other._y
@@ -113,17 +117,17 @@ class Vector:
         self._y *= factor
 
     def x(self) -> float:
-        "Obsolète, utiliser self[0] ou self['x']"
+        warning(f"{__name__}.x() is deprecated, use [0] or ['x'] instead")
         return self._x
 
     def y(self) -> float:
-        "Obsolète, utiliser self[1] ou self['y']"
+        warning(f"{__name__}.y() is deprecated, use [1] or ['y'] instead")
         return self._y
 
     def get_x(self) -> float:
-        "Obsolète, utiliser self[0] ou self['x']"
+        warning(f"{__name__}.get_x() is deprecated, use [0] or ['x'] instead")
         return self._x
 
     def get_y(self) -> float:
-        "Obsolète, utiliser self[1] ou self['y']"
+        warning(f"{__name__}.get_y() is deprecated, use [1] or ['y'] instead")
         return self._y
