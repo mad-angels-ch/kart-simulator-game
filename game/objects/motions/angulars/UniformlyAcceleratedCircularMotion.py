@@ -8,13 +8,11 @@ class UniformlyAcceleratedCircularMotion(AngularMotion):
 
     def __init__(
         self,
-        rotationCenter=Point(0, 0),
+        rotationCenter: Point = Point(0, 0),
         initialSpeed: float = 0,
         acceleration: float = 0,
     ) -> None:
-        super(UniformlyAcceleratedCircularMotion, self).__init__()
-        self._center = rotationCenter
-        self._speed = initialSpeed
+        super().__init__(initialSpeed, rotationCenter)
         self._acceleration = acceleration
 
     def updateReferences(self, deltaTime: float) -> None:

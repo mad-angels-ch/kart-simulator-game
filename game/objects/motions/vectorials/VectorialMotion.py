@@ -4,8 +4,8 @@ from lib.vector import Vector
 class VectorialMotion:
     _speed: Vector
 
-    def __init__(self) -> None:
-        self._speed = Vector(0, 0)
+    def __init__(self, speed: Vector = Vector(0, 0)) -> None:
+        self._speed = speed
 
     def updateReferences(self, deltaTime: float) -> None:
         pass

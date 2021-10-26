@@ -6,9 +6,10 @@ from .VectorialMotion import VectorialMotion
 class UniformlyAcceleratedMotion(VectorialMotion):
     _acceleration: Vector
 
-    def __init__(self, initialSpeed=Vector(0, 0), acceleration=Vector(0, 0)) -> None:
-        super().__init__()
-        self._speed = initialSpeed
+    def __init__(
+        self, initialSpeed: Vector = Vector(0, 0), acceleration: Vector = Vector(0, 0)
+    ) -> None:
+        super().__init__(initialSpeed)
         self._acceleration = acceleration
 
     def updateReferences(self, deltaTime: float) -> None:
