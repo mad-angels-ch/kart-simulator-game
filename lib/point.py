@@ -55,16 +55,16 @@ class Point:
 
     def x(self) -> float:
         warning(f"{__name__}.x() is deprecated, use [0] or ['x'] instead")
-        return self._x
+        return self[0]
 
     def y(self) -> float:
         warning(f"{__name__}.y() is deprecated, use [1] or ['y'] instead")
-        return self._y
+        return self[1]
 
     def get_x(self) -> float:
         warning(f"{__name__}.get_x() is deprecated, use [0] or ['x'] instead")
-        return self._x
+        return self[0]
 
     def get_y(self) -> float:
         warning(f"{__name__}.get_y() is deprecated, use [1] or ['y'] instead")
-        return self._y
+        return self[1]
