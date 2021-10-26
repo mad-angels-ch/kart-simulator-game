@@ -32,6 +32,7 @@ class AngularMotionFactory:
                 float(jsonObject["center"]["x"]), float(jsonObject["center"]["y"])
             )
             kwargs["initialSpeed"] = jsonObject["velocity"]
+            kwargs["acceleration"] = jsonObject["acceleration"]
 
         return self.__call__(type=type, **kwargs)
 
