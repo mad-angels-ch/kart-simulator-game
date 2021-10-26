@@ -31,7 +31,7 @@ class Object:
 
     def relativePosition(self, deltaTime: float) -> Vector:
         fromRotationCenterBefore = Vector.fromPoints(
-            self.angularMotion.rotationCenter(), self.center()
+            self.angularMotion.center(), self.center()
         )
         fromRotationCenterAfter = Vector(*fromRotationCenterBefore)
         fromRotationCenterAfter.rotate(self.angularMotion.relativeAngle(deltaTime))
@@ -74,9 +74,9 @@ class Object:
         # mise à jour de la vitesse angulaire
         # self._angle = self.angle(deltaTime)
         self.angularMotion.updateReferences(deltaTime)
-        rotationCenter = Point(*self.angularMotion.rotationCenter())
+        rotationCenter = Point(*self.angularMotion.center())
         rotationCenter.translate(self.vectorialMotion.relativePosition(deltaTime))
-        self.angularMotion.set_rotationCenter(rotationCenter)
+        self.angularMotion.set_center(rotationCenter)
 
         # mise à jour de la vitesse vectorielle
         # self._center = self.center(deltaTime)

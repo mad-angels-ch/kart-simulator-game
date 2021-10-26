@@ -4,7 +4,6 @@ from .AngularMotion import AngularMotion
 
 
 class UniformlyAcceleratedCircularMotion(AngularMotion):
-    _center: Point
     _acceleration: float
 
     def __init__(
@@ -20,12 +19,6 @@ class UniformlyAcceleratedCircularMotion(AngularMotion):
 
     def updateReferences(self, deltaTime: float) -> None:
         self._speed = self.speed(deltaTime)
-
-    def rotationCenter(self) -> Point:
-        return self._center
-
-    def set_rotationCenter(self, point: Point) -> None:
-        self._center = point
 
     def relativeAngle(self, deltaTime: float = 0) -> float:
         return self._acceleration * (deltaTime ** 2 / 2) + self._speed * deltaTime
