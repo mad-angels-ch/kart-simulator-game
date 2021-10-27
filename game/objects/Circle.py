@@ -15,10 +15,12 @@ class Circle(Object):
 
     def collides(self, object: "Object") -> bool:
         if isinstance(object, Circle):
+            print(self.center().distanceOf(object.center()))
             return (
                 self.center().distanceOf(object.center())
                 < self.radius() + object.radius()
             )
+            
 
         else:
             return object.collides(self)

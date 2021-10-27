@@ -38,7 +38,6 @@ class Game:
         self._keyboard.bind(on_key_up=self.on_keyboard_up)
 
     def nextFrame(self, elapsedTime: float) -> None:
-
         # 1: traiter les events
         self.handleEvents()
 
