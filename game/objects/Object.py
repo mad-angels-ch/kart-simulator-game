@@ -24,10 +24,18 @@ class Object:
     def name(self) -> str:
         return self._name
 
+    def angle(self, deltaTime: float = 0) -> float:
+        if not deltaTime:
+            return self._angle
+        return self._angle + self.relativeAngle(deltaTime)
+
     def center(self, deltaTime: float = 0) -> Point:
         if not deltaTime:
             return self._center
-        return Point(*(Vector(*self.center()) + self.relativePosition(deltaTime)))
+        return Point(**self.center()).translate(self.relativePosition(deltaTime))
+
+    def relativeAngle(self, deltaTime: float) -> float:
+        return self.angularMotion.relativeAngle(deltaTime)
 
     def relativePosition(self, deltaTime: float) -> Vector:
         fromRotationCenterBefore = Vector.fromPoints(
@@ -41,13 +49,38 @@ class Object:
             + fromRotationCenterAfter
         )
 
-    def angle(self, deltaTime: float = 0) -> float:
-        if not deltaTime:
-            return self._angle
-        return self._angle + self.relativeAngle(deltaTime)
+    def speedAtPoint(self, point: Point, deltaTime: float = 0) -> Vector:
+        return self.angularMotion.speedAtPoint(
+            point, deltaTime
+        ) + self.vectorialMotion.speed(deltaTime)
 
-    def relativeAngle(self, deltaTime: float) -> float:
-        return self.angularMotion.relativeAngle(deltaTime)
+    def centerSpeed(self, deltaTime: float = 0) -> Vector:
+        return self.speedAtPoint(self.center(deltaTime), deltaTime)
+
+    def set_angle(self, newAngle: float) -> None:
+        self._angle = newAngle
+
+    def set_center(self, newCenter: Point) -> None:
+        self._center = newCenter
+
+    def rotate(self, angle: float) -> None:
+        self._angle += angle
+
+    def translate(self, vector: Vector) -> None:
+        self._center.translate(vector)
+
+    def updateReferences(self, deltaTime: float) -> None:
+        # mise à jour de la vitesse angulaire
+        # self.set_angle(self.angle(deltaTime))
+        self.rotate(self.relativeAngle(deltaTime))
+        self.angularMotion.updateReferences(deltaTime)
+        rotationCenter = Point(*self.angularMotion.center())
+        rotationCenter.translate(self.vectorialMotion.relativePosition(deltaTime))
+        self.angularMotion.set_center(rotationCenter)
+
+        # mise à jour de la vitesse vectorielle
+        self.translate(self.relativePosition(deltaTime))
+        self.vectorialMotion.updateReferences(deltaTime)
 
     def fill(self) -> str:
         return self._fill
@@ -64,30 +97,6 @@ class Object:
     def friction(self) -> float:
         return self._friction
 
-    def set_center(self, newCenter: Point) -> None:
-        self._center = newCenter
-
-    def translate(self, vector: Vector) -> None:
-        self._center.translate(vector)
-
-    def set_angle(self, newAngle: float) -> None:
-        self._angle = newAngle
-
-    def rotate(self, angle: float) -> None:
-        self._angle += angle
-
-    def updateReferences(self, deltaTime: float) -> None:
-        # mise à jour de la vitesse angulaire
-        # self.set_angle(self.angle(deltaTime))
-        self.angularMotion.updateReferences(deltaTime)
-        rotationCenter = Point(*self.angularMotion.center())
-        rotationCenter.translate(self.vectorialMotion.relativePosition(deltaTime))
-        self.angularMotion.set_center(rotationCenter)
-
-        # mise à jour de la vitesse vectorielle
-        # self.set_angle(self.center(deltaTime))
-        self.vectorialMotion.updateReferences(deltaTime)
-
     def collides(self, object: "Object", timeInterval: float) -> bool:
         return False
 
@@ -96,8 +105,3 @@ class Object:
 
     def collisionTangent(self, object: "Object") -> Vector:
         return Vector(0, 0)
-
-    def speedAtPoint(self, point: Point, deltaTime: float = 0) -> Vector:
-        return self.angularMotion.speedAtPoint(
-            point, deltaTime
-        ) + self.vectorialMotion.speed(deltaTime)
