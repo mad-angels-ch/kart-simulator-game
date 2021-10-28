@@ -64,22 +64,28 @@ class Object:
     def friction(self) -> float:
         return self._friction
 
+    def set_center(self, newCenter: Point) -> None:
+        self._center = newCenter
+
     def translate(self, vector: Vector) -> None:
         self._center.translate(vector)
+
+    def set_angle(self, newAngle: float) -> None:
+        self._angle = newAngle
 
     def rotate(self, angle: float) -> None:
         self._angle += angle
 
     def updateReferences(self, deltaTime: float) -> None:
         # mise à jour de la vitesse angulaire
-        # self._angle = self.angle(deltaTime)
+        # self.set_angle(self.angle(deltaTime))
         self.angularMotion.updateReferences(deltaTime)
         rotationCenter = Point(*self.angularMotion.center())
         rotationCenter.translate(self.vectorialMotion.relativePosition(deltaTime))
         self.angularMotion.set_center(rotationCenter)
 
         # mise à jour de la vitesse vectorielle
-        # self._center = self.center(deltaTime)
+        # self.set_angle(self.center(deltaTime))
         self.vectorialMotion.updateReferences(deltaTime)
 
     def collides(self, object: "Object") -> bool:

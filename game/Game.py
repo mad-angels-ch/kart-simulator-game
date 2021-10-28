@@ -57,5 +57,4 @@ class Game:
         collisionsZone.resolve()
 
     def callOutput(self, elapsedTime: float) -> None:
-        print("called")
         self._output(elapsedTime, self._objects)
