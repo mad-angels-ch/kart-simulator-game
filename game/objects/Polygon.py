@@ -9,12 +9,12 @@ from .Circle import Circle
 
 
 class Polygon(Object):
-    _summits: List[Point]
+    _vertices: List[Point]
     _angleCosSin: List[float]
 
     def __init__(self) -> None:
         super().__init__()
-        self._summits = list()
+        self._vertices = list()
         self._angleCosSin = list()
 
     def angleCosSin(self, deltaTime: float = 0) -> List[float]:
@@ -34,42 +34,42 @@ class Polygon(Object):
         super().rotate(angle)
         self.updateAngleCosSin()
 
-    def rel_summits(self) -> List[Point]:
+    def rel_vertices(self) -> List[Point]:
         """Retourne la coordonnée relative des sommets,
         par rapport au centre et à l'angle"""
-        return self._summits
+        return self._vertices
 
-    def rel_summit(self, summitIndex: int) -> Point:
+    def rel_vertex(self, vertexIndex: int) -> Point:
         """Retourne la coordonnée relative du sommet,
         par rapport au centre et à l'angle"""
-        return self._summits[summitIndex]
+        return self._vertices[vertexIndex]
 
-    def abs_summit(self, deltaTime: float = 0) -> Point:
+    def abs_vertex(self, deltaTime: float = 0) -> Point:
         """Retourne la coordonnée absolue des sommets,
         en tenant compte du centre et de l'angle"""
-        return [self.abs_summit(i, deltaTime) for i in range(len(self.rel_summits()))]
+        return [self.abs_vertex(i, deltaTime) for i in range(len(self.rel_vertices()))]
 
-    def abs_summit(self, summitIndex: int, deltaTime: float = 0) -> Point:
+    def abs_vertex(self, vertexIndex: int, deltaTime: float = 0) -> Point:
         """Retourne la coordonnée absolue du sommet,
         en tenant compte du centre et de l'angle"""
-        summitV = Vector(*self.rel_summit(summitIndex))
-        summitV.rotateCosSin(*self.angleCosSin(deltaTime))
-        summitP = Point(*summitV)
-        summitP.translate(Vector(*self.center(deltaTime)))
-        return summitP
+        vertexV = Vector(*self.rel_vertex(vertexIndex))
+        vertexV.rotateCosSin(*self.angleCosSin(deltaTime))
+        vertexP = Point(*vertexV)
+        vertexP.translate(Vector(*self.center(deltaTime)))
+        return vertexP
 
     def collides(self, object: "Object", timeInterval: float) -> bool:
         if isinstance(object, Circle):
-            second = len(self.rel_summits()) - 1
-            for first in range(len(self.rel_summits())):
-                summit = self.abs_summit(first)
+            second = len(self.rel_vertices()) - 1
+            for first in range(len(self.rel_vertices())):
+                vertex = self.abs_vertex(first)
 
                 # collision sur un sommet
-                if summit.distanceOf(object.center()) < object.radius():
+                if vertex.distanceOf(object.center()) < object.radius():
                     return True
 
                 # collision sur un côté
-                side = Segment(summit, self.abs_summit(second))
+                side = Segment(vertex, self.abs_vertex(second))
                 projection: Point = side.orthogonalProjection(object.center())
                 if side.passBy(projection):
                     if object.center().distanceOf(projection):
