@@ -88,7 +88,7 @@ class Object:
         # self.set_angle(self.center(deltaTime))
         self.vectorialMotion.updateReferences(deltaTime)
 
-    def collides(self, object: "Object") -> bool:
+    def collides(self, object: "Object", timeInterval: float) -> bool:
         return False
 
     def collisionPoint(self, object: "Object") -> Point:

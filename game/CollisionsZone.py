@@ -43,7 +43,7 @@ class CollisionsZone:
             def getCollidedObjects(objects: List[objects.Object]):
                 for first in range(len(objects) - 1):
                     for second in range(first + 1, len(objects)):
-                        if objects[first].collides(objects[second]):
+                        if objects[first].collides(objects[second], 0):
                             return (objects[first], objects[second])
                 return None
 

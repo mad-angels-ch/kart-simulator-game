@@ -58,7 +58,7 @@ class Polygon(Object):
         summitP.translate(Vector(*self.center(deltaTime)))
         return summitP
 
-    def collides(self, object: "Object") -> bool:
+    def collides(self, object: "Object", timeInterval: float) -> bool:
         if isinstance(object, Circle):
             second = len(self.rel_summits()) - 1
             for first in range(len(self.rel_summits())):
