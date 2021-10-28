@@ -99,10 +99,16 @@ class Vector:
             angle += 2 * math.pi
         return angle
 
+    def rotateCosSin(self, cosAngle: float, sinAngle: float):
+        self._x, self._y = (
+            self._x * cosAngle - self._y * sinAngle,
+            self._x * sinAngle + self._y * cosAngle,
+        )
+
     def rotate(self, angle: float) -> None:
         cos = math.cos(angle)
         sin = math.sin(angle)
-        self._x, self._y = self._x * cos - self._y * sin, self._x * sin + self._y * cos
+        self.rotateCosSin(cos, sin)
 
     def orthogonalProjection(self, vector: "Vector") -> "Vector":
         "Projete ce vecteur sur le vecteur donné en paramètre"
