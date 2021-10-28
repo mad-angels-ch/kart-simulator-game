@@ -53,14 +53,14 @@ class Polygon(Object):
         """Retourne la coordonnée absolue du sommet,
         en tenant compte du centre et de l'angle"""
         summitV = Vector(*self.rel_summit(summitIndex))
-        summitV.rotateCosSin(self.angleCosSin(deltaTime))
+        summitV.rotateCosSin(*self.angleCosSin(deltaTime))
         summitP = Point(*summitV)
         summitP.translate(Vector(*self.center(deltaTime)))
         return summitP
 
     def collides(self, object: "Object") -> bool:
         if isinstance(object, Circle):
-            second = len(self.rel_summits())
+            second = len(self.rel_summits()) - 1
             for first in range(len(self.rel_summits())):
                 summit = self.abs_summit(first)
 

@@ -36,7 +36,7 @@ class Line:
 
         projectedVector = vectorToProject.orthogonalProjection(self._vector)
         if type(pointOrVector) == Point:
-            projectedPoint = Point(self._point)
+            projectedPoint = Point(*self._point)
             projectedPoint.translate(projectedPoint)
             return projectedPoint
         else:
