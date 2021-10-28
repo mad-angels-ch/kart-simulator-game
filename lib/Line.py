@@ -28,7 +28,7 @@ class Line:
         return self._vector.normalVector()
 
     def orthogonalProjection(self, pointOrVector: "Point | Vector") -> "Point | Vector":
-        """Projete ce vecteur ou le point donné en paramètre sur la droite"""
+        """Projete le vecteur ou le point donné en paramètre sur la droite"""
         if type(pointOrVector) == Point:
             vectorToProject = Vector.fromPoints(self.point(), pointOrVector)
         else:
