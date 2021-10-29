@@ -77,7 +77,8 @@ class Vector:
         except ZeroDivisionError:
             return
         else:
-            self *= factor
+            for i in range(len(self)):
+                self[i] *= factor
 
     def scalarProduct(self, other: "Vector") -> float:
         return self._x * other._x + self._y * other._y
