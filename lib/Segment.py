@@ -1,3 +1,5 @@
+import math
+
 from .vector import Vector
 from .point import Point
 from .Line import Line
@@ -28,7 +30,29 @@ class Segment(Line):
         begin = self.begin()
         end = self.end()
         for i in range(len(point)):
-            if min(begin[i], end[i]) > point[i] or max(begin[i], end[i]) < point[i]:
+            if min(begin[i], end[i]) >= point[i] or max(begin[i], end[i]) <= point[i]:
                 return False
 
         return True
+
+    def intercepts(self, other: "Segment") -> bool:
+        """Retourne True si les deux segments se coupent"""
+        coefficient = self._vectorCoefficientToIntersectionPoint(other)
+        if not coefficient:
+            return False
+        return 0 <= coefficient and coefficient <= 1
+
+    def intersection(self, other: "Segment") -> "Point | None":
+        """Retourne le point d'intersection entre les segments s'il existe"""
+        coefficient = self._vectorCoefficientToIntersectionPoint(other)
+        if not coefficient:
+            return
+        elif coefficient < 0 or 1 < coefficient:
+            return
+        else:
+            return Point(
+                *[
+                    self.begin()[i] + coefficient * self.vector()[i]
+                    for i in range(self.begin())
+                ]
+            )

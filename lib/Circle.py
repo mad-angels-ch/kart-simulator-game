@@ -28,7 +28,7 @@ class Circle:
         if isinstance(other, Circle):
             return (
                 self.center().distanceOf(other.center())
-                < self.radius() + other.radius()
+                <= self.radius() + other.radius()
             )
 
         else:

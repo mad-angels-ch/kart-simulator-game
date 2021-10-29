@@ -35,7 +35,7 @@ class Polygon(Shape):
             for first in range(len(self)):
 
                 # collision sur un sommet
-                if other.center().distanceOf(self.vertex(first)) < other.radius():
+                if other.center().distanceOf(self.vertex(first)) <= other.radius():
                     return True
 
                 # collision sur un côté
@@ -46,5 +46,14 @@ class Polygon(Shape):
                         return True
 
                 second = first
+            return False
 
-        return False
+        elif isinstance(other, Polygon):
+            for selfEge in self.edges():
+                for otherEdge in other.edges():
+                    if selfEge.intercepts(otherEdge):
+                        return True
+            return False
+
+        else:
+            return other.collides(self)
