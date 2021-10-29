@@ -60,20 +60,20 @@ class Circle(Object):
         else:
             return other.collides(self)
 
-    def collisionPoint(self, object: "Object") -> lib.Point:
-        if isinstance(object, Circle):
-            translation = lib.Vector.fromPoints(self.center(), object.center())
+    def collisionPoint(self, other: "Object") -> lib.Point:
+        if isinstance(other, Circle):
+            translation = lib.Vector.fromPoints(self.center(), other.center())
             translation.set_norm(self.radius())
             collisionPoint = lib.Point(*self.center())
             collisionPoint.translate(translation)
             return collisionPoint
 
         else:
-            return object.collisionPoint(self)
+            return other.collisionPoint(self)
 
-    def collisionTangent(self, object: "Object") -> lib.Vector:
-        if isinstance(object, Circle):
-            return lib.Vector.fromPoints(self.center(), object.center()).normalVector()
+    def collisionTangent(self, other: "Object") -> lib.Vector:
+        if isinstance(other, Circle):
+            return lib.Vector.fromPoints(self.center(), other.center()).normalVector()
 
         else:
-            return object.collisionTangent(self)
+            return other.collisionTangent(self)
