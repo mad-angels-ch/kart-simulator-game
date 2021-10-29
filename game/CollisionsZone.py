@@ -9,7 +9,7 @@ from . import objects
 
 
 class CollisionsZone:
-    timePrecision = 1e-5
+    timePrecision = 1e-3
 
     _timeInterval: float
     _objects: List[objects.Object]

@@ -19,7 +19,7 @@ class ConvexPolygon(Polygon):
             return self._separatingAxisTheoremCircle(other)
 
         elif isinstance(other, ConvexPolygon):
-            return self._separatingAxisTheoremConvexPolygon(self, other)
+            return self._separatingAxisTheoremConvexPolygon(other)
 
         else:
             return other.collides(self)
