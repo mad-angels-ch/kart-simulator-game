@@ -3,6 +3,8 @@ import math
 
 
 class Vector:
+    precision = 1e-6
+
     _x: float
     _y: float
 
@@ -43,7 +45,9 @@ class Vector:
         return self.scalarProduct(self)
 
     def __eq__(self, o: "Vector") -> bool:
-        return self._x == o._x and self._y == o._y
+        return math.isclose(self._x, o._x, abs_tol=Vector.precision) and math.isclose(
+            self._y, o._y, abs_tol=Vector.precision
+        )
 
     def __ne__(self, o: object) -> bool:
         return not self == o
@@ -84,7 +88,7 @@ class Vector:
         return self._x * other._x + self._y * other._y
 
     def isNormal(self, other: "Vector") -> bool:
-        return self.scalarProduct(other) == 0
+        return math.isclose(self.scalarProduct(other), 0, abs_tol=Vector.precision)
 
     def isCollinear(self, other: "Vector") -> bool:
         return self.normalVector().isNormal(other)
@@ -124,11 +128,9 @@ class Vector:
         self._y *= factor
 
     def x(self) -> float:
-        warning(f"{__name__}.x() is deprecated, use [0] or ['x'] instead")
         return self._x
 
     def y(self) -> float:
-        warning(f"{__name__}.y() is deprecated, use [1] or ['y'] instead")
         return self._y
 
     def get_x(self) -> float:

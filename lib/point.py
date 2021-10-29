@@ -3,6 +3,8 @@ import math
 
 
 class Point:
+    precision = 1e-6
+
     _x: float
     _y: float
 
@@ -17,7 +19,9 @@ class Point:
         return iter((self._x, self._y))
 
     def __eq__(self, o: "Point") -> bool:
-        return self._x == o._x and self._y == o._y
+        return math.isclose(self._x, o._x, abs_tol=Point.precision) and math.isclose(
+            self._y, o._y, abs_tol=Point.precision
+        )
 
     def __ne__(self, o: object) -> bool:
         return not self == o
@@ -54,11 +58,9 @@ class Point:
         return math.hypot(*[self[i] - point[i] for i in range(len(self))])
 
     def x(self) -> float:
-        warning(f"{__name__}.x() is deprecated, use [0] or ['x'] instead")
         return self[0]
 
     def y(self) -> float:
-        warning(f"{__name__}.y() is deprecated, use [1] or ['y'] instead")
         return self[1]
 
     def get_x(self) -> float:
