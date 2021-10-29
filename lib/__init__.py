@@ -2,3 +2,8 @@ from .point import Point
 from .vector import Vector
 from .Line import Line
 from .Segment import Segment
+from .Shape import Shape
+from .Circle import Circle
+from .Polygon import Polygon
+from .ConvexPolygon import ConvexPolygon
+from .Rectangle import Rectangle
