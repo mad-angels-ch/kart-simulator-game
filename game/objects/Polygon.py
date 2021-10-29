@@ -44,7 +44,7 @@ class Polygon(Object):
         par rapport au centre et à l'angle"""
         return self._vertices[vertexIndex]
 
-    def abs_vertex(self, deltaTime: float = 0) -> Point:
+    def abs_vertices(self, deltaTime: float = 0) -> Point:
         """Retourne la coordonnée absolue des sommets,
         en tenant compte du centre et de l'angle"""
         return [self.abs_vertex(i, deltaTime) for i in range(len(self.rel_vertices()))]

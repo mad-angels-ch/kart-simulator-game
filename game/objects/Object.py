@@ -9,7 +9,6 @@ class Object:
 
     _center: Point
     _angle: float
-
     angularMotion: motions.angulars.AngularMotion
     vectorialMotion: motions.vectorials.VectorialMotion
 
