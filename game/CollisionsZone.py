@@ -29,21 +29,13 @@ class CollisionsZone:
         halfWorkingInterval = timeInterval
         lastCollidedObjects = None
         while halfWorkingInterval > self.timePrecision:
-            transformations = [
-                (
-                    ob.relativeAngle(halfWorkingInterval),
-                    ob.relativePosition(halfWorkingInterval),
-                )
-                for ob in self._objects
-            ]
-            for i in range(len(self._objects)):
-                self._objects[i].rotate(transformations[i][0])
-                self._objects[i].translate(transformations[i][1])
 
             def getCollidedObjects(objects: List[objects.Object]):
                 for first in range(len(objects) - 1):
                     for second in range(first + 1, len(objects)):
-                        if objects[first].collides(objects[second], 0):
+                        if objects[first].collides(
+                            objects[second], halfWorkingInterval
+                        ):
                             return (objects[first], objects[second])
                 return None
 
@@ -51,21 +43,16 @@ class CollisionsZone:
 
             if collidedObjects:
                 lastCollidedObjects = collidedObjects
-                for i in range(len(self._objects)):
-                    self._objects[i].rotate(-transformations[i][0])
-                    self._objects[i].translate(-transformations[i][1])
             else:
+                for obj in self._objects:
+                    obj.updateReferences(timeInterval)
                 if not lastCollidedObjects:
                     # il n'y a aucune collision dans l'intervalle donnée à la fonction
-                    for obj in self._objects:
-                        obj.updateReferences(timeInterval)
                     return timeInterval
                 checkedInterval += halfWorkingInterval
             halfWorkingInterval /= 2
 
         # gestion de la collision
-        for obj in self._objects:
-            obj.updateReferences(checkedInterval)
         point = lastCollidedObjects[0].collisionPoint(lastCollidedObjects[1])
         tangent = lastCollidedObjects[0].collisionTangent(lastCollidedObjects[1])
         angle = tangent.direction()

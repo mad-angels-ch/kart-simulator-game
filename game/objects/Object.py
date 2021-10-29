@@ -1,4 +1,5 @@
 from lib import Point, Vector
+import lib
 
 from . import motions
 
@@ -32,7 +33,10 @@ class Object:
     def center(self, deltaTime: float = 0) -> Point:
         if not deltaTime:
             return self._center
-        return Point(**self.center()).translate(self.relativePosition(deltaTime))
+
+        newCenter = lib.Point(*self.center())
+        newCenter.translate(self.relativePosition(deltaTime))
+        return newCenter
 
     def relativeAngle(self, deltaTime: float) -> float:
         return self.angularMotion.relativeAngle(deltaTime)

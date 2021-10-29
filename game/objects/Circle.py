@@ -1,4 +1,4 @@
-from lib import Point, Vector
+import lib
 
 from .Object import Object
 
@@ -13,30 +13,67 @@ class Circle(Object):
     def radius(self) -> float:
         return self._radius
 
-    def collides(self, object: "Object", timeInterval: float) -> bool:
-        if isinstance(object, Circle):
-            return (
-                self.center().distanceOf(object.center())
-                < self.radius() + object.radius()
-            )
+    def collides(self, other: "Object", timeInterval: float) -> bool:
+        if isinstance(other, Circle):
+            newSelf = lib.Circle(self.center(timeInterval), self.radius())
+            newOther = lib.Circle(other.center(timeInterval), other.radius())
+            if newSelf.collides(newOther):
+                return True
+
+            # contrôller que les cercles ne se sont pas passés par dessus
+            selfTrajectory = None
+            if self.center().distanceOf(newSelf.center()) > self.radius():
+                normalTrajectoryVector = lib.Vector.fromPoints(
+                    self.center(), newSelf.center()
+                ).normalVector()
+                normalTrajectoryVector.set_norm(self.radius())
+                v0 = lib.Point(*self.center())
+                v1 = lib.Point(*self.center())
+                v2 = lib.Point(*newSelf.center())
+                v0.translate(-normalTrajectoryVector)
+                v1.translate(normalTrajectoryVector)
+                v2.translate(normalTrajectoryVector)
+                selfTrajectory = lib.Rectangle(v0, v1, v2)
+                if selfTrajectory.collides(newOther):
+                    return True
+
+            otherTrajectory = None
+            if other.center().distanceOf(newOther.center()) > other.radius():
+                normalTrajectoryVector = lib.Vector.fromPoints(
+                    other.center(), newOther.center()
+                ).normalVector()
+                normalTrajectoryVector.set_norm(other.radius())
+                v0 = lib.Point(*other.center())
+                v1 = lib.Point(*other.center())
+                v2 = lib.Point(*newOther.center())
+                v0.translate(-normalTrajectoryVector)
+                v1.translate(normalTrajectoryVector)
+                v2.translate(normalTrajectoryVector)
+                otherTrajectory = lib.Rectangle(v0, v1, v2)
+                if otherTrajectory.collides(newSelf):
+                    True
+            if selfTrajectory and otherTrajectory:
+                return selfTrajectory.collides(otherTrajectory)
+            else:
+                return False
 
         else:
-            return object.collides(self)
+            return other.collides(self)
 
-    def collisionPoint(self, object: "Object") -> Point:
+    def collisionPoint(self, object: "Object") -> lib.Point:
         if isinstance(object, Circle):
-            translation = Vector.fromPoints(self.center(), object.center())
+            translation = lib.Vector.fromPoints(self.center(), object.center())
             translation.set_norm(self.radius())
-            collisionPoint = Point(*self.center())
+            collisionPoint = lib.Point(*self.center())
             collisionPoint.translate(translation)
             return collisionPoint
 
         else:
             return object.collisionPoint(self)
 
-    def collisionTangent(self, object: "Object") -> Vector:
+    def collisionTangent(self, object: "Object") -> lib.Vector:
         if isinstance(object, Circle):
-            return Vector.fromPoints(self.center(), object.center()).normalVector()
+            return lib.Vector.fromPoints(self.center(), object.center()).normalVector()
 
         else:
             return object.collisionTangent(self)
