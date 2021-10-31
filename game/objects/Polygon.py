@@ -47,7 +47,7 @@ class Polygon(Object):
         self.updateAngleCosSin()
 
     def vertex(self, vertexIndex: int, deltaTime: float = 0) -> lib.Point:
-        vertexV = lib.Vector(*self.rel_vertex(vertexIndex))
+        vertexV = lib.Vector(*self._vertices[vertexIndex])
         vertexV.rotateCosSin(*self.angleCosSin(deltaTime))
         vertex = lib.Point(*vertexV)
         vertex.translate(lib.Vector(*self.center(deltaTime)))

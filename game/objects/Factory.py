@@ -39,11 +39,19 @@ class Factory:
         newObject._angle = angle
         newObject.angularMotion = angularMotion
         newObject.vectorialMotion = vectorialMotion
-        newObject._fill = fill
         newObject._opacity = opacity
         newObject._mass = mass
         newObject._friction = friction
 
+        if fill[0] != '#':      # Transformation des couleurs rgb en hex
+            f = fill[4:-1].split(',')
+            l = list()
+            for i in f:
+                l.append(int(i))
+            newObject._fill = '#%02x%02x%02x' % (l[0],l[1],l[2])
+        else:
+            newObject._fill = fill
+            
         if type == "circle":
             self._circleAfter(newObject, **kwargs)
         elif type == "polygon":
@@ -66,7 +74,7 @@ class Factory:
         return newObject
 
     def _polygonAfter(self, newObject: Polygon, **kwargs):
-        newObject._summits = kwargs.get("summits", [])
+        newObject._vertices = kwargs.get("summits", [])
         newObject.updateAngleCosSin()
 
     def fromFabric(self, jsonObject) -> List[Object]:
