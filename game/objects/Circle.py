@@ -60,7 +60,7 @@ class Circle(Object):
                 return False
 
         else:
-            return other.collides(self)
+            return other.collides(self, timeInterval)
 
     def collisionPointAndTangent(self, other: "Object") -> Tuple[lib.Point, lib.Vector]:
         if isinstance(other, Circle):
