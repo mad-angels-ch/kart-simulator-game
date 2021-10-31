@@ -57,6 +57,10 @@ class Point:
         """Retourne la distance séparent les deux points"""
         return math.hypot(*[self[i] - point[i] for i in range(len(self))])
 
+    def squareDistanceOf(self, point: "Point") -> float:
+        """Retourne le carré de la distance séparent les deux points"""
+        return (self[0] - point[0]) ** 2 + (self[1] - point[1]) ** 2
+
     def x(self) -> float:
         return self[0]
 

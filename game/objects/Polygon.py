@@ -1,8 +1,12 @@
-from typing import List
+import math
+from typing import List, Tuple
 from logging import info
 from math import sin, cos
 
 import lib
+from lib.Segment import Segment
+from lib.point import Point
+from lib.vector import Vector
 
 from .Object import Object
 from .Circle import Circle
@@ -52,29 +56,22 @@ class Polygon(Object):
     def vertices(self, deltaTime: float = 0) -> List[lib.Point]:
         return [self.vertex(i, deltaTime) for i in range(len(self))]
 
-    def rel_vertices(self) -> List[lib.Point]:
-        """Retourne la coordonnée relative des sommets,
-        par rapport au centre et à l'angle"""
-        return self._vertices
+    def edge(self, startVertexIndex: int, deltaTime: float = 0) -> lib.Segment:
+        endVertexIndex = startVertexIndex + 1
+        if endVertexIndex == len(self):
+            endVertexIndex = 0
+        return lib.Segment(
+            self.vertex(startVertexIndex, deltaTime),
+            self.vertex(endVertexIndex, deltaTime),
+        )
 
-    def rel_vertex(self, vertexIndex: int) -> lib.Point:
-        """Retourne la coordonnée relative du sommet,
-        par rapport au centre et à l'angle"""
-        return self._vertices[vertexIndex]
-
-    def abs_vertex(self, deltaTime: float = 0) -> lib.Point:
-        """Retourne la coordonnée absolue des sommets,
-        en tenant compte du centre et de l'angle"""
-        return [self.abs_vertex(i, deltaTime) for i in range(len(self.rel_vertices()))]
-
-    def abs_vertex(self, vertexIndex: int, deltaTime: float = 0) -> lib.Point:
-        """Retourne la coordonnée absolue du sommet,
-        en tenant compte du centre et de l'angle"""
-        vertexV = lib.Vector(*self.rel_vertex(vertexIndex))
-        vertexV.rotateCosSin(*self.angleCosSin(deltaTime))
-        vertexP = lib.Point(*vertexV)
-        vertexP.translate(lib.Vector(*self.center(deltaTime)))
-        return vertexP
+    def edges(self, deltaTime: float = 0) -> List[lib.Segment]:
+        edges = []
+        vertices = self.vertices(deltaTime)
+        second = len(vertices) - 1
+        for first in range(len(vertices)):
+            edges.append(lib.Segment(vertices[first], vertices[second]))
+        return edges
 
     def collides(self, other: "Object", timeInterval: float) -> bool:
         if isinstance(other, Circle):
@@ -100,10 +97,61 @@ class Polygon(Object):
         else:
             return other.collides(self)
 
-    def collisionPoint(self, other: "Object") -> lib.Point:
-        # à compléter
-        return super().collisionPoint(other)
+    def collisionPointAndTangent(self, other: "Object") -> Tuple[lib.Point, lib.Vector]:
+        if isinstance(other, Circle):
+            smallestVertexSquareDistance = math.inf
+            smallestEdgeSquareDistance = math.inf
+            second = len(self) - 1
+            for first in range(len(self)):
+                firstVertex = self.vertex(first)
+                vertexSquareDistance = other.center().squareDistanceOf(firstVertex)
+                if vertexSquareDistance < smallestVertexSquareDistance:
+                    smallestVertexSquareDistance = vertexSquareDistance
+                    nearestVertex = firstVertex
 
-    def collisionTangent(self, other: "Object") -> lib.Vector:
-        # à compléter
-        return super().collisionTangent(other)
+                edge = lib.Segment(firstVertex, self.vertex(second))
+                projection: Point = edge.orthogonalProjection(other.center())
+                if edge.passBy(projection):
+                    edgeSquareDistance = other.center().squareDistanceOf(projection)
+                    if edgeSquareDistance < smallestEdgeSquareDistance:
+                        smallestEdgeSquareDistance = edgeSquareDistance
+                        nearestEdge = edge
+                        nearestProjection = projection
+
+                second = first
+            if smallestEdgeSquareDistance < smallestVertexSquareDistance:
+                return nearestProjection, nearestEdge.vector()
+            else:
+                return (
+                    nearestVertex,
+                    Vector.fromPoints(other.center(), nearestVertex).normalVector(),
+                )
+
+        elif isinstance(other, Polygon):
+
+            def findNearest(
+                edges: List[lib.Segment], vertices: List[lib.Point]
+            ) -> Tuple[float, lib.Point, lib.Vector]:
+                smallestSquareDistance = math.inf
+                for edge in edges:
+                    for vertex in vertices:
+                        projection: Point = edge.orthogonalProjection(vertex)
+                        if edge.passBy(projection):
+                            squareDistance = vertex.squareDistanceOf(projection)
+                            if squareDistance < smallestSquareDistance:
+                                smallestSquareDistance = squareDistance
+                                nearestVertex = vertex
+                                nearestEdge = edge
+                return smallestSquareDistance, nearestVertex, nearestEdge.vector()
+
+            nearests = (
+                findNearest(self.edges(), other.vertices()),
+                findNearest(other.edges(), self.vertices()),
+            )
+            nearest = 0
+            if nearests[1][0] < nearests[0][0]:
+                nearest = 1
+            return nearests[nearest][1], nearests[nearest][2]
+
+        else:
+            return other.collisionPointAndTangent(self)

@@ -53,8 +53,9 @@ class CollisionsZone:
             halfWorkingInterval /= 2
 
         # gestion de la collision
-        point = lastCollidedObjects[0].collisionPoint(lastCollidedObjects[1])
-        tangent = lastCollidedObjects[0].collisionTangent(lastCollidedObjects[1])
+        point, tangent = lastCollidedObjects[0].collisionPointAndTangent(
+            lastCollidedObjects[1]
+        )
         angle = tangent.direction()
 
         masses = [obj.mass() for obj in lastCollidedObjects]

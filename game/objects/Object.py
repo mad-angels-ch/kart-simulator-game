@@ -1,3 +1,4 @@
+from typing import Tuple
 import lib
 
 from . import motions
@@ -104,11 +105,7 @@ class Object:
         """Retourne vrai si les deux objets se collisionnent dans l'intervalle de temps donné"""
         return False
 
-    def collisionPoint(self, other: "Object") -> lib.Point:
-        """Retourne une approximation du point par lequel les deux objets se touchent"""
-        return other.center()
-
-    def collisionTangent(self, other: "Object") -> lib.Vector:
-        """Retourne une approximation d'un vecteur directeur de la tangente
-        commune aux deux objets passant par le point de collision"""
-        return lib.Vector(0, 0)
+    def collisionPointAndTangent(self, other: "Object") -> Tuple[lib.Point, lib.Vector]:
+        """Retourne une approximation du point par lequel les deux objets se touchent
+        ainsi qu'une approximation d'un vecteur directeur de la tangente passant par ce point"""
+        return other.center(), lib.Vector(0, 0)

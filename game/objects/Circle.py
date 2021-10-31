@@ -1,3 +1,5 @@
+from typing import Tuple
+
 import lib
 
 from .Object import Object
@@ -60,20 +62,16 @@ class Circle(Object):
         else:
             return other.collides(self)
 
-    def collisionPoint(self, other: "Object") -> lib.Point:
+    def collisionPointAndTangent(self, other: "Object") -> Tuple[lib.Point, lib.Vector]:
         if isinstance(other, Circle):
             translation = lib.Vector.fromPoints(self.center(), other.center())
             translation.set_norm(self.radius())
             collisionPoint = lib.Point(*self.center())
             collisionPoint.translate(translation)
-            return collisionPoint
+            return (
+                collisionPoint,
+                lib.Vector.fromPoints(self.center(), other.center()).normalVector(),
+            )
 
         else:
-            return other.collisionPoint(self)
-
-    def collisionTangent(self, other: "Object") -> lib.Vector:
-        if isinstance(other, Circle):
-            return lib.Vector.fromPoints(self.center(), other.center()).normalVector()
-
-        else:
-            return other.collisionTangent(self)
+            return other.collisionPointAndTangent(self)
