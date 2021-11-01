@@ -15,7 +15,9 @@ class Segment(Line):
 
     def end(self) -> Point:
         """Retourne l'autre extrémité du segment"""
-        return Point(self.point()).translate(self.vector())
+        endPoint = Point(*self.point())
+        endPoint.translate(self.vector())
+        return endPoint
 
     def length(self) -> float:
         """Retourne la longueur du segment"""
