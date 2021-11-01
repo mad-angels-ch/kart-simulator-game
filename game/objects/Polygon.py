@@ -71,6 +71,7 @@ class Polygon(Object):
         second = len(vertices) - 1
         for first in range(len(vertices)):
             edges.append(lib.Segment(vertices[first], vertices[second]))
+            second = first
         return edges
 
     def collides(self, other: "Object", timeInterval: float) -> bool:
