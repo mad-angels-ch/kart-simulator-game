@@ -39,22 +39,32 @@ class Segment(Line):
 
     def intercepts(self, other: "Segment") -> bool:
         """Retourne True si les deux segments se coupent"""
-        coefficient = self._vectorCoefficientToIntersectionPoint(other)
-        if not coefficient:
+        coefficients = self._vectorCoefficientsToIntersectionPoint(other)
+        if not coefficients:
             return False
-        return 0 <= coefficient and coefficient <= 1
+        return (
+            0 <= coefficients[0]
+            and coefficients[0] <= 1
+            and 0 <= coefficients[1]
+            and coefficients[1] <= 1
+        )
 
     def intersection(self, other: "Segment") -> "Point | None":
         """Retourne le point d'intersection entre les segments s'il existe"""
-        coefficient = self._vectorCoefficientToIntersectionPoint(other)
-        if not coefficient:
+        coefficients = self._vectorCoefficientsToIntersectionPoint(other)
+        if not coefficients:
             return
-        elif coefficient < 0 or 1 < coefficient:
+        elif (
+            0 <= coefficients[0]
+            and coefficients[0] <= 1
+            and 0 <= coefficients[1]
+            and coefficients[1] <= 1
+        ):
             return
         else:
             return Point(
                 *[
-                    self.begin()[i] + coefficient * self.vector()[i]
-                    for i in range(self.begin())
+                    self.begin()[i] + coefficients[0] * self.vector()[i]
+                    for i in range(len(self.begin()))
                 ]
             )

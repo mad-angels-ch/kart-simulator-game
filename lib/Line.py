@@ -1,4 +1,5 @@
 import math
+from typing import List
 
 from .vector import Vector
 from .point import Point
@@ -38,7 +39,7 @@ class Line:
         else:
             vectorToProject: Vector = pointOrVector
 
-        projectedVector = vectorToProject.orthogonalProjection(self._vector)
+        projectedVector = vectorToProject.orthogonalProjection(self.vector())
         if type(pointOrVector) == Point:
             projectedPoint = Point(*self.point())
             projectedPoint.translate(projectedVector)
@@ -54,27 +55,36 @@ class Line:
         """Retourne True si le point donné en paramètre se trouve sur la droite"""
         return Vector.fromPoints(self._point, point).isCollinear(self._vector)
 
-    def _vectorCoefficientToIntersectionPoint(self, other: "Line") -> "float | None":
+    def _vectorCoefficientsToIntersectionPoint(
+        self, other: "Line"
+    ) -> "List[float] | None":
         denominator = (
             self.vector()[0] * other.vector()[1] - self.vector()[1] * other.vector()[0]
         )
         if math.isclose(denominator, 0, abs_tol=Line.precision):
-            return None
+            return
 
         otherEnd = Point(*other.point())
         otherEnd.translate(other.vector())
-        return (
+        selfCoefficient = (
             (self.point()[0] - other.point()[0]) * (other.point()[1] - otherEnd[1])
-            - (self.point()[1] - other.point()[1]) * (other.point()[0] - otherEnd[1])
+            - (self.point()[1] - other.point()[1]) * (other.point()[0] - otherEnd[0])
         ) / denominator
+        selfEnd = Point(*self.point())
+        selfEnd.translate(self.vector())
+        otherCoefficient = (
+            (self.point()[0] - other.point()[0]) * (self.point()[1] - selfEnd[1])
+            - (self.point()[1] - other.point()[1]) * (self.point()[0] - selfEnd[0])
+        ) / denominator
+        return selfCoefficient, otherCoefficient
 
     def intercepts(self, other: "Line") -> bool:
         """Retourne True si les deux droites se coupent"""
-        return bool(self._vectorCoefficientToIntersectionPoint(other))
+        return bool(self._vectorCoefficientsToIntersectionPoint(other))
 
     def intersection(self, other: "Line") -> "Point | None":
         """Retourne le point d'intersection entre les droites s'il existe"""
-        coefficient = self._vectorCoefficientToIntersectionPoint(other)
+        coefficient = self._vectorCoefficientsToIntersectionPoint(other)
         if not coefficient:
             return
         else:

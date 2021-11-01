@@ -49,8 +49,9 @@ class Polygon(Shape):
             return False
 
         elif isinstance(other, Polygon):
+            otherEdges = other.edges()
             for selfEge in self.edges():
-                for otherEdge in other.edges():
+                for otherEdge in otherEdges:
                     if selfEge.intercepts(otherEdge):
                         return True
             return False
