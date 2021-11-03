@@ -7,7 +7,7 @@ from .Segment import Segment
 from .Shape import Shape
 
 
-class Circle:
+class Circle(Shape):
     _center: Point
     _radius: float
 

@@ -40,12 +40,14 @@ class Polygon(Shape):
 
                 # collision sur un côté
                 side = Segment(self.vertex(first), self.vertex(second))
-                projection: Point = side.orthogonalProjection(other.center())
-                if side.passBy(projection):
-                    if other.center().distanceOf(projection) < other.radius():
-                        return True
+                try:
+                    projection: Point = side.orthogonalProjection(other.center())
+                    if side.passBy(projection):
+                        if other.center().distanceOf(projection) < other.radius():
+                            return True
+                finally:
+                    second = first
 
-                second = first
             return False
 
         elif isinstance(other, Polygon):

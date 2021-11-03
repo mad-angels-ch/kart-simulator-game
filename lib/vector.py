@@ -116,7 +116,7 @@ class Vector:
         self.rotateCosSin(cos, sin)
 
     def orthogonalProjection(self, vector: "Vector") -> "Vector":
-        "Projete ce vecteur sur le vecteur donné en paramètre"
+        "Projete CE vecteur sur le vecteur donné en paramètre"
         return vector * ((self.scalarProduct(vector)) / (vector ** 2))
 
     def scaleX(self, factor: float) -> None:
