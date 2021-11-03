@@ -37,6 +37,8 @@ class Game:
         self._keyboard.bind(on_key_down=self.on_keyboard_down)
         self._keyboard.bind(on_key_up=self.on_keyboard_up)
 
+        self.counter = 0
+
     def nextFrame(self, elapsedTime: float) -> None:
         # start = time.time()
 
@@ -51,6 +53,9 @@ class Game:
 
         # 3: appeler output
         self.callOutput(elapsedTime)
+
+        # self.counter += 1
+        # print(self.counter)
 
         # print(f"Elapsed time: {time.time() - start}, last frame: {elapsedTime}")
 
