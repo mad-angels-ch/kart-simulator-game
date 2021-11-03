@@ -31,12 +31,12 @@ class CollisionsZone:
         while halfWorkingInterval > self.timePrecision:
 
             def getCollidedObjects(objects: List[objects.Object]):
-                for first in range(len(objects) - 1):
-                    for second in range(first + 1, len(objects)):
-                        if objects[first].collides(
-                            objects[second], halfWorkingInterval
-                        ):
-                            return (objects[first], objects[second])
+                # for first in range(len(objects) - 1):
+                #     for second in range(first + 1, len(objects)):
+                #         if objects[first].collides(
+                #             objects[second], halfWorkingInterval
+                #         ):
+                #             return (objects[first], objects[second])
                 return None
 
             collidedObjects = getCollidedObjects(self._objects)
