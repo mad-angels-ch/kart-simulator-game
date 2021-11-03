@@ -38,6 +38,8 @@ class Game:
         self._keyboard.bind(on_key_up=self.on_keyboard_up)
 
     def nextFrame(self, elapsedTime: float) -> None:
+        # start = time.time()
+
         if elapsedTime > 1 / 50:
             elapsedTime = 1 / 60
 
@@ -50,14 +52,19 @@ class Game:
         # 3: appeler output
         self.callOutput(elapsedTime)
 
+        # print(f"Elapsed time: {time.time() - start}, last frame: {elapsedTime}")
+
     def handleEvents(self) -> None:
         pass
 
     def simulatePhysics(self, elapsedTime: float) -> None:
+        # start = time.time()
         collisionsZone = CollisionsZone(elapsedTime)
         for object in self._objects:
             collisionsZone += object
+        # print("before:", time.time() - start)
         collisionsZone.resolve()
+        # print("after:", time.time() - start)
 
     def callOutput(self, elapsedTime: float) -> None:
         self._output(elapsedTime, self._objects)

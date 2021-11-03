@@ -99,9 +99,9 @@ class Factory:
 
                 scaleX, scaleY = fabricObject["scaleX"], fabricObject["scaleY"]
                 if fabricObject["flipX"]:
-                    scaleY *= -1
-                if fabricObject["flipY"]:
                     scaleX *= -1
+                if fabricObject["flipY"]:
+                    scaleY *= -1
 
                 kwargs = {}
                 if type == "circle":
@@ -125,10 +125,8 @@ class Factory:
 
                         pointV.scaleX(scaleX)
                         pointV.scaleY(scaleY)
-                        pointV.rotate(angle)
 
                         kwargs["vertices"][i] = Point(*pointV)
-                        # point.translate(pointV)
 
                 objects.append(
                     self.__call__(
