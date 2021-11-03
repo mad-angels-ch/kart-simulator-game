@@ -2,6 +2,7 @@ import math
 from typing import List, Tuple
 from logging import info
 from math import sin, cos
+import time
 
 import lib
 from lib.Segment import Segment
@@ -13,14 +14,23 @@ from .Circle import Circle
 
 
 class Polygon(Object):
+    counter = 0
+    precision = 1e-6
+
     _vertices: List[lib.Point]
+
+    # Pour des questions de performance, nous stockons les valeurs des sin et cos d'angles fréquents
     _angleCosSin: List[float]
+    _angleCosSin2: List[float]
+    _angleCosSin2Angle: float
     _convex: bool
 
     def __init__(self) -> None:
         super().__init__()
         self._vertices = list()
         self._angleCosSin = list()
+        self._angleCosSin2 = list()
+        self._angleCosSin2Angle = -1
 
     def __len__(self) -> int:
         return len(self._vertices)
@@ -34,9 +44,18 @@ class Polygon(Object):
 
     def angleCosSin(self, deltaTime: float = 0) -> List[float]:
         if not deltaTime:
-            self._angleCosSin
+            return self._angleCosSin
         angle = super().angle(deltaTime=deltaTime)
-        return [fun(angle) for fun in [cos, sin]]
+        if math.isclose(angle, self._angle, abs_tol=Polygon.precision):
+            return self._angleCosSin
+        elif math.isclose(angle, self._angleCosSin2Angle, abs_tol=Polygon.precision):
+            return self._angleCosSin2
+        else:
+            info(f"{__name__}.angleCosSin(): {self.formID()} has changed his angle!")
+
+            self._angleCosSin2 = [fun(angle) for fun in [cos, sin]]
+            self._angleCosSin2 = angle
+            return self._angleCosSin2
 
     def set_angle(self, newAngle: float) -> None:
         super().set_angle(newAngle)
@@ -77,10 +96,13 @@ class Polygon(Object):
     def collides(self, other: "Object", timeInterval: float) -> bool:
         if not (self.mass() or other.mass()):
             return False
-            
+
         elif isinstance(other, Circle):
+            # start = time.time()
             newSelf = lib.Polygon(*self.vertices(timeInterval))
             newOther = lib.Circle(other.center(timeInterval), other.radius())
+            # gz = time.time() - start
+            # print(gz)
             if newSelf.collides(newOther):
                 return True
 
