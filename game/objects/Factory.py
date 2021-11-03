@@ -74,7 +74,7 @@ class Factory:
         return newObject
 
     def _polygonAfter(self, newObject: Polygon, **kwargs):
-        newObject._vertices = kwargs.get("summits", [])
+        newObject._vertices = kwargs.get("vertices", [])
         newObject.updateAngleCosSin()
 
     def fromFabric(self, jsonObject) -> List[Object]:
@@ -108,27 +108,25 @@ class Factory:
                     kwargs["radius"] = fabricObject["radius"] * scaleX
 
                 elif type == "polygon":
-                    kwargs["summits"] = [
+                    kwargs["vertices"] = [
                         Point(*point.values()) for point in fabricObject["points"]
                     ]
-                    abscissas = [point["x"] for point in kwargs["summits"]]
-                    ordinates = [point["y"] for point in kwargs["summits"]]
+                    abscissas = [point["x"] for point in kwargs["vertices"]]
+                    ordinates = [point["y"] for point in kwargs["vertices"]]
 
                     toOrigin = -Vector(
                         (min(abscissas) + max(abscissas)) / 2,
                         (min(ordinates) + max(ordinates)) / 2,
                     )
 
-                    for point in kwargs["summits"]:
-                        point.translate(toOrigin)
-                        pointV = Vector(*point)
+                    for i in range(len(kwargs["vertices"])):
+                        kwargs["vertices"][i].translate(toOrigin)
+                        pointV = Vector(*kwargs["vertices"][i])
 
                         pointV.scaleX(scaleX)
                         pointV.scaleY(scaleY)
-                        pointV.rotate(angle)
 
-                        point = Point(*center)
-                        point.translate(pointV)
+                        kwargs["vertices"][i] = Point(*pointV)
 
                 objects.append(
                     self.__call__(

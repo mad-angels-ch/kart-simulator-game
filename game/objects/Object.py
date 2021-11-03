@@ -101,7 +101,8 @@ class Object:
         return self._friction
 
     def collides(self, other: "Object", timeInterval: float) -> bool:
-        """Retourne vrai si les deux objets se collisionnent dans l'intervalle de temps donné"""
+        """Retourne vrai si les deux objets se collisionnent dans l'intervalle de temps donné
+        Les collisions entres deux objets fixés sont ignorés (ceux qui ont une masse nulle)"""
         return False
 
     def collisionPointAndTangent(self, other: "Object") -> Tuple[lib.Point, lib.Vector]:

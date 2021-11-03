@@ -16,7 +16,10 @@ class Circle(Object):
         return self._radius
 
     def collides(self, other: "Object", timeInterval: float) -> bool:
-        if isinstance(other, Circle):
+        if not (self.mass() or other.mass()):
+            return False
+
+        elif isinstance(other, Circle):
             newSelf = lib.Circle(self.center(timeInterval), self.radius())
             newOther = lib.Circle(other.center(timeInterval), other.radius())
             if newSelf.collides(newOther):

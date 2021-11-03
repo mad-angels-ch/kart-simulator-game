@@ -75,7 +75,10 @@ class Polygon(Object):
         return edges
 
     def collides(self, other: "Object", timeInterval: float) -> bool:
-        if isinstance(other, Circle):
+        if not (self.mass() or other.mass()):
+            return False
+            
+        elif isinstance(other, Circle):
             newSelf = lib.Polygon(*self.vertices(timeInterval))
             newOther = lib.Circle(other.center(timeInterval), other.radius())
             if newSelf.collides(newOther):
