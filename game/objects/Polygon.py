@@ -14,7 +14,7 @@ class Polygon(Object):
     counter = 0
     precision = 1e-6
 
-    _vertices: List[lib.Point]
+    _vertices: List[lib.Vector]
 
     # Pour des questions de performance, nous stockons les valeurs des sin et cos d'angles fréquents
     _angleCosSin: List[float]
@@ -95,19 +95,10 @@ class Polygon(Object):
             return False
 
         elif isinstance(other, Circle):
-            # start = time.time()
             newSelf = lib.Polygon(*self.vertices(timeInterval))
-            # print(time.time() - start)
-            # start = time.time()
             newOther = lib.Circle(other.center(timeInterval), other.radius())
-            # print(time.time() - start)
-            # gz = time.time() - start
-            # print(gz)
-            # start = time.time()
             if newSelf.collides(newOther):
-                # print(time.time() - start)
                 return True
-            # print(time.time() - start)
 
             # contrôller que les objets ne se sont pas passés par dessus
             # À compléter ...

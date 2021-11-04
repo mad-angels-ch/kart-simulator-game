@@ -43,15 +43,15 @@ class Factory:
         newObject._mass = mass
         newObject._friction = friction
 
-        if fill[0] != '#':      # Transformation des couleurs rgb en hex
-            f = fill[4:-1].split(',')
+        if fill[0] != "#":  # Transformation des couleurs rgb en hex
+            f = fill[4:-1].split(",")
             l = list()
             for i in f:
                 l.append(int(i))
-            newObject._fill = '#%02x%02x%02x' % (l[0],l[1],l[2])
+            newObject._fill = "#%02x%02x%02x" % (l[0], l[1], l[2])
         else:
             newObject._fill = fill
-            
+
         if type == "circle":
             self._circleAfter(newObject, **kwargs)
         elif type == "polygon":
@@ -109,15 +109,18 @@ class Factory:
 
                 elif type == "polygon":
                     kwargs["vertices"] = [
-                        lib.Point(list(point.values())) for point in fabricObject["points"]
+                        lib.Point(list(point.values()))
+                        for point in fabricObject["points"]
                     ]
                     abscissas = [point[0] for point in kwargs["vertices"]]
                     ordinates = [point[1] for point in kwargs["vertices"]]
 
-                    toOrigin = -lib.Vector((
-                        (min(abscissas) + max(abscissas)) / 2,
-                        (min(ordinates) + max(ordinates)) / 2,
-                    ))
+                    toOrigin = -lib.Vector(
+                        (
+                            (min(abscissas) + max(abscissas)) / 2,
+                            (min(ordinates) + max(ordinates)) / 2,
+                        )
+                    )
 
                     for i in range(len(kwargs["vertices"])):
                         kwargs["vertices"][i].translate(toOrigin)
@@ -126,7 +129,7 @@ class Factory:
                         pointV.scaleX(scaleX)
                         pointV.scaleY(scaleY)
 
-                        kwargs["vertices"][i] = lib.Point(pointV)
+                        kwargs["vertices"][i] = pointV
 
                 objects.append(
                     self.__call__(

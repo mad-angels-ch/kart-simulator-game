@@ -35,24 +35,19 @@ class Polygon(Shape):
             second = len(self) - 1
 
             for first in range(len(self)):
-                # start = time.time()
                 # collision sur un sommet
                 if other.center().squareDistanceOf(self.vertex(first)) <= other.radius() * other.radius():
                     return True
-                # print(time.time() - start)
 
                 # collision sur un côté
                 side = Segment(self.vertex(first), self.vertex(second))
                 try:
-                    # start = time.time()
                     projection: Point = side.orthogonalProjection(other.center())
-                    # print(time.time() - start)
                     if side.passBy(projection):
                         if other.center().squareDistanceOf(projection) < other.radius() * other.radius():
                             return True
                 finally:
                     second = first
-                # print(time.time() - start)
 
             return False
 

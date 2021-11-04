@@ -25,43 +25,22 @@ class CollisionsZone:
         return self
 
     def _solveFirst(self, timeInterval: float) -> float:
-        # start = time.time()
-
         # recherche du moment de la collision
         checkedInterval = 0
         halfWorkingInterval = timeInterval
         lastCollidedObjects = None
-        # i = 0
-        # counts = {}
         while halfWorkingInterval > self.timePrecision:
 
             def getCollidedObjects(objects: List[objects.Object]):
                 for first in range(len(objects) - 1):
                     for second in range(first + 1, len(objects)):
-                        # start = time.time()
                         if objects[first].collides(
                             objects[second], halfWorkingInterval
                         ):
                             return (objects[first], objects[second])
-                        # end = time.time() - start
-                        # print(end)
-                        # if end:
-                        #     print(end, first, second)
-                        #     counts[first] = counts.get(first, 0) + 1
-                        #     counts[second] = counts.get(second, 0) + 1
-                # theKey = -1
-                # theValue = 0
-                # for key, value in counts.items():
-                #     if value > theValue:
-                #         theValue = value
-                #         theKey = key
-                # print(theKey, theValue)
                 return None
 
             collidedObjects = getCollidedObjects(self._objects)
-            # i += 1
-            # print(i)
-            # print(time.time() - start)
 
             if collidedObjects:
                 lastCollidedObjects = collidedObjects
@@ -70,13 +49,11 @@ class CollisionsZone:
                     obj.updateReferences(timeInterval)
                 if not lastCollidedObjects:
                     # il n'y a aucune collision dans l'intervalle donnée à la fonction
-                    # print(time.time() - start)
                     return timeInterval
                 checkedInterval += halfWorkingInterval
             halfWorkingInterval /= 2
 
         # gestion de la collision
-        info("Collision")
         point, tangent = lastCollidedObjects[0].collisionPointAndTangent(
             lastCollidedObjects[1]
         )
