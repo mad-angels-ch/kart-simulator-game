@@ -3,8 +3,7 @@ from typing import List
 import json
 import time
 
-from .events.Event import Event
-from . import objects
+from . import events, objects
 from .CollisionsZone import CollisionsZone
 
 from kivy.core.window import Window
@@ -20,12 +19,14 @@ class Game:
         on_touch_down,
     )
 
-    _events: List[Event]
+    _events: List[events.Event]
     _output: "function"
     _dataUrl: str
     _objects: List[objects.Object]
 
-    def __init__(self, dataUrl: str, events: List[Event], output: "function") -> None:
+    def __init__(
+        self, dataUrl: str, events: List[events.Event], output: "function"
+    ) -> None:
         self._dataUrl = dataUrl
         self._events = events
         self._output = output
@@ -51,7 +52,11 @@ class Game:
         self.callOutput(elapsedTime)
 
     def handleEvents(self) -> None:
-        pass
+        for event in self._events:
+            if isinstance(event, events.EventOnTarget):
+                event.apply(self._objects)
+            else:
+                raise ValueError(f"{event} is not from a supported event type")
 
     def simulatePhysics(self, elapsedTime: float) -> None:
         collisionsZone = CollisionsZone(elapsedTime)
