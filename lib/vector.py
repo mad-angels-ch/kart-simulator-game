@@ -1,5 +1,6 @@
 from logging import warning
 import math
+from typing import Iterable, Tuple
 
 
 class Vector:
@@ -11,9 +12,13 @@ class Vector:
     def fromPoints(point1: "Point", point2: "Point") -> "Vector":
         return Vector(*[point2[i] - point1[i] for i in range(len(point1))])
 
-    def __init__(self, x: float, y: float):
-        self._x = x
-        self._y = y
+    # def __init__(self, x: float, y: float):
+    #     self._x = x
+    #     self._y = y
+
+    def __init__(self, coords: Tuple[float, float]) -> None:
+        self._x = coords[0]
+        self._y = coords[1]
 
     def __len__(self) -> int:
         return 2
@@ -54,6 +59,7 @@ class Vector:
 
     def __getitem__(self, index: "int | str") -> float:
         if type(index) == str:
+            warning(f"{__name__}.[] don't use with a str !!!")
             index = index.lower()
         if index == 0 or index == "x":
             return self._x
@@ -131,12 +137,4 @@ class Vector:
         return self._x
 
     def y(self) -> float:
-        return self._y
-
-    def get_x(self) -> float:
-        warning(f"{__name__}.get_x() is deprecated, use [0] or ['x'] instead")
-        return self._x
-
-    def get_y(self) -> float:
-        warning(f"{__name__}.get_y() is deprecated, use [1] or ['y'] instead")
         return self._y

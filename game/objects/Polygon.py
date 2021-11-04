@@ -100,11 +100,17 @@ class Polygon(Object):
         elif isinstance(other, Circle):
             # start = time.time()
             newSelf = lib.Polygon(*self.vertices(timeInterval))
+            # print(time.time() - start)
+            # start = time.time()
             newOther = lib.Circle(other.center(timeInterval), other.radius())
+            # print(time.time() - start)
             # gz = time.time() - start
             # print(gz)
+            # start = time.time()
             if newSelf.collides(newOther):
+                # print(time.time() - start)
                 return True
+            # print(time.time() - start)
 
             # contrôller que les objets ne se sont pas passés par dessus
             # À compléter ...

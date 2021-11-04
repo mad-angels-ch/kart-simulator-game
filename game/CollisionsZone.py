@@ -46,9 +46,9 @@ class CollisionsZone:
                         # end = time.time() - start
                         # print(end)
                         # if end:
-                            # print(end, first, second)
-                #             counts[first] = counts.get(first, 0) + 1
-                #             counts[second] = counts.get(second, 0) + 1
+                        #     print(end, first, second)
+                        #     counts[first] = counts.get(first, 0) + 1
+                        #     counts[second] = counts.get(second, 0) + 1
                 # theKey = -1
                 # theValue = 0
                 # for key, value in counts.items():

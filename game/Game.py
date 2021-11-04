@@ -51,6 +51,8 @@ class Game:
         # 2: appliquer la physique sur les objects
         self.simulatePhysics(elapsedTime)
 
+        # print(time.time() - start)
+
         # 3: appeler output
         self.callOutput(elapsedTime)
 
