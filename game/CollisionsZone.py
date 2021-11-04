@@ -89,7 +89,7 @@ class CollisionsZone:
         speedsBefore.extend(pointSpeeds)
         for speed in speedsBefore:
             speed.rotate(-angle)
-        speedsAfter = [Vector(*speed) for speed in objSpeeds]
+        speedsAfter = [Vector(speed) for speed in objSpeeds]
 
         other = len(masses) - 1
         for current in range(len(masses)):

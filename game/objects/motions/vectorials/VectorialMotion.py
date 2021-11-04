@@ -1,20 +1,20 @@
-from lib.vector import Vector
+import lib
 
 
 class VectorialMotion:
-    _speed: Vector
+    _speed: lib.Vector
 
-    def __init__(self, speed: Vector = Vector(0, 0)) -> None:
+    def __init__(self, speed: lib.Vector = lib.Vector((0, 0))) -> None:
         self._speed = speed
 
     def updateReferences(self, deltaTime: float) -> None:
         pass
 
-    def relativePosition(self, deltaTime: float = 0) -> Vector:
+    def relativePosition(self, deltaTime: float = 0) -> lib.Vector:
         return self._speed * deltaTime
 
-    def speed(self, deltaTime: float = 0) -> Vector:
+    def speed(self, deltaTime: float = 0) -> lib.Vector:
         return self._speed
 
-    def set_speed(self, newSpeed: Vector) -> None:
+    def set_speed(self, newSpeed: lib.Vector) -> None:
         self._speed = newSpeed

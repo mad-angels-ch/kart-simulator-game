@@ -1,4 +1,4 @@
-from lib.point import Point
+import lib
 
 from .AngularMotion import AngularMotion
 
@@ -8,7 +8,7 @@ class UniformlyAcceleratedCircularMotion(AngularMotion):
 
     def __init__(
         self,
-        rotationCenter: Point = Point(0, 0),
+        rotationCenter: lib.Point = lib.Point((0, 0)),
         initialSpeed: float = 0,
         acceleration: float = 0,
     ) -> None:

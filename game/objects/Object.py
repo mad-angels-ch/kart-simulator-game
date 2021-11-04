@@ -33,7 +33,7 @@ class Object:
         if not deltaTime:
             return self._center
 
-        newCenter = lib.Point(*self.center())
+        newCenter = lib.Point(self.center())
         newCenter.translate(self.relativePosition(deltaTime))
         return newCenter
 
@@ -44,7 +44,7 @@ class Object:
         fromRotationCenterBefore = lib.Vector.fromPoints(
             self.angularMotion.center(), self.center()
         )
-        fromRotationCenterAfter = lib.Vector(*fromRotationCenterBefore)
+        fromRotationCenterAfter = lib.Vector(fromRotationCenterBefore)
         fromRotationCenterAfter.rotate(self.angularMotion.relativeAngle(deltaTime))
         return (
             self.vectorialMotion.relativePosition(deltaTime)
@@ -77,7 +77,7 @@ class Object:
         # self.set_angle(self.angle(deltaTime))
         self.rotate(self.relativeAngle(deltaTime))
         self.angularMotion.updateReferences(deltaTime)
-        rotationCenter = lib.Point(*self.angularMotion.center())
+        rotationCenter = lib.Point(self.angularMotion.center())
         rotationCenter.translate(self.vectorialMotion.relativePosition(deltaTime))
         self.angularMotion.set_center(rotationCenter)
 

@@ -1,5 +1,10 @@
 from logging import warning
 import math
+from typing import Tuple
+
+
+class Vector:
+    pass
 
 
 class Point:
@@ -8,9 +13,9 @@ class Point:
     _x: float
     _y: float
 
-    def __init__(self, x: float, y: float) -> None:
-        self._x = x
-        self._y = y
+    def __init__(self, coordinates: Tuple[float, float]) -> None:
+        self._x = coordinates[0]
+        self._y = coordinates[1]
 
     def __len__(self) -> int:
         return 2
@@ -28,6 +33,7 @@ class Point:
 
     def __getitem__(self, index: "int | str") -> float:
         if type(index) == str:
+            warning(f"{__name__}[] don't use with a str !!!")
             index = index.lower()
         if index == 0 or index == "x":
             return self._x
@@ -38,6 +44,7 @@ class Point:
 
     def __setitem__(self, index: "int | str", value: float) -> None:
         if type(index) == str:
+            warning(f"{__name__}[] don't use with a str !!!")
             index = index.lower()
         if index == 0 or index == "x":
             self._x = value
@@ -65,12 +72,4 @@ class Point:
         return self[0]
 
     def y(self) -> float:
-        return self[1]
-
-    def get_x(self) -> float:
-        warning(f"{__name__}.get_x() is deprecated, use [0] or ['x'] instead")
-        return self[0]
-
-    def get_y(self) -> float:
-        warning(f"{__name__}.get_y() is deprecated, use [1] or ['y'] instead")
         return self[1]

@@ -1,7 +1,7 @@
 import math
 
-from .vector import Vector
-from .point import Point
+from .Vector import Vector
+from .Point import Point
 from .Line import Line
 
 
@@ -15,7 +15,7 @@ class Segment(Line):
 
     def end(self) -> Point:
         """Retourne l'autre extrémité du segment"""
-        endPoint = Point(*self.point())
+        endPoint = Point(self.point())
         endPoint.translate(self.vector())
         return endPoint
 

@@ -1,7 +1,7 @@
 from typing import Dict, List
 from math import radians
 
-from lib import Point, Vector
+import lib
 
 from .Object import Object
 from .Circle import Circle
@@ -16,7 +16,7 @@ class Factory:
         self,
         type: str,
         name: str = None,
-        center: Point = Point(0, 0),
+        center: lib.Point = lib.Point((0, 0)),
         angle: float = 0,
         angularMotion=motions.angulars.AngularMotion(),
         vectorialMotion=motions.vectorials.VectorialMotion(),
@@ -83,7 +83,7 @@ class Factory:
             for fabricObject in jsonObject.get("objects"):
                 type = fabricObject["type"]
                 name = fabricObject["lge"].get("name")
-                center = Point(fabricObject["left"], fabricObject["top"])
+                center = lib.Point((fabricObject["left"], fabricObject["top"]))
                 angle = radians(fabricObject["angle"])
                 fill = fabricObject["fill"]
                 opacity = fabricObject["opacity"]
@@ -109,24 +109,24 @@ class Factory:
 
                 elif type == "polygon":
                     kwargs["vertices"] = [
-                        Point(*point.values()) for point in fabricObject["points"]
+                        lib.Point(list(point.values())) for point in fabricObject["points"]
                     ]
-                    abscissas = [point["x"] for point in kwargs["vertices"]]
-                    ordinates = [point["y"] for point in kwargs["vertices"]]
+                    abscissas = [point[0] for point in kwargs["vertices"]]
+                    ordinates = [point[1] for point in kwargs["vertices"]]
 
-                    toOrigin = -Vector(
+                    toOrigin = -lib.Vector((
                         (min(abscissas) + max(abscissas)) / 2,
                         (min(ordinates) + max(ordinates)) / 2,
-                    )
+                    ))
 
                     for i in range(len(kwargs["vertices"])):
                         kwargs["vertices"][i].translate(toOrigin)
-                        pointV = Vector(*kwargs["vertices"][i])
+                        pointV = lib.Vector(kwargs["vertices"][i])
 
                         pointV.scaleX(scaleX)
                         pointV.scaleY(scaleY)
 
-                        kwargs["vertices"][i] = Point(*pointV)
+                        kwargs["vertices"][i] = lib.Point(pointV)
 
                 objects.append(
                     self.__call__(

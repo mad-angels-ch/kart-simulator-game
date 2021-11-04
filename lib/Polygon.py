@@ -1,8 +1,8 @@
 from typing import Iterable, List
 import time
 
-from .point import Point
-from .vector import Vector
+from .Point import Point
+from .Vector import Vector
 from .Line import Line
 from .Segment import Segment
 from .Shape import Shape
@@ -45,7 +45,7 @@ class Polygon(Shape):
                 side = Segment(self.vertex(first), self.vertex(second))
                 try:
                     # start = time.time()
-                    projection: Point = side.orthogonopalProjection(other.center())
+                    projection: Point = side.orthogonalProjection(other.center())
                     # print(time.time() - start)
                     if side.passBy(projection):
                         if other.center().squareDistanceOf(projection) < other.radius() * other.radius():

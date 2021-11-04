@@ -3,22 +3,22 @@ import math
 from typing import Iterable, Tuple
 
 
+class Point:
+    pass
+
+
 class Vector:
     precision = 1e-6
 
     _x: float
     _y: float
 
-    def fromPoints(point1: "Point", point2: "Point") -> "Vector":
-        return Vector(*[point2[i] - point1[i] for i in range(len(point1))])
+    def fromPoints(point1: Point, point2: Point) -> "Vector":
+        return Vector([point2[i] - point1[i] for i in range(len(point1))])
 
-    # def __init__(self, x: float, y: float):
-    #     self._x = x
-    #     self._y = y
-
-    def __init__(self, coords: Tuple[float, float]) -> None:
-        self._x = coords[0]
-        self._y = coords[1]
+    def __init__(self, coordinates: Tuple[float, float]) -> None:
+        self._x = coordinates[0]
+        self._y = coordinates[1]
 
     def __len__(self) -> int:
         return 2
@@ -27,19 +27,19 @@ class Vector:
         return iter((self._x, self._y))
 
     def __neg__(self) -> "Vector":
-        return Vector(-self._x, -self._y)
+        return Vector((-self._x, -self._y))
 
     def __pos__(self) -> "Vector":
         return self
 
     def __add__(self, other: "Vector") -> "Vector":
-        return Vector(self._x + other._x, self._y + other._y)
+        return Vector((self._x + other._x, self._y + other._y))
 
     def __sub__(self, other: "Vector") -> "Vector":
         return self + (-other)
 
     def __mul__(self, other: float) -> "Vector":
-        return Vector(self._x * other, self._y * other)
+        return Vector((self._x * other, self._y * other))
 
     def __truediv__(self, other: float) -> "Vector":
         return Vector(self._x / other, self._y / other)
@@ -59,7 +59,7 @@ class Vector:
 
     def __getitem__(self, index: "int | str") -> float:
         if type(index) == str:
-            warning(f"{__name__}.[] don't use with a str !!!")
+            warning(f"{__name__}[] don't use with a str !!!")
             index = index.lower()
         if index == 0 or index == "x":
             return self._x
@@ -70,6 +70,7 @@ class Vector:
 
     def __setitem__(self, index: "int | str", value: float) -> None:
         if type(index) == str:
+            warning(f"{__name__}[] don't use with a str !!!")
             index = index.lower()
         if index == 0 or index == "x":
             self._x = value
@@ -100,7 +101,7 @@ class Vector:
         return self.normalVector().isNormal(other)
 
     def normalVector(self) -> "Vector":
-        return Vector(-self._y, self._x)
+        return Vector((-self._y, self._x))
 
     def direction(self) -> float:
         """Retourne l'angle formé par ce vecteur et un vecteur de composantes 1 et 0.

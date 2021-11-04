@@ -1,4 +1,4 @@
-from lib import Point, Vector
+import lib
 
 from .VectorialMotion import VectorialMotion
 from .UniformlyAcceleratedMotion import UniformlyAcceleratedMotion
@@ -16,8 +16,8 @@ class VectorialMotionFactory:
         return vectorialMotion
 
     def _uniformlyAcceleratedMotion(self, **kwargs) -> UniformlyAcceleratedMotion:
-        initialSpeed = kwargs.get("initialSpeed", Vector(0, 0))
-        acceleration = kwargs.get("acceleration", Vector(0, 0))
+        initialSpeed = kwargs.get("initialSpeed", lib.Vector((0, 0)))
+        acceleration = kwargs.get("acceleration", lib.Vector((0, 0)))
 
         return UniformlyAcceleratedMotion(initialSpeed, acceleration)
 
@@ -25,12 +25,8 @@ class VectorialMotionFactory:
         type = jsonObject["type"]
         kwargs = {}
         if type in ["uam"]:
-            kwargs["initialSpeed"] = Vector(
-                jsonObject["velocity"]["x"], jsonObject["velocity"]["y"]
-            )
-            kwargs["acceleration"] = Vector(
-                jsonObject["acceleration"]["x"], jsonObject["acceleration"]["y"]
-            )
+            kwargs["initialSpeed"] = lib.Vector(list(jsonObject["velocity"].values()))
+            kwargs["acceleration"] = lib.Vector(list(jsonObject["acceleration"].values()))
 
         return self.__call__(type=type, **kwargs)
 

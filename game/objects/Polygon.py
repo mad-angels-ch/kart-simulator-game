@@ -5,9 +5,6 @@ from math import sin, cos
 import time
 
 import lib
-from lib.Segment import Segment
-from lib.point import Point
-from lib.vector import Vector
 
 from .Object import Object
 from .Circle import Circle
@@ -66,10 +63,10 @@ class Polygon(Object):
         self.updateAngleCosSin()
 
     def vertex(self, vertexIndex: int, deltaTime: float = 0) -> lib.Point:
-        vertexV = lib.Vector(*self._vertices[vertexIndex])
+        vertexV = lib.Vector(self._vertices[vertexIndex])
         vertexV.rotateCosSin(*self.angleCosSin(deltaTime))
-        vertex = lib.Point(*vertexV)
-        vertex.translate(lib.Vector(*self.center(deltaTime)))
+        vertex = lib.Point(vertexV)
+        vertex.translate(lib.Vector(self.center(deltaTime)))
         return vertex
 
     def vertices(self, deltaTime: float = 0) -> List[lib.Point]:
@@ -117,8 +114,8 @@ class Polygon(Object):
             return False
 
         elif isinstance(other, Polygon):
-            newSelf = lib.Polygon(*self.vertices(timeInterval))
-            newOther = lib.Polygon(*other.vertices(timeInterval))
+            newSelf = lib.Polygon(self.vertices(timeInterval))
+            newOther = lib.Polygon(other.vertices(timeInterval))
             if newSelf.collides(newOther):
                 return True
 
@@ -142,7 +139,7 @@ class Polygon(Object):
                     nearestVertex = firstVertex
 
                 edge = lib.Segment(firstVertex, self.vertex(second))
-                projection: Point = edge.orthogonalProjection(other.center())
+                projection: lib.Point = edge.orthogonalProjection(other.center())
                 if edge.passBy(projection):
                     edgeSquareDistance = other.center().squareDistanceOf(projection)
                     if edgeSquareDistance < smallestEdgeSquareDistance:
@@ -156,7 +153,7 @@ class Polygon(Object):
             else:
                 return (
                     nearestVertex,
-                    Vector.fromPoints(other.center(), nearestVertex).normalVector(),
+                    lib.Vector.fromPoints(other.center(), nearestVertex).normalVector(),
                 )
 
         elif isinstance(other, Polygon):
@@ -167,7 +164,7 @@ class Polygon(Object):
                 smallestSquareDistance = math.inf
                 for edge in edges:
                     for vertex in vertices:
-                        projection: Point = edge.orthogonalProjection(vertex)
+                        projection: lib.Point = edge.orthogonalProjection(vertex)
                         if edge.passBy(projection):
                             squareDistance = vertex.squareDistanceOf(projection)
                             if squareDistance < smallestSquareDistance:

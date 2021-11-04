@@ -1,8 +1,8 @@
 import math
 from typing import List
 
-from .vector import Vector
-from .point import Point
+from .Vector import Vector
+from .Point import Point
 
 
 class Line:
@@ -41,7 +41,7 @@ class Line:
 
         projectedVector = vectorToProject.orthogonalProjection(self.vector())
         if type(pointOrVector) == Point:
-            projectedPoint = Point(*self.point())
+            projectedPoint = Point(self.point())
             projectedPoint.translate(projectedVector)
             return projectedPoint
         else:

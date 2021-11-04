@@ -1,8 +1,8 @@
 from typing import List
 from math import inf
 
-from .point import Point
-from .vector import Vector
+from .Point import Point
+from .Vector import Vector
 from .Line import Line
 from .Segment import Segment
 from .Shape import Shape
