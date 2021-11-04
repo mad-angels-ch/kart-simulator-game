@@ -16,9 +16,9 @@ class Vector:
     def fromPoints(point1: Point, point2: Point) -> "Vector":
         return Vector([point2[i] - point1[i] for i in range(len(point1))])
 
-    def __init__(self, coordinates: Tuple[float, float]) -> None:
-        self._x = coordinates[0]
-        self._y = coordinates[1]
+    def __init__(self, components: Tuple[float, float]) -> None:
+        self._x = components[0]
+        self._y = components[1]
 
     def __len__(self) -> int:
         return 2
