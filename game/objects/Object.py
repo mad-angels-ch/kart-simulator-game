@@ -5,6 +5,8 @@ from . import motions
 
 
 class Object:
+    precision = 1e-6
+
     _name: str
     _formID: int
 
@@ -74,7 +76,6 @@ class Object:
 
     def updateReferences(self, deltaTime: float) -> None:
         # mise à jour de la vitesse angulaire
-        # self.set_angle(self.angle(deltaTime))
         self.rotate(self.relativeAngle(deltaTime))
         self.angularMotion.updateReferences(deltaTime)
         rotationCenter = lib.Point(self.angularMotion.center())

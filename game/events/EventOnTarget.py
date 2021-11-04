@@ -28,12 +28,12 @@ class EventOnTarget(Event):
         """Retourne la clé permettant l'identification, dépendant de la méthode"""
         return self._target
 
-    def apply(self, objects: List[Object]):
+    def apply(self, objects: List[Object], events: List[Event]):
         """Méthode à ne pas surcharger, sert à sélectionner les éléments cibles"""
         for obj in objects:
             if obj[self.method()]() == self.target():
                 self.applyOn(obj)
 
     def applyOn(self, target: Object) -> None:
-        """Méthode à surcharger"""
+        """Méthode à surcharger."""
         pass

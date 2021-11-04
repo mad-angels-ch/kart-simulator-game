@@ -6,6 +6,7 @@ import lib
 from .Object import Object
 from .Circle import Circle
 from .Polygon import Polygon
+from .Flipper import Flipper
 from . import motions
 
 
@@ -30,6 +31,8 @@ class Factory:
             newObject = self._circleBefore(**kwargs)
         elif type == "polygon":
             newObject = self._polygonBefore(**kwargs)
+        elif type == "flipper":
+            newObject = self._flipperBefore(**kwargs)
         else:
             raise ValueError(f"{type} is not a valid type!")
 
@@ -54,10 +57,8 @@ class Factory:
 
         if type == "circle":
             self._circleAfter(newObject, **kwargs)
-        elif type == "polygon":
+        if type in ["polygon", "flipper"]:
             self._polygonAfter(newObject, **kwargs)
-        else:
-            raise ValueError(f"{type} is not a valid type!")
 
         Factory.objectsCreatedCount += 1
         return newObject
@@ -76,6 +77,14 @@ class Factory:
     def _polygonAfter(self, newObject: Polygon, **kwargs):
         newObject._vertices = kwargs.get("vertices", [])
         newObject.updateAngleCosSin()
+
+    def _flipperBefore(self, **kwargs):
+        newObject = Flipper()
+        return newObject
+
+    def _flipperAfter(self, newObject: Flipper, **kwargs):
+        newObject._flipperMaxAngle = kwargs["flipperMaxAngle"]
+        newObject._flipperUpwardSpeed = kwargs["flipperUpwardSpeed"]
 
     def fromFabric(self, jsonObject) -> List[Object]:
         objects = []
@@ -107,7 +116,7 @@ class Factory:
                 if type == "circle":
                     kwargs["radius"] = fabricObject["radius"] * scaleX
 
-                elif type == "polygon":
+                if type in ["polygon", "flipper"]:
                     kwargs["vertices"] = [
                         lib.Point(list(point.values()))
                         for point in fabricObject["points"]
@@ -130,6 +139,12 @@ class Factory:
                         pointV.scaleY(scaleY)
 
                         kwargs["vertices"][i] = pointV
+
+                if type in ["flipper"]:
+                    kwargs["flipperMaxAngle"] = fabricObject["lge"]["flipperMaxAngle"]
+                    kwargs["flipperUpwardSpeed"] = fabricObject["lge"][
+                        "flipperUpwardSpeed"
+                    ]
 
                 objects.append(
                     self.__call__(
