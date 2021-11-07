@@ -11,13 +11,13 @@ from kivy.core.window import Window
 
 class Game:
 
-    from user_actions import (
-        keyboard_closed,
-        on_keyboard_down,
-        on_touch_up,
-        on_keyboard_up,
-        on_touch_down,
-    )
+    # from user_actions import (
+    #     keyboard_closed,
+    #     on_keyboard_down,
+    #     on_touch_up,
+    #     on_keyboard_up,
+    #     on_touch_down,
+    # )
 
     _events: List[events.Event]
     _output: "function"
@@ -34,14 +34,21 @@ class Game:
         with open(dataUrl, "r") as data:
             self._objects = objects.create.fromFabric(json.load(data))
 
-        self._keyboard = Window.request_keyboard(self.keyboard_closed, self)
-        self._keyboard.bind(on_key_down=self.on_keyboard_down)
-        self._keyboard.bind(on_key_up=self.on_keyboard_up)
+        # self._keyboard = Window.request_keyboard(self.keyboard_closed, self)
+        # self._keyboard.bind(on_key_down=self.on_keyboard_down)
+        # self._keyboard.bind(on_key_up=self.on_keyboard_up)
+    
 
+    # def to_window(self, x, y, initial=False, relative=False):
+    #     return super().to_window(x, y, initial=initial, relative=relative)
+    # i = 0
     def nextFrame(self, elapsedTime: float) -> None:
+        # self.i += 1
+        # print("update"+str(self.i)+", please wait.........\n")
+
         if elapsedTime > 1 / 50:
             elapsedTime = 1 / 60
-
+        
         # 1: traiter les events
         self.handleEvents()
 
@@ -49,7 +56,7 @@ class Game:
         self.simulatePhysics(elapsedTime)
 
         # 3: appeler output
-        self.callOutput(elapsedTime)
+        self.callOutput()
 
     def handleEvents(self) -> None:
         for event in self._events:
@@ -64,5 +71,5 @@ class Game:
             collisionsZone += object
         collisionsZone.resolve()
 
-    def callOutput(self, elapsedTime: float) -> None:
-        self._output(elapsedTime, self._objects)
+    def callOutput(self) -> None:
+        self._output(self._objects)
