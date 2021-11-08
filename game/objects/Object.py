@@ -47,7 +47,7 @@ class Object:
             self.angularMotion.center(), self.center()
         )
         fromRotationCenterAfter = lib.Vector(fromRotationCenterBefore)
-        fromRotationCenterAfter.rotate(self.angularMotion.relativeAngle(deltaTime))
+        fromRotationCenterAfter.rotate(self.relativeAngle(deltaTime))
         return (
             self.vectorialMotion.relativePosition(deltaTime)
             - fromRotationCenterBefore

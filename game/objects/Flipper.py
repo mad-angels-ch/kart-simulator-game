@@ -38,17 +38,23 @@ class Flipper(Polygon):
     def relativeAngle(self, deltaTime: float) -> float:
         relativeAngle = super().relativeAngle(deltaTime)
         if self.leftSide():
-            if relativeAngle < 0:
-                return 0
-            elif relativeAngle > self._flipperMaxAngle:
-                return self._flipperMaxAngle
+            if (
+                self.upward()
+                and self._flipperCurrentAngle + relativeAngle >= self._flipperMaxAngle
+            ):
+                return self._flipperMaxAngle - self._flipperCurrentAngle
+            elif self.downward() and self._flipperCurrentAngle - relativeAngle <= 0:
+                return -self._flipperCurrentAngle
             else:
                 return relativeAngle
         else:
-            if relativeAngle > 0:
-                return 0
-            elif relativeAngle < self._flipperMaxAngle:
-                return self._flipperMaxAngle
+            if (
+                self.upward()
+                and self._flipperCurrentAngle + relativeAngle <= self._flipperMaxAngle
+            ):
+                return self._flipperMaxAngle - self._flipperCurrentAngle
+            elif self.downward() and self._flipperCurrentAngle - relativeAngle >= 0:
+                return -self._flipperCurrentAngle
             else:
                 return relativeAngle
 
