@@ -54,6 +54,7 @@ class CollisionsZone:
             halfWorkingInterval /= 2
 
         # gestion de la collision
+        # print("Collision entre", lastCollidedObjects[0].formID(), "et", lastCollidedObjects[1].formID())
         point, tangent = lastCollidedObjects[0].collisionPointAndTangent(
             lastCollidedObjects[1]
         )

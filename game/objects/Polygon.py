@@ -94,6 +94,9 @@ class Polygon(Object):
             return False
 
         elif isinstance(other, Circle):
+            # if self.fill() == "#ff00ff":
+            #     print("here")
+
             newSelf = lib.Polygon(*self.vertices(timeInterval))
             newOther = lib.Circle(other.center(timeInterval), other.radius())
             if newSelf.collides(newOther):

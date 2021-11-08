@@ -32,7 +32,15 @@ class Segment(Line):
         begin = self.begin()
         end = self.end()
         for i in range(len(point)):
-            if min(begin[i], end[i]) >= point[i] or max(begin[i], end[i]) <= point[i]:
+            smallest = min(begin[i], end[i])
+            biggest = max(begin[i], end[i])
+            if (
+                smallest > point[i]
+                # and not math.isclose(smallest, point[i], abs_tol=Segment.precision)
+            ) or (
+                biggest < point[i]
+                # and not math.isclose(biggest, point[i], abs_tol=Segment.precision)
+            ):
                 return False
 
         return True

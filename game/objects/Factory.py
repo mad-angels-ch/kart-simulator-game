@@ -121,7 +121,7 @@ class Factory:
 
                 if type in ["polygon", "flipper"]:
                     kwargs["vertices"] = [
-                        lib.Point(list(point.values()))
+                        lib.Point((point["x"], point["y"]))
                         for point in fabricObject["points"]
                     ]
                     abscissas = [point[0] for point in kwargs["vertices"]]

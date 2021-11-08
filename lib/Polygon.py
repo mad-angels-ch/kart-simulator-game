@@ -44,8 +44,10 @@ class Polygon(Shape):
                 try:
                     projection: Point = side.orthogonalProjection(other.center())
                     if side.passBy(projection):
-                        if other.center().squareDistanceOf(projection) < other.radius() * other.radius():
+                        if other.center().squareDistanceOf(projection) <= other.radius() * other.radius():
                             return True
+                except:
+                    print("hey")
                 finally:
                     second = first
 

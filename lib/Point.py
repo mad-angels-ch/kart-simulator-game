@@ -66,7 +66,9 @@ class Point:
 
     def squareDistanceOf(self, point: "Point") -> float:
         """Retourne le carré de la distance séparent les deux points"""
-        return (self[0] - point[0]) ** 2 + (self[1] - point[1]) ** 2
+        return (self[0] - point[0]) * (self[0] - point[0]) + (
+            (self[1] - point[1]) * (self[1] - point[1])
+        )
 
     def x(self) -> float:
         return self[0]
