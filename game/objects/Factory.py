@@ -1,5 +1,6 @@
 from typing import Dict, List
 from math import radians
+import typing
 
 import lib
 
@@ -55,10 +56,12 @@ class Factory:
         else:
             newObject._fill = fill
 
-        if type == "circle":
+        if isinstance(newObject, Circle):
             self._circleAfter(newObject, **kwargs)
-        if type in ["polygon", "flipper"]:
+        if isinstance(newObject, Polygon):
             self._polygonAfter(newObject, **kwargs)
+        if isinstance(newObject, Flipper):
+            self._flipperAfter(newObject, **kwargs)
 
         Factory.objectsCreatedCount += 1
         return newObject

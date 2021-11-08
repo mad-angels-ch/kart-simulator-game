@@ -19,7 +19,7 @@ class FlipperEvent(EventOnTarget):
 
     def upward(self) -> bool:
         """Retourne True si le flipper doit monter ou False s'il doit descendre"""
-        return self._up
+        return self._upward
 
     def applyOn(self, target: Flipper) -> None:
         target.addMovement(self.upward())

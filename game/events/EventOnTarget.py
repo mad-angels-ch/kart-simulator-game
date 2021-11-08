@@ -22,16 +22,18 @@ class EventOnTarget(Event):
 
     def method(self) -> str:
         """Retourne la méthode d'itentification de la cible"""
-        return self._target
+        return self._method
 
     def target(self) -> Any:
         """Retourne la clé permettant l'identification, dépendant de la méthode"""
         return self._target
 
-    def apply(self, objects: List[Object], events: List[Event]):
+    def apply(self, objects: List[Object]):
         """Méthode à ne pas surcharger, sert à sélectionner les éléments cibles"""
         for obj in objects:
-            if obj[self.method()]() == self.target():
+            if self.method() == "formID" and obj.formID() == self.target():
+                self.applyOn(obj)
+            elif self.method() == "name" and obj.name() == self.target():
                 self.applyOn(obj)
 
     def applyOn(self, target: Object) -> None:

@@ -1,4 +1,4 @@
-from lib import Point, Vector
+import lib
 
 from .AngularMotion import AngularMotion
 from .UniformlyAcceleratedCircularMotion import UniformlyAcceleratedCircularMotion
@@ -18,7 +18,7 @@ class AngularMotionFactory:
     def _uniformlyAcceleratedCircularMotion(
         self, **kwargs
     ) -> UniformlyAcceleratedCircularMotion:
-        center = kwargs.get("center", Point(0, 0))
+        center = kwargs.get("center", lib.Point((0, 0)))
         initialSpeed = kwargs.get("initialSpeed", 0)
         acceleration = kwargs.get("acceleration", 0)
 
@@ -28,9 +28,9 @@ class AngularMotionFactory:
         type = jsonObject["type"]
         kwargs = {}
         if type in ["uacm"]:
-            kwargs["center"] = Point(
+            kwargs["center"] = lib.Point((
                 float(jsonObject["center"]["x"]), float(jsonObject["center"]["y"])
-            )
+            ))
             kwargs["initialSpeed"] = jsonObject["velocity"]
             kwargs["acceleration"] = jsonObject["acceleration"]
 
