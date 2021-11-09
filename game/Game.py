@@ -62,6 +62,7 @@ class Game:
         for event in self._events:
             if isinstance(event, events.EventOnTarget):
                 event.apply(self._objects)
+                self._events.remove(event)
             else:
                 raise ValueError(f"{event} is not from a supported event type")
 
