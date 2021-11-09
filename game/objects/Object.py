@@ -78,9 +78,9 @@ class Object:
         # mise à jour de la vitesse angulaire
         self.rotate(self.relativeAngle(deltaTime))
         self.angularMotion.updateReferences(deltaTime)
-        rotationCenter = lib.Point(self.angularMotion.center())
-        rotationCenter.translate(self.vectorialMotion.relativePosition(deltaTime))
-        self.angularMotion.set_center(rotationCenter)
+        self.angularMotion.center().translate(
+            self.vectorialMotion.relativePosition(deltaTime)
+        )
 
         # mise à jour de la vitesse vectorielle
         self.translate(self.relativePosition(deltaTime))
