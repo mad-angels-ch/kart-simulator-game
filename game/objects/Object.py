@@ -75,15 +75,13 @@ class Object:
         self._center.translate(vector)
 
     def updateReferences(self, deltaTime: float) -> None:
-        # mise à jour de la vitesse angulaire
         self.rotate(self.relativeAngle(deltaTime))
+        self.translate(self.relativePosition(deltaTime))
+
         self.angularMotion.updateReferences(deltaTime)
         self.angularMotion.center().translate(
             self.vectorialMotion.relativePosition(deltaTime)
         )
-
-        # mise à jour de la vitesse vectorielle
-        self.translate(self.relativePosition(deltaTime))
         self.vectorialMotion.updateReferences(deltaTime)
 
     def fill(self) -> str:
