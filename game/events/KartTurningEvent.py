@@ -5,18 +5,18 @@ class Kart:
     pass
 
 
-class KartDirectionEvent(EventOnTarget):
+class KartTurningEvent(EventOnTarget):
     # <0 -> droite, 0 -> tout droit, >0 -> gauche
-    _direction: int
+    _turning: int
 
     def __init__(
         self,
-        direction: "int",
+        turning: "int",
         targetFormID: "int | None" = None,
         targetsName: "str | None" = None,
     ) -> None:
         super().__init__(targetFormID=targetFormID, targetsName=targetsName)
-        self._direction = direction
+        self._turning = turning
 
     def applyOn(self, target: Kart) -> None:
-        pass
+        target.addTurning(self._turning)

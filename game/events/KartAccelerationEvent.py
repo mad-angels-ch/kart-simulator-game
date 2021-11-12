@@ -19,4 +19,4 @@ class KartAccelerationEvent(EventOnTarget):
         self._acceleration = acceleration
 
     def applyOn(self, target: Kart) -> None:
-        pass
+        target.addAcceleration(self._acceleration)
