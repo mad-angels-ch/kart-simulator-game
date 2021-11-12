@@ -13,7 +13,7 @@ class Point:
     _x: float
     _y: float
 
-    def __init__(self, coordinates: Tuple[float, float]) -> None:
+    def __init__(self, coordinates: Tuple[float, float] = (0, 0)) -> None:
         self._x = coordinates[0]
         self._y = coordinates[1]
 
