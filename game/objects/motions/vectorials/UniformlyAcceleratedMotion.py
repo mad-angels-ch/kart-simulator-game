@@ -20,3 +20,9 @@ class UniformlyAcceleratedMotion(VectorialMotion):
 
     def speed(self, deltaTime: float = 0) -> lib.Vector:
         return self._acceleration * deltaTime + self._speed
+        
+    def acceleration(self) -> lib.Vector:
+        return self._acceleration
+
+    def set_acceleration(self, newAcceleration: lib.Vector) -> None:
+        self._acceleration = newAcceleration
