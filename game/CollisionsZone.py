@@ -91,9 +91,9 @@ class CollisionsZone:
 
         for current in range(len(masses)):
             speedsAfter[current].rotate(angle)
-            speedsAfter[current] *= (1 - lastCollidedObjects[current].friction()) * (
-                1 - lastCollidedObjects[other].friction()
-            )
+            # speedsAfter[current] *= (1 - lastCollidedObjects[current].friction()) * (
+            #     1 - lastCollidedObjects[other].friction()
+            # )
             lastCollidedObjects[current].vectorialMotion.set_speed(speedsAfter[current])
 
             other = current
