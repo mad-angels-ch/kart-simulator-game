@@ -6,17 +6,19 @@ from .motions import angulars as angularMotions, vectorials as vectorialMotions
 
 
 class Kart(Polygon):
-    _acceleration = lib.Vector((0, 1))
+    _acceleration = lib.Vector((0, 10))
+    _turning = 1
 
     _accelerationsQueue: List[int]
     _turningQueue: List[int]
+    _isTurning: int
 
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
+        self.vectorialMotion = vectorialMotions.UniformlyAcceleratedMotion()
         self._accelerationsQueue = []
         self._turningQueue = []
-        self.angularMotion = angularMotions.AngularMotion()
-        self.vectorialMotion = vectorialMotions.UniformlyAcceleratedMotion()
+        self._isTurning = 0
 
     def addAcceleration(self, acceleration: int) -> None:
         """Demande à change "l'accélération" du kart.
@@ -30,6 +32,11 @@ class Kart(Polygon):
         <0 -> droite, 0 -> tout droit, >0 -> gauche"""
         self._turningQueue.append(turning)
 
+    def isTurning(self) -> int:
+        """Retourne -1 si le kart est en train de tourner à droite,
+        0 s'il va tout droit et 1 s'il tourne à gauche"""
+        return self._isTurning
+
     def updateReferences(self, deltaTime: float) -> None:
         super().updateReferences(deltaTime)
         while len(self._accelerationsQueue):
@@ -39,8 +46,10 @@ class Kart(Polygon):
             elif acceleration < 0:
                 self.vectorialMotion.set_acceleration(-self._acceleration)
             else:
-                self.vectorialMotion.set_acceleration(lib.Vector(0, 0))
+                self.vectorialMotion.set_acceleration(lib.Vector())
         while len(self._turningQueue):
-            turning = self._turningQueue.pop(0)
-            if turning > 0:
-                pass
+            self._isTurning = self._turningQueue.pop(0)
+        if self._isTurning < 0:
+            self.vectorialMotion.acceleration().rotate(-self._turning * deltaTime)
+        elif self._isTurning > 0:
+            self.vectorialMotion.acceleration().rotate(self._turning * deltaTime)
