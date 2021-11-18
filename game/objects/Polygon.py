@@ -22,12 +22,18 @@ class Polygon(Object):
     _angleCosSin2Angle: float
     _convex: bool
 
-    def __init__(self) -> None:
-        super().__init__()
-        self._vertices = list()
-        self._angleCosSin = list()
-        self._angleCosSin2 = list()
-        self._angleCosSin2Angle = -1
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
+        self._vertices = kwargs.get(
+            "vertices",
+            [
+                lib.Vector((math.cos(angle), math.sin(angle)))
+                for angle in [0, math.pi * 2 / 3, math.pi * 4 / 3]
+            ],
+        )
+        self.updateAngleCosSin()
+        self._angleCosSin2Angle = self.angle()
+        self._angleCosSin2 = self._angleCosSin
 
     def __len__(self) -> int:
         return len(self._vertices)

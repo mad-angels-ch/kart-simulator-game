@@ -6,11 +6,8 @@ import time
 from . import events, objects
 from .CollisionsZone import CollisionsZone
 
-from kivy.core.window import Window
-
 
 class Game:
-
 
     _events: List[events.Event]
     _output: "function"
@@ -25,8 +22,10 @@ class Game:
         self._output = output
 
         with open(dataUrl, "r") as data:
-            self._objects = objects.create.fromFabric(json.load(data))
-
+            jsonObject = json.load(data)
+            self._objects = objects.create.fromFabric(
+                jsonObject["objects"], jsonObject["version"]
+            )
 
     # def to_window(self, x, y, initial=False, relative=False):
     #     return super().to_window(x, y, initial=initial, relative=relative)
@@ -37,7 +36,7 @@ class Game:
 
         if elapsedTime > 1 / 50:
             elapsedTime = 1 / 60
-        
+
         # 1: traiter les events
         self.handleEvents()
 

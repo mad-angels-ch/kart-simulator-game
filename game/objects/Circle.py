@@ -8,9 +8,9 @@ from .Object import Object
 class Circle(Object):
     _radius: float
 
-    def __init__(self) -> None:
-        super().__init__()
-        self._radius = 0
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
+        self._radius = kwargs.get("radius", 1)
 
     def radius(self) -> float:
         return self._radius

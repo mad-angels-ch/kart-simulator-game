@@ -14,10 +14,10 @@ class Flipper(Polygon):
     _flipperCurrentAngle: float
     _flipperMovementsQueue: List[bool]
 
-    def __init__(self) -> None:
-        super().__init__()
-        self._flipperMaxAngle = 0
-        self._flipperUpwardSpeed = 0
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
+        self._flipperMaxAngle = kwargs["flipperMaxAngle"]
+        self._flipperUpwardSpeed = kwargs["flipperUpwardSpeed"]
         self._flipperCurrentAngle = 0
         self._flipperMovementsQueue = []
 
