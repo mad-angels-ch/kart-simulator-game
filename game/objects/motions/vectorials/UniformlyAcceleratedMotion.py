@@ -7,7 +7,9 @@ class UniformlyAcceleratedMotion(VectorialMotion):
     _acceleration: lib.Vector
 
     def __init__(
-        self, initialSpeed: lib.Vector = lib.Vector((0, 0)), acceleration: lib.Vector = lib.Vector((0, 0))
+        self,
+        initialSpeed: lib.Vector = lib.Vector((0, 0)),
+        acceleration: lib.Vector = lib.Vector((0, 0)),
     ) -> None:
         super().__init__(initialSpeed)
         self._acceleration = acceleration
@@ -20,8 +22,8 @@ class UniformlyAcceleratedMotion(VectorialMotion):
 
     def speed(self, deltaTime: float = 0) -> lib.Vector:
         return self._acceleration * deltaTime + self._speed
-        
-    def acceleration(self) -> lib.Vector:
+
+    def acceleration(self, deltaTime: float = 0) -> lib.Vector:
         return self._acceleration
 
     def set_acceleration(self, newAcceleration: lib.Vector) -> None:

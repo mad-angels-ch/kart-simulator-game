@@ -29,8 +29,17 @@ class AngularMotion:
     def set_speed(self, newSpeed: float) -> None:
         self._speed = newSpeed
 
+    def acceleration(self, deltaTime: float = 0) -> float:
+        return 0
+
     def speedAtPoint(self, point: lib.Point, deltaTime: float = 0) -> lib.Vector:
         normal = lib.Vector.fromPoints(self.center(), point)
         speed = lib.Vector((0, self.speed(deltaTime) * normal.norm()))
         speed.rotate(normal.direction())
         return speed
+
+    def accelerationAtPoint(self, point: lib.Point, deltaTime: float = 0) -> lib.Vector:
+        normal = lib.Vector.fromPoints(self.center(), point)
+        acceleration = lib.Vector((0, self.acceleration(deltaTime) * normal.norm()))
+        acceleration.rotate(normal.direction())
+        return acceleration
