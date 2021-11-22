@@ -7,3 +7,4 @@ from .Circle import Circle
 from .Polygon import Polygon
 from .ConvexPolygon import ConvexPolygon
 from .Rectangle import Rectangle
+from .AlignedRectangle import AlignedRectangle

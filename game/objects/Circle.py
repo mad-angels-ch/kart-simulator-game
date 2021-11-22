@@ -1,6 +1,7 @@
 from typing import Tuple
 
 import lib
+from lib.Point import Point, Vector
 
 from .Object import Object
 
@@ -14,6 +15,20 @@ class Circle(Object):
 
     def radius(self) -> float:
         return self._radius
+
+    def potentialCollisionZone(self, timeInterval: float) -> lib.AlignedRectangle:
+        translation = self.relativePosition(timeInterval)
+        if translation:
+            return lib.AlignedRectangle(
+                self.radius() + translation.x(),
+                self.radius() + translation.y(),
+                center=Point(Vector(self.center()) + translation / 2),
+            )
+
+        else:
+            return lib.AlignedRectangle(
+                self.radius(), self.radius(), center=self.center()
+            )
 
     def collides(self, other: "Object", timeInterval: float) -> bool:
         if not (self.mass() or other.mass()):

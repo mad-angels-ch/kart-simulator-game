@@ -14,9 +14,11 @@ class UniformlyAcceleratedCircularMotion(AngularMotion):
     ) -> None:
         super().__init__(initialSpeed, rotationCenter)
         self._acceleration = acceleration
+        self.updateIsStatic()
 
     def updateReferences(self, deltaTime: float) -> None:
         self._speed = self.speed(deltaTime)
+        self.updateIsStatic()
 
     def relativeAngle(self, deltaTime: float = 0) -> float:
         return self._acceleration * (deltaTime ** 2 / 2) + self._speed * deltaTime
