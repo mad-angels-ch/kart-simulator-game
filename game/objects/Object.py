@@ -2,6 +2,7 @@ from typing import Tuple
 import math
 
 import lib
+from lib.Point import Vector
 
 from . import motions
 
@@ -14,8 +15,8 @@ class Object:
 
     _angle: float
     _center: lib.Point
-    angularMotion: motions.angulars.AngularMotion
-    vectorialMotion: motions.vectorials.VectorialMotion
+    _angularMotion: motions.angulars.AngularMotion
+    _vectorialMotion: motions.vectorials.VectorialMotion
 
     _fill: str
     _opacity: float
@@ -27,10 +28,10 @@ class Object:
         self._formID = kwargs["formID"]
         self._angle = kwargs.get("angle", 0)
         self._center = kwargs.get("center", lib.Point())
-        self.angularMotion = kwargs.get(
+        self._angularMotion = kwargs.get(
             "angularMotion", motions.angulars.AngularMotion()
         )
-        self.vectorialMotion = kwargs.get(
+        self._vectorialMotion = kwargs.get(
             "vectorialMotion", motions.vectorials.VectorialMotion()
         )
         self._fill = kwargs.get("fill", "")
@@ -57,31 +58,31 @@ class Object:
         newCenter.translate(self.relativePosition(deltaTime))
         return newCenter
 
-    def potentialCollisionZone(self, timeInterval: float) -> lib.AlignedRectangle:
+    def potentialCollisionZone(self, timeInterval: float) -> lib.Circle:
         pass
 
     def isStatic(self) -> bool:
-        return self.angularMotion.isStatic() and self.vectorialMotion.isStatic()
+        return self._angularMotion.isStatic() and self._vectorialMotion.isStatic()
 
     def relativeAngle(self, deltaTime: float) -> float:
-        return self.angularMotion.relativeAngle(deltaTime)
+        return self._angularMotion.relativeAngle(deltaTime)
 
     def relativePosition(self, deltaTime: float) -> lib.Vector:
         fromRotationCenterBefore = lib.Vector.fromPoints(
-            self.angularMotion.center(), self.center()
+            self._angularMotion.center(), self.center()
         )
         fromRotationCenterAfter = lib.Vector(fromRotationCenterBefore)
         fromRotationCenterAfter.rotate(self.relativeAngle(deltaTime))
         return (
-            self.vectorialMotion.relativePosition(deltaTime)
+            self._vectorialMotion.relativePosition(deltaTime)
             - fromRotationCenterBefore
             + fromRotationCenterAfter
         )
 
     def speedAtPoint(self, point: lib.Point, deltaTime: float = 0) -> lib.Vector:
-        return self.angularMotion.speedAtPoint(
+        return self._angularMotion.speedAtPoint(
             point, deltaTime
-        ) + self.vectorialMotion.speed(deltaTime)
+        ) + self._vectorialMotion.speed(deltaTime)
 
     def centerSpeed(self, deltaTime: float = 0) -> lib.Vector:
         return self.speedAtPoint(self.center(deltaTime), deltaTime)
@@ -102,11 +103,55 @@ class Object:
         self.rotate(self.relativeAngle(deltaTime))
         self.translate(self.relativePosition(deltaTime))
 
-        self.angularMotion.updateReferences(deltaTime)
-        self.angularMotion.center().translate(
-            self.vectorialMotion.relativePosition(deltaTime)
+        self._angularMotion.updateReferences(deltaTime)
+        self._angularMotion.center().translate(
+            self._vectorialMotion.relativePosition(deltaTime)
         )
-        self.vectorialMotion.updateReferences(deltaTime)
+        self._vectorialMotion.updateReferences(deltaTime)
+
+    def angularMotionSpeed(self, deltaTime: float = 0) -> float:
+        """Attention, utilisation avancée uniquement
+        Retourne la vitesse angulaire de l'objet."""
+        return self._angularMotion.speed(deltaTime=deltaTime)
+
+    def set_angularMotionSpeed(self, newSpeed: float) -> None:
+        """Attention, utilisation avancée uniquement
+        Modifie la vitesse angulaire de l'objet."""
+        self._angularMotion.set_speed(newSpeed=newSpeed)
+
+    def angularMotionAcceleration(self, deltaTime: float = 0) -> float:
+        """Attention, utilisation avancée uniquement
+        Retourne l'accélération angulaire de l'objet."""
+        return self._angularMotion.acceleration(deltaTime=deltaTime)
+
+    def set_angularMotionAcceleration(self, newAcceleration: float) -> None:
+        """Attention, utilisation avancée uniquement
+        Modifie la vitesse angulaire de l'objet."""
+        self._angularMotion.set_acceleration(newAcceleration=newAcceleration)
+
+    def vectorialMotionSpeed(self, deltaTime: float = 0) -> lib.Vector:
+        """NE PAS MODIFIER, utiliser set_vectorialMotionSpeed()
+        Attention, utilisation avancée uniquement
+        Retourne la vitesse vectoriel de l'objet, sans tenir compte de sa rotation.
+        """
+        return self._vectorialMotion.speed(deltaTime=deltaTime)
+
+    def set_vectorialMotionSpeed(self, newSpeed: lib.Vector) -> None:
+        """Attention, utilisation avancée uniquement
+        Modifie la vitesse vectoriel de l'objet, sans tenir compte de sa rotation"""
+        self._vectorialMotion.set_speed(newSpeed=newSpeed)
+
+    def vectorialMotionAcceleration(self, deltaTime: float = 0) -> lib.Vector:
+        """NE PAS MODIFIER, utiliser set_vectorialMotionAcceleration()
+        Attention, utilisation avancée uniquement
+        Retourne l'accélération vectoriel de l'objet, sans tenir compte de sa rotation.
+        """
+        self._vectorialMotion.acceleration(deltaTime=deltaTime)
+
+    def set_vectorialMotionAcceleration(self, newAcceleration: lib.Vector) -> None:
+        """Attention, utilisation avancée uniquement
+        Modifie l'accélération vectoriel de l'objet, sans tenir compte de sa rotation"""
+        self._vectorialMotion.set_acceleration(newAcceleration=newAcceleration)
 
     def fill(self) -> str:
         return self._fill
@@ -139,6 +184,6 @@ class Object:
 
     # def netForceAtPoint(self, point: lib.Point, deltaTime: float = 0) -> lib.Vector:
     #     return self.mass() * (
-    #         self.angularMotion.accelerationAtPoint(point, deltaTime)
-    #         + self.vectorialMotion.acceleration(deltaTime)
+    #         self._angularMotion.accelerationAtPoint(point, deltaTime)
+    #         + self._vectorialMotion.acceleration(deltaTime)
     #     )

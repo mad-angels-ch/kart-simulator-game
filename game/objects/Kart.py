@@ -42,14 +42,14 @@ class Kart(Polygon):
         while len(self._accelerationsQueue):
             acceleration = self._accelerationsQueue.pop(0)
             if acceleration > 0:
-                self.vectorialMotion.set_acceleration(self._acceleration)
+                self.set_vectorialMotionAcceleration(self._acceleration)
             elif acceleration < 0:
-                self.vectorialMotion.set_acceleration(-self._acceleration)
+                self.set_vectorialMotionAcceleration(-self._acceleration)
             else:
-                self.vectorialMotion.set_acceleration(lib.Vector())
+                self.set_vectorialMotionAcceleration(lib.Vector())
         while len(self._turningQueue):
             self._isTurning = self._turningQueue.pop(0)
         if self._isTurning < 0:
-            self.vectorialMotion.acceleration().rotate(-self._turning * deltaTime)
+            self.vectorialMotionAcceleration().rotate(-self._turning * deltaTime)
         elif self._isTurning > 0:
-            self.vectorialMotion.acceleration().rotate(self._turning * deltaTime)
+            self.vectorialMotionAcceleration().rotate(self._turning * deltaTime)

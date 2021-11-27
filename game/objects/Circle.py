@@ -16,19 +16,30 @@ class Circle(Object):
     def radius(self) -> float:
         return self._radius
 
-    def potentialCollisionZone(self, timeInterval: float) -> lib.AlignedRectangle:
+    # def potentialCollisionZone(self, timeInterval: float) -> lib.AlignedRectangle:
+    #     translation = self.relativePosition(timeInterval)
+    #     if translation:
+    #         return lib.AlignedRectangle(
+    #             self.radius() + translation.x(),
+    #             self.radius() + translation.y(),
+    #             center=Point(Vector(self.center()) + translation / 2),
+    #         )
+
+    #     else:
+    #         return lib.AlignedRectangle(
+    #             self.radius(), self.radius(), center=self.center()
+    #         )
+
+    def potentialCollisionZone(self, timeInterval: float) -> lib.Circle:
         translation = self.relativePosition(timeInterval)
         if translation:
-            return lib.AlignedRectangle(
-                self.radius() + translation.x(),
-                self.radius() + translation.y(),
-                center=Point(Vector(self.center()) + translation / 2),
+            return lib.Circle(
+                Vector(self.center()) + translation / 2,
+                self.radius() + max(translation.x(), translation.x()),
             )
 
         else:
-            return lib.AlignedRectangle(
-                self.radius(), self.radius(), center=self.center()
-            )
+            return lib.Circle(self.center(), self.radius())
 
     def collides(self, other: "Object", timeInterval: float) -> bool:
         if not (self.mass() or other.mass()):

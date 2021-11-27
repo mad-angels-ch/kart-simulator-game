@@ -27,9 +27,7 @@ class Flipper(Polygon):
 
     def inMotion(self) -> bool:
         """Retourne vrai si le flipper est en mouvement"""
-        return not math.isclose(
-            self.angularMotion.speed(), 0, abs_tol=Flipper.precision
-        )
+        return not math.isclose(self.angularMotionSpeed(), 0, abs_tol=Flipper.precision)
 
     def leftSide(self) -> bool:
         """Retourne vrai si le flipper tourne dans le sens trigonométrique lorsqu'il monte"""
@@ -73,35 +71,35 @@ class Flipper(Polygon):
         if (self.upward() and self._flipperCurrentAngle == self._flipperMaxAngle) or (
             self.downward() and self._flipperCurrentAngle == 0
         ):
-            self.angularMotion.set_speed(0)
+            self.set_angularMotionSpeed(0)
 
         # nouvelle trajectoire
         if self.down():
             while len(self._flipperMovementsQueue):
                 if self._flipperMovementsQueue.pop(0):
-                    self.angularMotion.set_speed(self._flipperUpwardSpeed)
+                    self.set_angularMotionSpeed(self._flipperUpwardSpeed)
                     break
         elif self.up():
             while len(self._flipperMovementsQueue):
                 if not self._flipperMovementsQueue.pop(0):
-                    self.angularMotion.set_speed(-self._flipperUpwardSpeed)
+                    self.set_angularMotionSpeed(-self._flipperUpwardSpeed)
                     break
 
     def up(self) -> bool:
         """Retourne vrai si le flipper est dans sa position en haut"""
         return (
             self._flipperCurrentAngle == self._flipperMaxAngle
-            and self.angularMotion.speed() == 0
+            and self.angularMotionSpeed() == 0
         )
 
     def down(self) -> bool:
         """Retourne vrai si le flipper est dans sa position en bas"""
-        return self._flipperCurrentAngle == 0 and self.angularMotion.speed() == 0
+        return self._flipperCurrentAngle == 0 and self.angularMotionSpeed() == 0
 
     def upward(self) -> bool:
         """Retourne True si le flipper est en train de monter"""
-        return self.angularMotion.speed() == self._flipperUpwardSpeed
+        return self.angularMotionSpeed() == self._flipperUpwardSpeed
 
     def downward(self) -> bool:
         """Retourne True si le flipper est en train de descendre"""
-        return self.angularMotion.speed() == -self._flipperUpwardSpeed
+        return self.angularMotionSpeed() == -self._flipperUpwardSpeed

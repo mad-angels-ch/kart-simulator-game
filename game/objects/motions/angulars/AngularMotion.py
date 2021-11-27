@@ -38,6 +38,9 @@ class AngularMotion:
     def acceleration(self, deltaTime: float = 0) -> float:
         return 0
 
+    def set_acceleration(self, newAcceleration: float) -> None:
+        raise RuntimeError("You can't change the angular acceleration of this object")
+
     def updateIsStatic(self) -> None:
         self._static = math.isclose(
             self.speed(), 0, abs_tol=self.precision
