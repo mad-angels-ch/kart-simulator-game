@@ -61,7 +61,7 @@ class CollisionsZone:
         angle = tangent.direction()
 
         masses = [obj.mass() for obj in lastCollidedObjects]
-        objSpeeds = [obj.vectorialMotion.speed() for obj in lastCollidedObjects]
+        objSpeeds = [obj.vectorialMotionSpeed() for obj in lastCollidedObjects]
         pointSpeeds = [obj.speedAtPoint(point) for obj in lastCollidedObjects]
         speedsBefore = objSpeeds.copy()
         speedsBefore.extend(pointSpeeds)
@@ -94,7 +94,7 @@ class CollisionsZone:
             # speedsAfter[current] *= (1 - lastCollidedObjects[current].friction()) * (
             #     1 - lastCollidedObjects[other].friction()
             # )
-            lastCollidedObjects[current].vectorialMotion.set_speed(speedsAfter[current])
+            lastCollidedObjects[current].set_vectorialMotionSpeed(speedsAfter[current])
 
             other = current
 
