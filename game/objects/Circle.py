@@ -1,3 +1,4 @@
+import math
 from typing import Tuple
 
 import lib
@@ -30,16 +31,30 @@ class Circle(Object):
     #             self.radius(), self.radius(), center=self.center()
     #         )
 
-    def potentialCollisionZone(self, timeInterval: float) -> lib.Circle:
-        translation = self.relativePosition(timeInterval)
-        if translation:
-            return lib.Circle(
-                Vector(self.center()) + translation / 2,
-                self.radius() + max(translation.x(), translation.x()),
-            )
+    # def potentialCollisionZone(self, timeInterval: float) -> lib.Circle:
+    #     translation = self.relativePosition(timeInterval)
+    #     if translation:
+    #         return lib.Circle(
+    #             Vector(self.center()) + translation / 2,
+    #             self.radius() + max(translation.x(), translation.x()),
+    #         )
 
+    #     else:
+    #         return lib.Circle(self.center(), self.radius())
+
+    def updatePotentialCollisionZone(self, timeInterval: float) -> None:
+        if self.isStatic():
+            self._potentialCollisionZone = lib.AlignedRectangle(
+                self.radius() * 2, self.radius() * 2, self.center()
+            )
         else:
-            return lib.Circle(self.center(), self.radius())
+            translation = self.relativePosition(timeInterval)
+            self._potentialCollisionZone = lib.AlignedRectangle(
+                self.radius() * 2 + translation.x(),
+                self.radius() * 2 + translation.y(),
+                lib.Point(lib.Vector(self.center()) + translation / 2),
+            )
+        return super().updatePotentialCollisionZone(timeInterval)
 
     def collides(self, other: "Object", timeInterval: float) -> bool:
         if not (self.mass() or other.mass()):
