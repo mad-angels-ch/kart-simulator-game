@@ -22,7 +22,7 @@ class ConvexPolygon(Polygon):
             return self._separatingAxisTheoremConvexPolygon(other)
 
         else:
-            return other.collides(self)
+            return super().collides(other)
 
     def _edgesNeededForSAT(self) -> List[Segment]:
         """Retourne le nombre minimal de côtés sur lesquels les projections sont nécessaires à SAT"""
