@@ -45,14 +45,14 @@ class Circle(Object):
     def updatePotentialCollisionZone(self, timeInterval: float) -> None:
         if self.isStatic():
             self._potentialCollisionZone = lib.AlignedRectangle(
-                self.radius() * 2, self.radius() * 2, self.center()
+                self.radius() * 2, self.radius() * 2, center=self.center()
             )
         else:
             translation = self.relativePosition(timeInterval)
             self._potentialCollisionZone = lib.AlignedRectangle(
                 self.radius() * 2 + translation.x(),
                 self.radius() * 2 + translation.y(),
-                lib.Point(lib.Vector(self.center()) + translation / 2),
+                center=lib.Point(lib.Vector(self.center()) + translation / 2),
             )
         return super().updatePotentialCollisionZone(timeInterval)
 

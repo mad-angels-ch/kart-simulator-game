@@ -109,9 +109,11 @@ class Polygon(Object):
         def englobingAlignedRetangle(points: List[lib.Point]) -> lib.AlignedRectangle:
             xes = [point.x() for point in points]
             yes = [point.y() for point in points]
-            topLeft = lib.Point((min(xes), min(yes)))
+            leftBottom = lib.Point((min(xes), min(yes)))
             return lib.AlignedRectangle(
-                max(xes) - topLeft.x(), max(yes) - topLeft.y(), topLeft
+                max(xes) - leftBottom.x(),
+                max(yes) - leftBottom.y(),
+                leftBottom=leftBottom,
             )
 
         vertices = self.vertices()

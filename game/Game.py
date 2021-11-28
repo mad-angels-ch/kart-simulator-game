@@ -1,4 +1,4 @@
-from logging import error
+from logging import error, warning
 from typing import List
 import json
 import time
@@ -27,14 +27,10 @@ class Game:
                 jsonObject["objects"], jsonObject["version"]
             )
 
-    # def to_window(self, x, y, initial=False, relative=False):
-    #     return super().to_window(x, y, initial=initial, relative=relative)
-    # i = 0
     def nextFrame(self, elapsedTime: float) -> None:
-        # self.i += 1
-        # print("update"+str(self.i)+", please wait.........\n")
 
         if elapsedTime > 1 / 50:
+            warning(f"ElapsedTime too big: {elapsedTime}")
             elapsedTime = 1 / 60
 
         # 1: traiter les events
