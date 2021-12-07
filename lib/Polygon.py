@@ -19,9 +19,11 @@ class Polygon(Shape):
         return len(self._vertices)
 
     def vertex(self, vertexIndex: int) -> Point:
+        """Retourne le sommet correspondant du polygone"""
         return self._vertices[vertexIndex]
 
     def vertices(self) -> List[Point]:
+        """Retourne la liste des sommets du polygone"""
         return self._vertices
 
     def edge(self, startVertexIndex: int) -> Segment:

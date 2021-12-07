@@ -5,6 +5,7 @@ import time
 import math
 
 from lib import Point, Vector
+import lib
 
 from . import objects
 
@@ -14,14 +15,21 @@ class CollisionsZone:
 
     _timeInterval: float
     _objects: List[objects.Object]
+    _dimension: lib.AlignedRectangle
 
     def __init__(self, timeInterval: float) -> None:
         super().__init__()
         self._timeInterval = timeInterval
         self._objects = list()
 
+    def collides(self, objectToCheck: objects.Object) -> bool:
+        """Retourne vrai si l'objet donné en paramètre se trouve dans la zone."""
+
     def __iadd__(self, objectToAdd: objects.Object) -> None:
+        """Ajoute un objet à la zone et redimensionne celle-ci si nécessaire."""
         self._objects.append(objectToAdd)
+        # objectCollisionZone: lib.AlignedRectangle = objectToAdd.potentialCollisionZone()
+        
         return self
 
     def _solveFirst(self, timeInterval: float) -> float:
