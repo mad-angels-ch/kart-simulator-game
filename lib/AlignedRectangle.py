@@ -10,7 +10,7 @@ from .Rectangle import Rectangle
 class AlignedRectangle(Rectangle):
     _width: float
     _height: float
-    _bottomLeft: Point
+    _leftBottom: Point
 
     def smallestContaining(*rectangles: "AlignedRectangle") -> "AlignedRectangle":
         """Retourne le plus petit rectangle contenant tous les rectangles donnés en paramètre."""
@@ -37,7 +37,7 @@ class AlignedRectangle(Rectangle):
                 raise ValueError("Neither leftBottom or center has been given")
         self._width = width
         self._height = height
-        self._bottomLeft = Point(leftBottom)
+        self._leftBottom = Point(leftBottom)
 
     def width(self) -> float:
         """Retourne la largeur du rectangle"""
@@ -50,21 +50,21 @@ class AlignedRectangle(Rectangle):
     def leftBottom(self) -> Point:
         """NE PAS MODIFIER!
         Retourne le point inférieur gauche du rectangle."""
-        return self._bottomLeft
+        return self._leftBottom
 
     def center(self) -> Point:
         """Retourne le centre du rectangle"""
-        center = Point(self._bottomLeft)
+        center = Point(self._leftBottom)
         center.translate(Vector((self._width / 2, self._height / 2)))
         return center
 
     def left(self) -> float:
         """Retourne la position la plus à gauche du rectangle."""
-        return self._bottomLeft.x()
+        return self._leftBottom.x()
 
     def set_left(self, newLeft: float) -> None:
         """Modifie la position la plus à gauche du rectangle."""
-        self._bottomLeft[0] = newLeft
+        self._leftBottom[0] = newLeft
 
     def right(self) -> float:
         """Retourne la position la plus à droite du rectangle."""
@@ -76,11 +76,11 @@ class AlignedRectangle(Rectangle):
 
     def bottom(self) -> float:
         """Retourne la position la plus basse du rectangle."""
-        return self._bottomLeft.y()
+        return self._leftBottom.y()
 
     def set_bottom(self, newBottom: float) -> None:
         """Modifie la position la plus basse du rectangle."""
-        self._bottomLeft[1] = newBottom
+        self._leftBottom[1] = newBottom
 
     def top(self) -> float:
         """Retourne la position la plus haute du rectangle."""
@@ -91,10 +91,10 @@ class AlignedRectangle(Rectangle):
         self._height += newTop - self.top()
 
     def vertex(self, vertexIndex: int) -> Point:
-        x = self.bottomLeft().x()
+        x = self.leftBottom().x()
         if vertexIndex in [1, 2]:
             x += self.width()
-        y = self.bottomLeft().y()
+        y = self.leftBottom().y()
         if vertexIndex in [2, 3]:
             y += self.height()
         return Point((x, y))
@@ -102,12 +102,12 @@ class AlignedRectangle(Rectangle):
     def vertices(self) -> List[Point]:
         return [self.vertex(i) for i in range(0, 4)]
 
-    def resizeToInclude(self, otherAlignedRectangle: "AlignedRectangle") -> None:
+    def resizeToInclude(self, other: "AlignedRectangle") -> None:
         """Agrandi le rectangle (si nécessaire) de manière à ce que l'autre rectangle (donné en paramètre) soint entièrement à l'intérieur"""
-        self.set_left(min(self.left(), otherAlignedRectangle.left()))
-        self.set_right(max(self.right(), otherAlignedRectangle.right()))
-        self.set_bottom(min(self.bottom(), otherAlignedRectangle.bottom()))
-        self.set_top(max(self.top(), otherAlignedRectangle.top()))
+        self.set_left(min(self.left(), other.left()))
+        self.set_right(max(self.right(), other.right()))
+        self.set_bottom(min(self.bottom(), other.bottom()))
+        self.set_top(max(self.top(), other.top()))
 
     def collides(self, other: Shape) -> bool:
         if isinstance(other, AlignedRectangle):
