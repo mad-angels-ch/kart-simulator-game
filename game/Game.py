@@ -8,7 +8,6 @@ from .CollisionsZone import CollisionsZone
 
 
 class Game:
-
     _events: List[events.Event]
     _output: "function"
     _dataUrl: str
@@ -51,10 +50,11 @@ class Game:
                 raise ValueError(f"{event} is not from a supported event type")
 
     def simulatePhysics(self, elapsedTime: float) -> None:
-        collisionsZone = CollisionsZone(elapsedTime)
-        for object in self._objects:
-            collisionsZone += object
-        collisionsZone.resolve()
+        zones, others = CollisionsZone.create(self._objects, elapsedTime)
+        for zone in zones:
+            zone.resolve()
+        for other in others:
+            other.updateReferences(elapsedTime)
 
     def callOutput(self) -> None:
         self._output(self._objects)

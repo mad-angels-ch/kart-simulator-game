@@ -3,6 +3,7 @@ from typing import List, Tuple
 import os
 import time
 import math
+from game.objects.Object import Object
 
 from lib import Point, Vector
 import lib
@@ -13,23 +14,54 @@ from . import objects
 class CollisionsZone:
     timePrecision = 1e-3
 
+    def create(
+        objectsList: List[objects.Object], timeInterval: float
+    ) -> Tuple[List["CollisionsZone"], List[objects.Object]]:
+        """Détermine et retourne les différentes zones où il peut potentiellement avoir des collisions
+        entre les objects donnés dans l'intervalle de temps donné.
+        Retourne aussi la liste des objets ne se trouvant dans aucune zone."""
+        moving = [obj for obj in objectsList if not obj.isStatic()]
+        static = [obj for obj in objectsList if obj.isStatic()]
+        zones = []
+
+        def moveCollidingToZone(
+            zone: CollisionsZone, objs: List[objects.Object]
+        ) -> None:
+            for obj in objs:
+                if zone.collides(obj):
+                    zone += obj
+                    objs.remove(obj)
+
+        while moving:
+            zones.append(CollisionsZone(timeInterval, moving.pop()))
+            moveCollidingToZone(zones[-1], moving)
+            moveCollidingToZone(zones[-1], static)
+
+        return zones, moving + static
+
     _timeInterval: float
     _objects: List[objects.Object]
     _dimension: lib.AlignedRectangle
 
-    def __init__(self, timeInterval: float) -> None:
+    def __init__(self, timeInterval: float, *objectsInside: objects.Object) -> None:
         super().__init__()
         self._timeInterval = timeInterval
-        self._objects = list()
+        self._objects = list(objectsInside)
+        self._dimension = lib.AlignedRectangle.smallestContaining(
+            *[obj.potentialCollisionZone(timeInterval) for obj in objectsInside]
+        )
 
     def collides(self, objectToCheck: objects.Object) -> bool:
         """Retourne vrai si l'objet donné en paramètre se trouve dans la zone."""
+        return self._dimension.collides(objectToCheck.potentialCollisionZone(self._timeInterval))
 
     def __iadd__(self, objectToAdd: objects.Object) -> None:
         """Ajoute un objet à la zone et redimensionne celle-ci si nécessaire."""
         self._objects.append(objectToAdd)
-        # objectCollisionZone: lib.AlignedRectangle = objectToAdd.potentialCollisionZone()
-        
+        self._dimension.resizeToInclude(
+            objectToAdd.potentialCollisionZone(self._timeInterval)
+        )
+
         return self
 
     def _solveFirst(self, timeInterval: float) -> float:

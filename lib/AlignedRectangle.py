@@ -14,13 +14,12 @@ class AlignedRectangle(Rectangle):
 
     def smallestContaining(*rectangles: "AlignedRectangle") -> "AlignedRectangle":
         """Retourne le plus petit rectangle contenant tous les rectangles donnés en paramètre."""
-        container = rectangles[0]
-        for rectangle in rectangles[1:]:
-            container.set_left(min(container.left(), rectangle.left()))
-            container.set_right(max(container.right(), rectangle.right()))
-            container.set_bottom(min(container.bottom(), rectangle.bottom()))
-            container.set_top(max(container.top(), rectangle.top()))
-        return rectangle
+        container = AlignedRectangle(0, 0, Point())
+        container.set_left(min([rect.left() for rect in rectangles]))
+        container.set_right(max([rect.right() for rect in rectangles]))
+        container.set_bottom(min([rect.bottom() for rect in rectangles]))
+        container.set_top(max([rect.top() for rect in rectangles]))
+        return container
 
     def __init__(
         self,
