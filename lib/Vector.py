@@ -42,7 +42,7 @@ class Vector:
         return Vector((self._x * other, self._y * other))
 
     def __truediv__(self, other: float) -> "Vector":
-        return Vector(self._x / other, self._y / other)
+        return Vector((self._x / other, self._y / other))
 
     def __pow__(self, other: int) -> float:
         if other != 2:
