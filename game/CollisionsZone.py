@@ -24,18 +24,25 @@ class CollisionsZone:
         static = [obj for obj in objectsList if obj.isStatic()]
         zones = []
 
-        def moveCollidingToZone(
-            zone: CollisionsZone, objs: List[objects.Object]
-        ) -> None:
-            for obj in objs:
-                if zone.collides(obj):
-                    zone += obj
-                    objs.remove(obj)
-
         while moving:
-            zones.append(CollisionsZone(timeInterval, moving.pop()))
-            moveCollidingToZone(zones[-1], moving)
-            moveCollidingToZone(zones[-1], static)
+            zone: "CollisionsZone | None" = None
+            obj = moving.pop()
+            for objs in [static, moving]:
+                tested = 0
+                while tested < len(moving):
+                    if zone:
+                        if zone.collides(objs[tested]):
+                            zone += objs.pop(tested)
+                            # ne pas incrémenter car l'élément a été supprimé
+                        else:
+                            tested += 1
+                    else:
+                        if obj.collides(objs[tested], timeInterval):
+                            zone = CollisionsZone(obj, objs.pop(tested), timeInterval)
+                            zones.append(zone)
+                            # idem
+                        else:
+                            tested += 1
 
         return zones, moving + static
 
@@ -43,9 +50,11 @@ class CollisionsZone:
     _objects: List[objects.Object]
     _dimension: lib.AlignedRectangle
 
-    def __init__(self, timeInterval: float, *objectsInside: objects.Object) -> None:
+    def __init__(self, *objectsInside: objects.Object, timeInterval: float) -> None:
         super().__init__()
         self._timeInterval = timeInterval
+        if len(objectsInside) < 2:
+            raise SyntaxError("A collision zone must contain at least 2 objects")
         self._objects = list(objectsInside)
         self._dimension = lib.AlignedRectangle.smallestContaining(
             *[obj.potentialCollisionZone(timeInterval) for obj in objectsInside]
@@ -53,16 +62,17 @@ class CollisionsZone:
 
     def collides(self, objectToCheck: objects.Object) -> bool:
         """Retourne vrai si l'objet donné en paramètre se trouve dans la zone."""
-        return self._dimension.collides(objectToCheck.potentialCollisionZone(self._timeInterval))
-
-    def __iadd__(self, objectToAdd: objects.Object) -> None:
-        """Ajoute un objet à la zone et redimensionne celle-ci si nécessaire."""
-        self._objects.append(objectToAdd)
-        self._dimension.resizeToInclude(
-            objectToAdd.potentialCollisionZone(self._timeInterval)
+        return self._dimension.collides(
+            objectToCheck.potentialCollisionZone(self._timeInterval)
         )
 
-        return self
+    def __iadd__(self, objectToAdd: objects.Object) -> None:
+        """Ajoute un objet à la zone et redimentionne celle-ci si nécessaire"""
+        self._objects.append(objectToAdd)
+        if not objectToAdd.isStatic():
+            self._dimension.resizeToInclude(
+                objectToAdd.potentialCollisionZone(self._timeInterval)
+            )
 
     def _solveFirst(self, timeInterval: float) -> float:
         # recherche du moment de la collision
