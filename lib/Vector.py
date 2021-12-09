@@ -20,6 +20,9 @@ class Vector:
         self._x = components[0]
         self._y = components[1]
 
+    def __bool__(self) -> bool:
+        return self != Vector()
+
     def __len__(self) -> int:
         return 2
 
