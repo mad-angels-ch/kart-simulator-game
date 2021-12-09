@@ -29,7 +29,7 @@ class Game:
     def nextFrame(self, elapsedTime: float) -> None:
 
         if elapsedTime > 1 / 50:
-            warning(f"ElapsedTime too big: {elapsedTime}")
+            # warning(f"ElapsedTime too big: {elapsedTime}")
             elapsedTime = 1 / 60
 
         # 1: traiter les events
