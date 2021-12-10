@@ -15,6 +15,9 @@ class Polygon(Shape):
     def __init__(self, *vertices: Point) -> None:
         self._vertices = [vertex for vertex in vertices]
 
+    def copy(self) -> "Polygon":
+        return Polygon(*[vertex.copy() for vertex in self.vertices()])
+
     def __len__(self) -> int:
         return len(self._vertices)
 
@@ -38,7 +41,10 @@ class Polygon(Shape):
 
             for first in range(len(self)):
                 # collision sur un sommet
-                if other.center().squareDistanceOf(self.vertex(first)) <= other.radius() * other.radius():
+                if (
+                    other.center().squareDistanceOf(self.vertex(first))
+                    <= other.radius() * other.radius()
+                ):
                     return True
 
                 # collision sur un côté
@@ -46,7 +52,10 @@ class Polygon(Shape):
                 try:
                     projection: Point = side.orthogonalProjection(other.center())
                     if side.passBy(projection):
-                        if other.center().squareDistanceOf(projection) <= other.radius() * other.radius():
+                        if (
+                            other.center().squareDistanceOf(projection)
+                            <= other.radius() * other.radius()
+                        ):
                             return True
                 except:
                     print("hey")

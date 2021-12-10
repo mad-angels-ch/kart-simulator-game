@@ -142,3 +142,7 @@ class Vector:
 
     def y(self) -> float:
         return self._y
+
+    def copy(self) -> "Vector":
+        """Retourne une copie"""
+        return Vector(self)

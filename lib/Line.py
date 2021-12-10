@@ -20,6 +20,10 @@ class Line:
         else:
             raise TypeError("vectorOrSecondPoint is neither a point nor a vector")
 
+    def copy(self) -> "Line":
+        """Retourne une copie"""
+        return Line(self.point().copy(), self.vector().copy())
+
     def point(self) -> Point:
         """Retourne un point de la droite"""
         return self._point

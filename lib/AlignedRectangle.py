@@ -38,6 +38,9 @@ class AlignedRectangle(Rectangle):
         self._height = height
         self._leftBottom = Point(leftBottom)
 
+    def copy(self) -> "AlignedRectangle":
+        return AlignedRectangle(self.width(), self.height(), self.leftBottom())
+
     def width(self) -> float:
         """Retourne la largeur du rectangle"""
         return self._width

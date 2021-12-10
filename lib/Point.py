@@ -75,3 +75,7 @@ class Point:
 
     def y(self) -> float:
         return self[1]
+
+    def copy(self) -> "Point":
+        """Retourne une copie"""
+        return Point(self)
