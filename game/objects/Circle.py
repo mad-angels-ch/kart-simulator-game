@@ -57,6 +57,15 @@ class Circle(Object):
         return super().updatePotentialCollisionZone(timeInterval)
 
     def collides(self, other: "Object", timeInterval: float) -> bool:
+        
+        if not other.mass():
+            if self.vectorialMotion().speed().norm() and self.mass():
+                tan = self.collisionPointAndTangent(other)[1].unitVector()
+                cos = self.vectorialMotion().speed().CosAngleBetweenTwoVectors(tan)
+                new_norm = self.vectorialMotion().speed().norm()
+                new_speed = tan*cos*new_norm
+                self.set_vectorialMotionSpeed(newSpeed=new_speed)
+                
         if not (self.mass() or other.mass()):
             return False
 

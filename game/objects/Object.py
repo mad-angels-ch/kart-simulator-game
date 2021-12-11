@@ -213,3 +213,6 @@ class Object:
     #         self._angularMotion.accelerationAtPoint(point, deltaTime)
     #         + self._vectorialMotion.acceleration(deltaTime)
     #     )
+
+    def vectorialMotion(self):
+        return self._vectorialMotion

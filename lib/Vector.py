@@ -142,8 +142,8 @@ class Vector:
 
     def CosAngleBetweenTwoVectors(self, other:"Vector") -> float:
         "Retourne le cosinus de l'angle aigu ou optu entre ce vecteur et un autre vecteur donné"
-        return self.scalarProduct(self,other) / self.norm()*other.norm()
+        return self.scalarProduct(other) / self.norm()*other.norm()
     
     def unitVector(self) -> "Vector":
         "Retourne le vecteur unitaire de ce vecteur"
-        return self / self.norm() 
+        return self / self.norm()
