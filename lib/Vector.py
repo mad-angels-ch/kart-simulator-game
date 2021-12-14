@@ -13,12 +13,16 @@ class Vector:
     _x: float
     _y: float
 
+    _norm: float
+    _normUptodate: bool
+
     def fromPoints(point1: Point, point2: Point) -> "Vector":
         return Vector([point2[i] - point1[i] for i in range(len(point1))])
 
     def __init__(self, components: Tuple[float, float] = (0, 0)) -> None:
         self._x = components[0]
         self._y = components[1]
+        self._normUptodate = False
 
     def __len__(self) -> int:
         return 2
@@ -46,7 +50,7 @@ class Vector:
 
     def __pow__(self, other: int) -> float:
         if other != 2:
-            raise ValueError()
+            raise ValueError("Only **2 is supported")
         return self.scalarProduct(self)
 
     def __eq__(self, o: "Vector") -> bool:
@@ -77,10 +81,15 @@ class Vector:
         elif index == 1 or index == "y":
             self._y = value
         else:
-            raise ValueError()
+            raise ValueError()        
+        self._normUptodate = False
 
     def norm(self) -> None:
-        return math.hypot(*self)
+        """Retourne la norme du vecteur"""
+        if not self._normUptodate:
+            self._norm = math.hypot(*self)
+            self._normUptodate = True
+        return self._norm
 
     def set_norm(self, newNorm: float) -> None:
         try:
@@ -90,6 +99,7 @@ class Vector:
         else:
             for i in range(len(self)):
                 self[i] *= factor
+            self._norm *= factor
 
     def scalarProduct(self, other: "Vector") -> float:
         return self._x * other._x + self._y * other._y
@@ -116,6 +126,7 @@ class Vector:
             self._x * cosAngle - self._y * sinAngle,
             self._x * sinAngle + self._y * cosAngle,
         )
+        self._normUptodate = False
 
     def rotate(self, angle: float) -> None:
         cos = math.cos(angle)
@@ -129,10 +140,12 @@ class Vector:
     def scaleX(self, factor: float) -> None:
         "Multiplie la composante du vecteur par le facteur donné"
         self._x *= factor
+        self._normUptodate = False
 
     def scaleY(self, factor: float) -> None:
         "Multiplie la composante du vecteur par le facteur donné"
         self._y *= factor
+        self._normUptodate = False
 
     def x(self) -> float:
         return self._x
