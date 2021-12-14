@@ -88,13 +88,14 @@ class CollisionsZone:
                 if m2:
                     speedsAfter[current][1] = 2 * (m1 * v1 + m2 * v2) / (m1 + m2) - v1
                 else:
-                    # if lastCollidedObjects[0].vectorialMotion().speed().norm() and lastCollidedObjects[0].mass():
-                    #     tan = lastCollidedObjects[0].collisionPointAndTangent(lastCollidedObjects[1])[1].unitVector()
-                    #     cos = lastCollidedObjects[0].vectorialMotion().speed().CosAngleBetweenTwoVectors(tan)
-                    #     new_norm = lastCollidedObjects[0].vectorialMotion().speed().norm()
-                    #     new_speed = tan*cos*new_norm
-                    #     lastCollidedObjects[0].set_vectorialMotionSpeed(newSpeed=new_speed)
-                    speedsAfter[current][1] = 2 * v2 - v1
+                    if lastCollidedObjects[0].vectorialMotion().speed().norm() and lastCollidedObjects[0].mass():
+                        tan = lastCollidedObjects[0].collisionPointAndTangent(lastCollidedObjects[1])[1].unitVector()
+                        cos = lastCollidedObjects[0].vectorialMotion().speed().CosAngleBetweenTwoVectors(tan)
+                        new_norm = lastCollidedObjects[0].vectorialMotion().speed().norm()
+                        new_speed = tan*cos*new_norm
+                        lastCollidedObjects[0].set_vectorialMotionSpeed(newSpeed=new_speed)
+                        speedsAfter[current] = new_speed
+                    # speedsAfter[current][1] = 2 * v2 - v1
             else:
                 if m2:
                     speedsAfter[current][1] = v1
