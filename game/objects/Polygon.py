@@ -185,8 +185,8 @@ class Polygon(Object):
             return False
 
         elif isinstance(other, Polygon):
-            newSelf = lib.Polygon(self.vertices(timeInterval))
-            newOther = lib.Polygon(other.vertices(timeInterval))
+            newSelf = lib.Polygon(*self.vertices(timeInterval))
+            newOther = lib.Polygon(*other.vertices(timeInterval))
             if newSelf.collides(newOther):
                 return True
 
