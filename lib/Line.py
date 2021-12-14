@@ -64,13 +64,13 @@ class Line:
         if math.isclose(denominator, 0, abs_tol=Line.precision):
             return
 
-        otherEnd = Point(*other.point())
+        otherEnd = Point(other.point())
         otherEnd.translate(other.vector())
         selfCoefficient = (
             (self.point()[0] - other.point()[0]) * (other.point()[1] - otherEnd[1])
             - (self.point()[1] - other.point()[1]) * (other.point()[0] - otherEnd[0])
         ) / denominator
-        selfEnd = Point(*self.point())
+        selfEnd = Point(self.point())
         selfEnd.translate(self.vector())
         otherCoefficient = (
             (self.point()[0] - other.point()[0]) * (self.point()[1] - selfEnd[1])
