@@ -10,14 +10,14 @@ class Point:
 class Vector:
     precision = 1e-6
 
+    def fromPoints(point1: Point, point2: Point) -> "Vector":
+        return Vector([point2[i] - point1[i] for i in range(len(point1))])
+
     _x: float
     _y: float
 
     _norm: float
     _normUptodate: bool
-
-    def fromPoints(point1: Point, point2: Point) -> "Vector":
-        return Vector([point2[i] - point1[i] for i in range(len(point1))])
 
     def __init__(self, components: Tuple[float, float] = (0, 0)) -> None:
         self._x = components[0]
@@ -54,8 +54,8 @@ class Vector:
         return self.scalarProduct(self)
 
     def __eq__(self, o: "Vector") -> bool:
-        return math.isclose(self._x, o._x, abs_tol=Vector.precision) and math.isclose(
-            self._y, o._y, abs_tol=Vector.precision
+        return math.isclose(self._x, o._x, abs_tol=self.precision) and math.isclose(
+            self._y, o._y, abs_tol=self.precision
         )
 
     def __ne__(self, o: object) -> bool:
@@ -105,7 +105,7 @@ class Vector:
         return self._x * other._x + self._y * other._y
 
     def isNormal(self, other: "Vector") -> bool:
-        return math.isclose(self.scalarProduct(other), 0, abs_tol=Vector.precision)
+        return math.isclose(self.scalarProduct(other), 0, abs_tol=self.precision)
 
     def isCollinear(self, other: "Vector") -> bool:
         return self.normalVector().isNormal(other)
