@@ -26,7 +26,7 @@ class CollisionsZone:
         ]
         current = -1
         # ne pas tester le dernier objet contre lui-même
-        while -current < len(objs) and objs[current].isStatic():
+        while -current < len(objs) and not objs[current].isStatic():
             tested = 0
             while tested < len(objs) - 1:
                 if (
