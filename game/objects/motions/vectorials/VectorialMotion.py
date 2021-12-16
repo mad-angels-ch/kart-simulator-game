@@ -27,7 +27,8 @@ class VectorialMotion:
         return lib.Vector()
 
     def set_acceleration(self, newAcceleration: lib.Vector) -> None:
-        raise RuntimeError("You can't change the vectorial acceleration of this object")
+        self.set_speed(newSpeed=self.speed()+newAcceleration)
+        # raise RuntimeError("You can't change the vectorial acceleration of this object")
 
     def updateIsStatic(self) -> None:
         if self._speed:

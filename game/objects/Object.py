@@ -170,7 +170,7 @@ class Object:
         Attention, utilisation avancée uniquement
         Retourne l'accélération vectoriel de l'objet, sans tenir compte de sa rotation.
         """
-        self._vectorialMotion.acceleration(deltaTime=deltaTime)
+        return self._vectorialMotion.acceleration(deltaTime=deltaTime)
 
     def set_vectorialMotionAcceleration(self, newAcceleration: lib.Vector) -> None:
         """Attention, utilisation avancée uniquement
