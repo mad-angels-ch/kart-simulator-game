@@ -68,7 +68,7 @@ class ObjectFactory:
                     scaleY *= -1
 
                 if objectType in ["Circle"]:
-                    kwds["radius"] = obj["radius"]
+                    kwds["radius"] = obj["radius"] * min(scaleX, scaleY)
 
                 if objectType in ["Polygon", "Flipper", "Kart"]:
                     kwds["vertices"] = [
