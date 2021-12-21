@@ -29,10 +29,10 @@ class CollisionsZone:
         while -current < len(objs) and not objs[current].isStatic():
             tested = 0
             while tested < len(objs):
-                if ( objs[current] != objs[tested] and
-                    objs[current]
-                    .potentialCollisionZone(timeInterval)
-                    .collides(objs[tested].potentialCollisionZone(timeInterval))
+                if objs[current] != objs[tested] and objs[
+                    current
+                ].potentialCollisionZone(timeInterval).collides(
+                    objs[tested].potentialCollisionZone(timeInterval)
                 ):
                     obj = objs.pop(tested)
                     zones.append(CollisionsZone(timeInterval, objs.pop(current), obj))
@@ -44,9 +44,7 @@ class CollisionsZone:
                     # pas besoin d'incrémenter <tested> car l'objet a été supprimé
                     # ajouter maintenant le reste des objets à la zone en suivant la même logique
                     while tested < len(objs):
-                        if zones[-1].collides(
-                            objs[tested].potentialCollisionZone(timeInterval)
-                        ):
+                        if zones[-1].collides(objs[tested]):
                             obj = objs.pop(tested)
                             zones[-1] += obj
                             if not obj.isStatic():
@@ -76,7 +74,7 @@ class CollisionsZone:
         for obj in objectsInside[1:]:
             self += obj
 
-    def __iadd__(self, objectToAdd: objects.Object) -> None:
+    def __iadd__(self, objectToAdd: objects.Object) -> "CollisionsZone":
         """Ajoute un objet à la zone et redimentionne celle-ci si nécessaire"""
         self._objects.append(objectToAdd)
         self._dimension.resizeToInclude(
@@ -86,6 +84,7 @@ class CollisionsZone:
             self._movingDimension.resizeToInclude(
                 objectToAdd.potentialCollisionZone(self._timeInterval)
             )
+        return self
 
     def collides(self, objectToCheck: objects.Object) -> bool:
         """Retourne vrai si l'objet donné en paramètre se trouve dans la zone."""
