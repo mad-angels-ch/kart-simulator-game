@@ -30,8 +30,8 @@ class AlignedRectangle(Rectangle):
     ) -> None:
         if not leftBottom:
             if center:
-                center.translate((-width / 2, -height / 2))
-                leftBottom = center
+                leftBottom = Point(center)
+                leftBottom.translate((-width / 2, -height / 2))
             else:
                 raise ValueError("Neither leftBottom or center has been given")
         self._width = width

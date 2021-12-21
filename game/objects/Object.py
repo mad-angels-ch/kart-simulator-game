@@ -55,6 +55,8 @@ class Object:
         return self._angle + self.relativeAngle(deltaTime)
 
     def center(self, deltaTime: float = 0) -> lib.Point:
+        """NE PAS MODIFIER
+        Retourne le centre de l'objet."""
         if not deltaTime:
             return self._center
 
