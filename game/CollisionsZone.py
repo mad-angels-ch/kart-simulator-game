@@ -26,10 +26,7 @@ class CollisionsZone:
         ]
         current = -1
         # ne pas tester le dernier objet contre lui-même
-        
-        # while -current < len(objs) and not objs[current].isStatic():
-        while -current < len(objs):
-    
+        while -current < len(objs) and not objs[current].isStatic():
             tested = 0
             while tested < len(objs) + current:
                 if (
@@ -37,8 +34,7 @@ class CollisionsZone:
                     .potentialCollisionZone(timeInterval)
                     .collides(objs[tested].potentialCollisionZone(timeInterval))
                 ):
-                    # obj = objs.pop(tested)
-                    obj=objs[tested]
+                    obj = objs.pop(tested)
                     zones.append(CollisionsZone(timeInterval, objs.pop(current), obj))
                     # nous avons supprimé l'objet mettre <current> à jour (car c'est l'index par rapport à la fin de la liste)
                     current += 1
@@ -49,8 +45,7 @@ class CollisionsZone:
                     # ajouter maintenant le reste des objets à la zone en suivant la même logique
                     while tested < len(objs):
                         if zones[-1].collides(objs[tested]):
-                            # obj = objs.pop(tested)
-                            obj=objs[tested]
+                            obj = objs.pop(tested)
                             zones[-1] += obj
                             if not obj.isStatic():
                                 tested = 0
@@ -71,8 +66,8 @@ class CollisionsZone:
         self._timeInterval = timeInterval
         if len(objectsInside) < 2:
             raise SyntaxError("A collision zone must contain at least 2 objects")
-        # elif objectsInside[0].isStatic():
-        #     raise ValueError("The first object can't be static")
+        elif objectsInside[0].isStatic():
+            raise ValueError("The first object can't be static")
         self._objects = [objectsInside[0]]
         self._dimension = objectsInside[0].potentialCollisionZone(timeInterval).copy()
         self._movingDimension = self._dimension.copy()
