@@ -28,11 +28,11 @@ class CollisionsZone:
         # ne pas tester le dernier objet contre lui-même
         while -current < len(objs) and not objs[current].isStatic():
             tested = 0
-            while tested < len(objs):
-                if objs[current] != objs[tested] and objs[
-                    current
-                ].potentialCollisionZone(timeInterval).collides(
-                    objs[tested].potentialCollisionZone(timeInterval)
+            while tested < len(objs) + current:
+                if (
+                    objs[current]
+                    .potentialCollisionZone(timeInterval)
+                    .collides(objs[tested].potentialCollisionZone(timeInterval))
                 ):
                     obj = objs.pop(tested)
                     zones.append(CollisionsZone(timeInterval, objs.pop(current), obj))
