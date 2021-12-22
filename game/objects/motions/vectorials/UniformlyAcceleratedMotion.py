@@ -32,4 +32,4 @@ class UniformlyAcceleratedMotion(VectorialMotion):
         self.updateIsStatic()
 
     def updateIsStatic(self) -> None:
-        self._static = bool(self.speed() and self.acceleration())
+        self._static = not (self.speed() or self.acceleration())
