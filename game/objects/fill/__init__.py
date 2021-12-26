@@ -1,1 +1,1 @@
-from .FillFactory import createFill
+from .FillFactory import createFill, Fill
