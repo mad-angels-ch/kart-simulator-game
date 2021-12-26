@@ -9,6 +9,7 @@ from .Polygon import Polygon
 from .Flipper import Flipper
 from .Kart import Kart
 from . import motions
+from .fill import createFill
 
 
 class ObjectFactory:
@@ -50,17 +51,11 @@ class ObjectFactory:
                     "name": obj["lge"].get("name"),
                     "center": lib.Point((obj["left"], obj["top"])),
                     "angle": radians(obj["angle"]),
-                    "fill": obj["fill"],
+                    "fill": createFill.fromFabric(obj["fill"]),
                     "opacity": obj["opacity"],
                     "friction": obj["lge"]["friction"],
                     "mass": obj["lge"]["mass"],
                 }
-                if kwds["fill"][0] != "#":
-                    f = kwds["fill"][4:-1].split(",")
-                    l = list()
-                    for i in f:
-                        l.append(int(i))
-                    kwds["fill"] = "#%02x%02x%02x" % (l[0], l[1], l[2])
                 scaleX, scaleY = obj["scaleX"], obj["scaleY"]
                 if obj["flipX"]:
                     scaleX *= -1

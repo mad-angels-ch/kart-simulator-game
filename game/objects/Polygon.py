@@ -172,7 +172,7 @@ class Polygon(Object):
             return False
 
         elif isinstance(other, Circle):
-            # if self.fill() == "#ff00ff":
+            # if self.fill().value() == "#ff00ff":
             #     print("here")
 
             newSelf = lib.Polygon(*self.vertices(timeInterval))
