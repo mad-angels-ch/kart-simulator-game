@@ -27,6 +27,7 @@ class Kart(Polygon):
         <acceleration> fonctionnne de la manière suivante:
         <0 -> ralentir (freins / reculer), 0 -> frottements seulement, >0 -> accélérer"""
         self._accelerationsQueue.append(acceleration)
+            
 
     def addTurning(self, turning: int) -> None:
         """Demande à change la "direction" du kart".
@@ -40,23 +41,18 @@ class Kart(Polygon):
         return self._isTurning
 
     def updateReferences(self, deltaTime: float) -> None:
-        self._aaa = self._angle/math.pi*180
         super().updateReferences(deltaTime)
         while len(self._accelerationsQueue):
             acceleration = self._accelerationsQueue.pop(0)
             if acceleration > 0:
                 vx=-math.sin(self.angle())*self._acceleration.x()
                 vy=math.cos(self.angle())*self._acceleration.y()
-                v=lib.Vector()
-                v._x = vx
-                v._y=vy
+                v=lib.Vector((vx,vy))
                 self.set_vectorialMotionAcceleration(v)
             elif acceleration < 0:
                 vx=math.sin(self.angle())*self._acceleration.x()
                 vy=-math.cos(self.angle())*self._acceleration.y()
-                v=lib.Vector()
-                v._x = vx
-                v._y=vy
+                v=lib.Vector((vx,vy))
                 self.set_vectorialMotionAcceleration(v)
             else:
                 self.set_vectorialMotionAcceleration(lib.Vector())
