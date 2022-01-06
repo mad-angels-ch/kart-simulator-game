@@ -43,6 +43,10 @@ class Object:
         self._friction = kwargs.get("friction", 0)
         self._potentialCollisionZoneUpToDate = False
 
+    def onEventsRegistered(self, deltaTime: float) -> None:
+        """Méthode à surcharger"""
+        pass
+
     def formID(self) -> int:
         return self._formID
 
@@ -202,9 +206,6 @@ class Object:
         """Retourne une approximation du point par lequel les deux objets se touchent
         ainsi qu'une approximation d'un vecteur directeur de la tangente passant par ce point"""
         raise RuntimeError("This method should be overwritten")
-
-    def onCollision(self, other: "Object") -> None:
-        """Méthode à surcharger, lancée lors des collisions"""
 
     # def xyz(self, other: "Object", deltaTime: float = 0) -> bool:
     #     point, tangent = self.collisionPointAndTangent(other)
