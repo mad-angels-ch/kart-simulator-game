@@ -57,13 +57,10 @@ class Kart(Polygon):
         super().set_angularMotionSpeed(newSpeed)
 
     def set_vectorialMotionSpeed(self, newSpeed: lib.Vector) -> None:
-        self._moving = 0
-        self._turning = 0
         super().set_vectorialMotionSpeed(newSpeed)
 
-    def updateReferences(self, deltaTime: float) -> None:
+    def onEventsRegistered(self, deltaTime: float) -> None:
         self.set_angularMotionSpeed(self._turning * self.turningSpeed)
         acceleration = lib.Vector((self._moving * self.movingSpeed, 0))
         acceleration.rotate(self.angle())
-        super().set_vectorialMotionSpeed(acceleration)
-        super().updateReferences(deltaTime)
+        self.set_vectorialMotionSpeed(acceleration)
