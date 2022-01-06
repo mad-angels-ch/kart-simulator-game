@@ -34,7 +34,7 @@ class Game:
             elapsedTime = 1 / 60
 
         # 1: traiter les events
-        self.handleEvents()
+        self.handleEvents(elapsedTime=elapsedTime)
 
         # 2: appliquer la physique sur les objects
         self.simulatePhysics(elapsedTime)
@@ -42,13 +42,15 @@ class Game:
         # 3: appeler output
         self.callOutput()
 
-    def handleEvents(self) -> None:
+    def handleEvents(self, elapsedTime: float) -> None:
         for event in self._events:
             if isinstance(event, events.EventOnTarget):
                 event.apply(self._objects)
                 self._events.remove(event)
             else:
                 raise ValueError(f"{event} is not from a supported event type")
+        for obj in self._objects:
+            obj.onEventsRegistered(deltaTime=elapsedTime)
 
     def simulatePhysics(self, elapsedTime: float) -> None:
         collisionsZone = CollisionsZone(elapsedTime)

@@ -17,9 +17,5 @@ class FlipperEvent(EventOnTarget):
         super().__init__(targetFormID=targetFormID, targetsName=targetsName)
         self._upward = upward
 
-    def upward(self) -> bool:
-        """Retourne True si le flipper doit monter ou False s'il doit descendre"""
-        return self._upward
-
     def applyOn(self, target: Flipper) -> None:
-        target.addMovement(self.upward())
+        target.addMovement(self._upward)

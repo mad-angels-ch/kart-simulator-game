@@ -43,6 +43,10 @@ class Object:
         self._friction = kwargs.get("friction", 0)
         self._potentialCollisionZoneUpToDate = False
 
+    def onEventsRegistered(self, deltaTime: float) -> None:
+        """Méthode à surcharger"""
+        pass
+
     def formID(self) -> int:
         return self._formID
 
