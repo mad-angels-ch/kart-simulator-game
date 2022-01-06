@@ -1,3 +1,4 @@
+import math
 from typing import List
 import lib
 
@@ -6,7 +7,8 @@ from .motions import angulars as angularMotions, vectorials as vectorialMotions
 
 
 class Kart(Polygon):
-    _acceleration = lib.Vector((0, 10))
+    forwardAcceleration = 10
+    backwardAcceleration = 10
     _turning = 1
 
     _accelerationsQueue: List[int]
@@ -15,7 +17,7 @@ class Kart(Polygon):
 
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
-        self.vectorialMotion = vectorialMotions.UniformlyAcceleratedMotion()
+        self._vectorialMotion = vectorialMotions.UniformlyAcceleratedMotion()
         self._accelerationsQueue = []
         self._turningQueue = []
         self._isTurning = 0
@@ -42,14 +44,36 @@ class Kart(Polygon):
         while len(self._accelerationsQueue):
             acceleration = self._accelerationsQueue.pop(0)
             if acceleration > 0:
-                self.set_vectorialMotionAcceleration(self._acceleration)
+                acceleration = lib.Vector((0, self.forwardAcceleration))
+                acceleration.rotate(self.angle())
+                self.set_vectorialMotionAcceleration(acceleration)
+                # vx = -math.sin(self.angle()) * self._acceleration.x()
+                # vy = math.cos(self.angle()) * self._acceleration.y()
+                # v = lib.Vector((vx, vy))
+                # self.set_vectorialMotionAcceleration(v)
             elif acceleration < 0:
-                self.set_vectorialMotionAcceleration(-self._acceleration)
+                acceleration = lib.Vector((0, -self.backwardAcceleration))
+                acceleration.rotate(self.angle())
+                self.set_vectorialMotionAcceleration(acceleration)
+                # vx = math.sin(self.angle()) * self._acceleration.x()
+                # vy = -math.cos(self.angle()) * self._acceleration.y()
+                # v = lib.Vector((vx, vy))
+                # self.set_vectorialMotionAcceleration(v)
             else:
                 self.set_vectorialMotionAcceleration(lib.Vector())
         while len(self._turningQueue):
             self._isTurning = self._turningQueue.pop(0)
-        if self._isTurning < 0:
-            self.vectorialMotionAcceleration().rotate(-self._turning * deltaTime)
-        elif self._isTurning > 0:
-            self.vectorialMotionAcceleration().rotate(self._turning * deltaTime)
+            if self._isTurning < 0:
+                self.vectorialMotionSpeed().rotate(-self._turning * deltaTime)
+                speed = lib.Vector(self.vectorialMotionSpeed())
+                speed.rotate(-self._turning * deltaTime)
+                self.set_vectorialMotionSpeed(speed)
+                self.rotate(-self._turning * deltaTime)
+            elif self._isTurning > 0:
+                self.vectorialMotionSpeed().rotate(-self._turning * deltaTime)
+                speed = lib.Vector(self.vectorialMotionSpeed())
+                speed.rotate(self._turning * deltaTime)
+                self.set_vectorialMotionSpeed(speed)
+                self.rotate(self._turning * deltaTime)
+                # self.vectorialMotionSpeed().rotate(self._turning * deltaTime)
+                # self.rotate(self._turning * deltaTime)
