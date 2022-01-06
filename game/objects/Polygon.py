@@ -166,8 +166,7 @@ class Polygon(Object):
             #     new_norm = self.vectorialMotion().speed().norm()
             #     new_speed = tan*cos*new_norm
             #     self.set_vectorialMotionSpeed(newSpeed=new_speed)
-        
-            
+
         if not (self.mass() or other.mass()):
             return False
 
@@ -244,10 +243,18 @@ class Polygon(Object):
                                 nearestEdge = edge
                 return smallestSquareDistance, nearestVertex, nearestEdge.vector()
 
-            nearests = (
-                findNearest(self.edges(), other.vertices()),
-                findNearest(other.edges(), self.vertices()),
-            )
+            try:
+                nearest1 = findNearest(self.edges(), other.vertices())
+            except UnboundLocalError:
+                nearest2 = findNearest(other.edges(), self.vertices())
+                return nearest2[1], nearest2[2]
+
+            try:
+                nearest2 = findNearest(other.edges(), self.vertices())
+            except UnboundLocalError:
+                return nearest1[1], nearest1[2]
+
+            nearests = (nearest1, nearest2)
             nearest = 0
             if nearests[1][0] < nearests[0][0]:
                 nearest = 1
