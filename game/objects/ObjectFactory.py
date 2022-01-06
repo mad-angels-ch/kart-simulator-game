@@ -1,5 +1,6 @@
 from math import radians
 from typing import Any, List
+from game.objects.FinishLine import FinishLine
 
 import lib
 
@@ -28,6 +29,8 @@ class ObjectFactory:
             return Flipper(**kwds)
         elif objectType == "Kart":
             return Kart(**kwds)
+        elif objectType == "FinishLine":
+            return FinishLine(**kwds)    
         else:
             raise ValueError(f"{objectType} is not valid")
 
@@ -46,6 +49,8 @@ class ObjectFactory:
                     objectType = "Flipper"
                 elif objectType in ["LGEKartPlaceHolder"]:
                     objectType = "Kart"
+                elif objectType in ["LGEFinishLine"]:
+                    objectType = "FinishLine"
 
                 kwds = {
                     "name": obj["lge"].get("name"),
@@ -65,7 +70,7 @@ class ObjectFactory:
                 if objectType in ["Circle"]:
                     kwds["radius"] = obj["radius"] * min(scaleX, scaleY)
 
-                if objectType in ["Polygon", "Flipper", "Kart"]:
+                if objectType in ["Polygon", "Flipper", "Kart", "FinishLine"]:
                     kwds["vertices"] = [
                         lib.Point((point["x"], point["y"])) for point in obj["points"]
                     ]

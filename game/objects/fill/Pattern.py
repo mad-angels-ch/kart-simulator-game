@@ -6,12 +6,16 @@ class Pattern(Fill):
     _repeat: str
     _source: str
 
-    def __init__(self, repeat: str, sourceURL: str) -> None:
+    def __init__(self, type: str, repeat: str, sourceURL: str) -> None:
+        self._type = type
         self._repeat = repeat
         self._source = sourceURL
 
     def type(self) -> str:
-        return "Pattern"
+        if self._type != "Pattern":
+            raise "Le pattern attendu est ""Pattern"", or celui reçu est:" + self._type
+        else:
+            return self._type
 
     def repeat(self) -> str:
         """Retourne la méthode de remplissage du pattern"""

@@ -255,3 +255,12 @@ class Polygon(Object):
 
         else:
             return other.collisionPointAndTangent(self)
+
+    def verticesBeforeRotation(self):
+        listOfVerticesBeforeRotation = []
+        for vertex in self._vertices:
+            vertexPoint = lib.Point(vertex)
+            vertexPoint.translate(lib.Vector(self.center()))
+            listOfVerticesBeforeRotation.append((vertexPoint[0],vertexPoint[1]))
+            
+        return listOfVerticesBeforeRotation

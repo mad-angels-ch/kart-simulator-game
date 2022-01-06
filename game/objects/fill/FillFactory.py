@@ -20,6 +20,7 @@ class FillFactory:
         kwds = {}
         if isinstance(jsonObject, str):
             kwds["type"] = "Hex"
+            kwds["hexColor"] = jsonObject
             if jsonObject[0] != "#":
                 f = jsonObject[4:-1].split(",")
                 l = list()
