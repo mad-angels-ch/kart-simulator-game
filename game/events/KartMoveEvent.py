@@ -1,22 +1,21 @@
-from .EventOnTarget import EventOnTarget, Object
+from .EventOnTarget import EventOnTarget
 
 
 class Kart:
     pass
 
 
-class KartTurningEvent(EventOnTarget):
-    # <0 -> droite, 0 -> tout droit, >0 -> gauche
-    _turning: int
+class KartMoveEvent(EventOnTarget):
+    _direction: int
 
     def __init__(
         self,
-        turning: "int",
+        direction: int,
         targetFormID: "int | None" = None,
         targetsName: "str | None" = None,
     ) -> None:
         super().__init__(targetFormID=targetFormID, targetsName=targetsName)
-        self._turning = turning
+        self._direction = direction
 
     def applyOn(self, target: Kart) -> None:
-        target.addTurning(self._turning)
+        target.request_move(self._direction)

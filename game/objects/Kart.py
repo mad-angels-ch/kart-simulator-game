@@ -7,83 +7,59 @@ from .motions import angulars as angularMotions, vectorials as vectorialMotions
 
 
 class Kart(Polygon):
-    acceleration = 10
-    decceleration = -30
-    lossesDecceleration = -2
-    turning = 1
+    """CREER AVEC LA FACTORY\n
+    Classe des karts.
+    Ceux-ci peuvent être contrôlés à l'aide des méthodes request_move() et request_turn().
+    Le sens du kart est indiqué par le vecteur (1, 0) lorsque l'angle du premier vaut 0.
+    Les propriétés <movingSpeed> et <turningSpeed> peuvent être modifiées et représentent les vitesses maximales du kart."""
 
-    _accelerationsQueue: List[int]
-    _turningQueue: List[int]
+    # vitesse de déplacement, m/s
+    movingSpeed: float = 30
+    # vitesse de rotation, rad/s
+    turningSpeed: float = 1
 
-    # 3 -> accelerating forward, 2 -> slowly deccelerating forward, 1 -> brake (while forward)
-    # 3 -> accelerating backward, 2 -> slowly deccelerating backward, 1 -> brake (while backward)
-    _speedState: int
+    # -1 = en arrière, 0 = arrêté, 1 = en avant
+    _moving: int
+
+    # -1 = à droite, 0 = tout droit, 1 = à gauche
+    _turning: int
 
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
-        self._vectorialMotion = vectorialMotions.UniformlyAcceleratedMotion()
-        self._accelerationsQueue = []
-        self._turningQueue = []
-        self._isTurning = 0
-        self._speedState = 0
+        self._vectorialMotion = vectorialMotions.VectorialMotion()
+        self._moving = 0
+        self._turning = 0
 
-    def addAcceleration(self, acceleration: int) -> None:
-        """Demande à change "l'accélération" du kart.
-        <acceleration> fonctionnne de la manière suivante:
-        -1 -> ralentir (freins / reculer), 0 -> frottements seulement, 1 -> accélérer"""
-        self._accelerationsQueue.append(acceleration)
+    def request_move(self, direction: int) -> None:
+        """Met le kart en mouvement
+        -1 = en arrière, 0 = arrêté, 1 = en avant"""
+        self._moving = direction
 
-    def addTurning(self, turning: int) -> None:
-        """Demande à change la "direction" du kart".
-        <turning> fonctionnne de la manière suivante:
-        -1 -> droite, 0 -> tout droit, 1 -> gauche"""
-        # self._turningQueue.append(turning)
+    def request_turn(self, direction: int) -> None:
+        """Fait tourner le kart
+        -1 = à droite, 0 = tout droit, 1 = à gauche"""
+        self._turning = direction
+
+    def set_center(self, newCenter: lib.Point) -> None:
+        super().set_center(newCenter)
+
+    def translate(self, vector: lib.Vector) -> None:
+        super().translate(vector)
+
+    def set_angle(self, newAngle: float) -> None:
+        super().set_angle(newAngle)
+
+    def rotate(self, angle: float) -> None:
+        super().rotate(angle)
+
+    def set_angularMotionSpeed(self, newSpeed: float) -> None:
+        super().set_angularMotionSpeed(newSpeed)
 
     def set_vectorialMotionSpeed(self, newSpeed: lib.Vector) -> None:
         super().set_vectorialMotionSpeed(newSpeed)
-        self.update()
-
-    def update(self) -> None:
-        self._speedState = 2
-        while len(self._accelerationsQueue):
-            acceleration = self._accelerationsQueue.pop(0)
-            if acceleration > 0:
-                self._speedState = 3
-            elif acceleration < 0:
-                self._speedState = 1
-
-        diff = abs(self.angle() - self.vectorialMotionSpeed().direction()) % (
-            2 * math.pi
-        )
-        print(diff)
-        if diff <= math.pi / 2 or diff >= 3 * math.pi / 2:
-            # print("le kart avance")
-            # le kart avance
-            pass
-
-        else:
-            # print("le kart recule")
-            # le kart recule
-            self._speedState -= 4
-
-        if self._speedState:
-            state = abs(self._speedState)
-            if state == 3:
-                acceleration = self.acceleration
-            elif state == 2:
-                acceleration = self.lossesDecceleration
-            else:
-                acceleration = self.decceleration
-
-            if state < 0:
-                acceleration *= -1
-
-            accelerationV = lib.Vector((acceleration, 0))
-            accelerationV.rotate(self.angle())
-            self.set_vectorialMotionAcceleration(accelerationV)
-        else:
-            self.set_vectorialMotionAcceleration(lib.Vector())
 
     def updateReferences(self, deltaTime: float) -> None:
+        acceleration = lib.Vector((self.movingSpeed * self._moving, 0))
+        acceleration.rotate(self.angle())
+        self.set_vectorialMotionSpeed(acceleration)
         super().updateReferences(deltaTime)
-        self.update()
