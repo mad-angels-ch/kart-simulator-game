@@ -26,6 +26,7 @@ class Kart(Polygon):
 
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
+        self._angularMotion.set_center(self.center())
         self._vectorialMotion = vectorialMotions.VectorialMotion()
         self._moving = 0
         self._turning = 0
@@ -56,10 +57,13 @@ class Kart(Polygon):
         super().set_angularMotionSpeed(newSpeed)
 
     def set_vectorialMotionSpeed(self, newSpeed: lib.Vector) -> None:
+        self._moving = 0
+        self._turning = 0
         super().set_vectorialMotionSpeed(newSpeed)
 
     def updateReferences(self, deltaTime: float) -> None:
-        acceleration = lib.Vector((self.movingSpeed * self._moving, 0))
+        self.set_angularMotionSpeed(self._turning * self.turningSpeed)
+        acceleration = lib.Vector((self._moving * self.movingSpeed, 0))
         acceleration.rotate(self.angle())
-        self.set_vectorialMotionSpeed(acceleration)
+        super().set_vectorialMotionSpeed(acceleration)
         super().updateReferences(deltaTime)
