@@ -5,7 +5,8 @@ from .Segment import Segment
 
 
 class Shape:
-    def translate(self, vector: Vector) -> None:
+    def copy(self) -> "Shape":
+        """Retourne une copie"""
         pass
 
     def collides(self, other: "Shape") -> bool:

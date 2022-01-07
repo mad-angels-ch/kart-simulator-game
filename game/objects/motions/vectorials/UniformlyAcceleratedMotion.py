@@ -11,9 +11,8 @@ class UniformlyAcceleratedMotion(VectorialMotion):
         initialSpeed: lib.Vector = lib.Vector((0, 0)),
         acceleration: lib.Vector = lib.Vector((0, 0)),
     ) -> None:
-        super().__init__(initialSpeed)
         self._acceleration = acceleration
-        self.updateIsStatic()
+        super().__init__(initialSpeed)
 
     def updateReferences(self, deltaTime: float) -> None:
         self._speed = self.speed(deltaTime)
@@ -31,3 +30,6 @@ class UniformlyAcceleratedMotion(VectorialMotion):
     def set_acceleration(self, newAcceleration: lib.Vector) -> None:
         self._acceleration = newAcceleration
         self.updateIsStatic()
+
+    def updateIsStatic(self) -> None:
+        self._static = not (self.speed() or self.acceleration())

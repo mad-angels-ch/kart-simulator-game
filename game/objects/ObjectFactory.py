@@ -1,5 +1,6 @@
 from math import radians
 from typing import Any, List
+from game.objects.FinishLine import FinishLine
 
 import lib
 
@@ -8,6 +9,7 @@ from .Circle import Circle
 from .Polygon import Polygon
 from .Flipper import Flipper
 from .Kart import Kart
+from .FinishLine import FinishLine
 from . import motions
 
 
@@ -27,6 +29,8 @@ class ObjectFactory:
             return Flipper(**kwds)
         elif objectType == "Kart":
             return Kart(**kwds)
+        elif objectType == "FinishLine":
+            return FinishLine(**kwds)
         else:
             raise ValueError(f"{objectType} is not valid")
 
@@ -45,6 +49,8 @@ class ObjectFactory:
                     objectType = "Flipper"
                 elif objectType in ["LGEKartPlaceHolder"]:
                     objectType = "Kart"
+                elif objectType in ["LGEFinishLine"]:
+                    objectType = "FinishLine"
 
                 kwds = {
                     "name": obj["lge"].get("name"),
@@ -55,13 +61,16 @@ class ObjectFactory:
                     "friction": obj["lge"]["friction"],
                     "mass": obj["lge"]["mass"],
                 }
-                if kwds["fill"][0] != "#":
-                    f = kwds["fill"][4:-1].split(",")
-                    l = list()
-                    for i in f:
-                        l.append(int(i))
-                    kwds["fill"] = "#%02x%02x%02x" % (l[0], l[1], l[2])
-                scaleX, scaleY = obj["scaleX"], obj["scaleY"]
+                if objectType != "FinishLine":
+                    if kwds["fill"][0] != "#":
+                        f = kwds["fill"][4:-1].split(",")
+                        l = list()
+                        for i in f:
+                            l.append(int(i))
+                        kwds["fill"] = "#%02x%02x%02x" % (l[0], l[1], l[2])
+                    scaleX, scaleY = obj["scaleX"], obj["scaleY"]
+                # elif objectType == "FinishLine":
+                #     kwds["fill"] = "repeat"
                 if obj["flipX"]:
                     scaleX *= -1
                 if obj["flipY"]:
@@ -70,7 +79,7 @@ class ObjectFactory:
                 if objectType in ["Circle"]:
                     kwds["radius"] = obj["radius"] * min(scaleX, scaleY)
 
-                if objectType in ["Polygon", "Flipper", "Kart"]:
+                if objectType in ["Polygon", "Flipper", "Kart", "FinishLine"]:
                     kwds["vertices"] = [
                         lib.Point((point["x"], point["y"])) for point in obj["points"]
                     ]
@@ -108,6 +117,7 @@ class ObjectFactory:
                     ] = motions.vectorials.createVectorialMotion.fromFabric(
                         obj["lge"]["motion"]["vector"]
                     )
+                
 
                 newObjects.append(self(objectType, **kwds))
 
