@@ -121,7 +121,6 @@ class CollisionsZone:
             collidedObjects = getCollidedObjects(self._objects)
 
             if collidedObjects:
-                print(collidedObjects[0].collides(collidedObjects[1], 0))
                 lastCollidedObjects = collidedObjects
             else:
                 for obj in self._objects:
@@ -178,7 +177,6 @@ class CollisionsZone:
 
             other = current
 
-        print("collision", speedsAfter[0].x())
         return checkedInterval
 
     def resolve(self) -> None:
