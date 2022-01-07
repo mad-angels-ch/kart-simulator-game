@@ -42,9 +42,7 @@ class Kart(Polygon):
         self._turning = direction
 
     def onEventsRegistered(self, deltaTime: float) -> None:
-        if self._turning:
-            self.set_angularMotionSpeed(self._turning * self.turningSpeed)
-        if self._moving:
-            targetSpeed = lib.Vector((self._moving * self.movingSpeed, 0))
-            targetSpeed.rotate(self.angle())
-            self.set_vectorialMotionSpeed(targetSpeed)
+        self.set_angularMotionSpeed(self._turning * self.turningSpeed)
+        targetSpeed = lib.Vector((self._moving * self.movingSpeed, 0))
+        targetSpeed.rotate(self.angle())
+        self.set_vectorialMotionSpeed(targetSpeed)
