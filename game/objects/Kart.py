@@ -12,14 +12,15 @@ class Kart(Polygon):
     Classe des karts.
     Ceux-ci peuvent être contrôlés à l'aide des méthodes request_move() et request_turn().
     Le sens du kart est indiqué par le vecteur (1, 0) lorsque l'angle du premier vaut 0.
-    Les propriétés <movingSpeed> et <turningSpeed> peuvent être modifiées et représentent les vitesses maximales du kart."""
+    Les propriétés <movingSpeed>, <movingCorrectionTime>, <turningSpeed> et <turningCorrectionTime>
+    peuvent être modifiées et représentent les vitesses maximales et temps de correction du kart."""
 
-    # vitesse de déplacement, m/s
     movingSpeed: float = 30
-    # vitesse de rotation, rad/s
+    movingCorrectionTime: float = 1
     turningSpeed: float = 1
-    # vitesse d'ajustement s
-    correctionSpeed: float = 1
+    turningCorrectionTime: float = 0.3
+
+    movingSpeedCorrectionTime: float = 1
 
     # -1 = en arrière, 0 = arrêté, 1 = en avant
     _moving: int
@@ -29,7 +30,9 @@ class Kart(Polygon):
 
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
-        self._angularMotion.set_center(self.center())
+        self._angularMotion = angularMotions.UniformlyAcceleratedCircularMotion(
+            rotationCenter=self.center()
+        )
         self._vectorialMotion = vectorialMotions.UniformlyAcceleratedMotion()
         self._moving = 0
         self._turning = 0
@@ -45,11 +48,18 @@ class Kart(Polygon):
         self._turning = direction
 
     def onEventsRegistered(self, deltaTime: float) -> None:
-        self.set_angularMotionSpeed(self._turning * self.turningSpeed)
-        targetSpeed = lib.Vector((self._moving * self.movingSpeed, 0))
-        targetSpeed.rotate(self.angle())
-        currentSpeed = self.vectorialMotionSpeed()
+        targetASpeed = self._turning * self.turningSpeed
+        currentASpeed = self.angularMotionSpeed()
+        self.set_angularMotionAcceleration(
+            (targetASpeed - currentASpeed) / self.turningCorrectionTime
+        )
+
+        targetVectorialSpeed = lib.Vector((self._moving * self.movingSpeed, 0))
+        targetVectorialSpeed.rotate(self.angle())
+        currentVectorialSpeed = self.vectorialMotionSpeed()
         acceleration = lib.Vector()
         for i in range(2):
-            acceleration[i] = (targetSpeed[i] - currentSpeed[i]) / self.correctionSpeed
+            acceleration[i] = (
+                targetVectorialSpeed[i] - currentVectorialSpeed[i]
+            ) / self.movingCorrectionTime
         self.set_vectorialMotionAcceleration(acceleration)
