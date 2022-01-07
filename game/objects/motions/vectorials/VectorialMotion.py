@@ -30,10 +30,7 @@ class VectorialMotion:
         raise RuntimeError("You can't change the vectorial acceleration of this object")
 
     def updateIsStatic(self) -> None:
-        if self._speed:
-            self._static = False
-        else:
-            self._static = True
+        self._static = self._speed == lib.Vector()
 
     def isStatic(self) -> bool:
         return self._static

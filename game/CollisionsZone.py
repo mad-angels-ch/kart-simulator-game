@@ -34,30 +34,29 @@ class CollisionsZone:
 
     def _solveFirst(self, timeInterval: float) -> float:
         # recherche du moment de la collision
+        def getCollidedObjects(objects: List[objects.Object]):
+            print(halfWorkingInterval)
+            for first in range(len(objects) - 1):
+                for second in range(first + 1, len(objects)):
+                    if objects[first].collides(objects[second], halfWorkingInterval):
+                        return (objects[first], objects[second])
+            return None
+
         checkedInterval = 0
         halfWorkingInterval = timeInterval
         lastCollidedObjects = None
         while halfWorkingInterval > self.timePrecision:
-
-            def getCollidedObjects(objects: List[objects.Object]):
-                for first in range(len(objects) - 1):
-                    for second in range(first + 1, len(objects)):
-                        if objects[first].collides(
-                            objects[second], halfWorkingInterval
-                        ):
-                            return (objects[first], objects[second])
-                return None
-
             collidedObjects = getCollidedObjects(self._objects)
 
             if collidedObjects:
+                print(collidedObjects[0].collides(collidedObjects[1], 0))
                 lastCollidedObjects = collidedObjects
             else:
                 for obj in self._objects:
-                    obj.updateReferences(timeInterval)
+                    obj.updateReferences(halfWorkingInterval)
                 if not lastCollidedObjects:
                     # il n'y a aucune collision dans l'intervalle donnée à la fonction
-                    return timeInterval
+                    return halfWorkingInterval
                 checkedInterval += halfWorkingInterval
             halfWorkingInterval /= 2
 
@@ -107,6 +106,7 @@ class CollisionsZone:
 
             other = current
 
+        print("collision", speedsAfter[0].x())
         return checkedInterval
 
     def resolve(self) -> None:
