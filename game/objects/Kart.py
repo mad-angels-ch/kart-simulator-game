@@ -20,8 +20,6 @@ class Kart(Polygon):
     turningSpeed: float = 1
     turningCorrectionTime: float = 0.3
 
-    movingSpeedCorrectionTime: float = 1
-
     # -1 = en arrière, 0 = arrêté, 1 = en avant
     _moving: int
 
