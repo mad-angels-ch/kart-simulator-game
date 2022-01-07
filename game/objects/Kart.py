@@ -1,3 +1,4 @@
+from logging import currentframe
 import math
 from typing import List
 import lib
@@ -17,6 +18,8 @@ class Kart(Polygon):
     movingSpeed: float = 30
     # vitesse de rotation, rad/s
     turningSpeed: float = 1
+    # vitesse d'ajustement s
+    correctionSpeed: float = 1
 
     # -1 = en arrière, 0 = arrêté, 1 = en avant
     _moving: int
@@ -27,7 +30,7 @@ class Kart(Polygon):
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
         self._angularMotion.set_center(self.center())
-        self._vectorialMotion = vectorialMotions.VectorialMotion()
+        self._vectorialMotion = vectorialMotions.UniformlyAcceleratedMotion()
         self._moving = 0
         self._turning = 0
 
@@ -45,4 +48,11 @@ class Kart(Polygon):
         self.set_angularMotionSpeed(self._turning * self.turningSpeed)
         targetSpeed = lib.Vector((self._moving * self.movingSpeed, 0))
         targetSpeed.rotate(self.angle())
-        self.set_vectorialMotionSpeed(targetSpeed)
+        currentSpeed = self.vectorialMotionSpeed()
+        acceleration = lib.Vector()
+        for i in range(2):
+            acceleration[i] = (targetSpeed[i] - currentSpeed[i]) / self.correctionSpeed
+        self.set_vectorialMotionAcceleration(acceleration)
+
+
+6

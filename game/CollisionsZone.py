@@ -107,7 +107,6 @@ class CollisionsZone:
     def _solveFirst(self, timeInterval: float) -> float:
         # recherche du moment de la collision
         def getCollidedObjects(objects: List[objects.Object]):
-            print(halfWorkingInterval)
             for first in range(len(objects) - 1):
                 for second in range(first + 1, len(objects)):
                     if objects[first].collides(objects[second], halfWorkingInterval):
