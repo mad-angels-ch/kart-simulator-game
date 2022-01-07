@@ -57,16 +57,14 @@ class Flipper(Polygon):
                 return relativeAngle
 
     def set_angle(self, newAngle: float) -> None:
-        warning(f"{__name__}.set_angle() has been used")
+        self._flipperCurrentAngle += newAngle - self.angle()
         return super().set_angle(newAngle)
 
     def rotate(self, angle: float) -> None:
         self._flipperCurrentAngle += angle
         return super().rotate(angle)
 
-    def updateReferences(self, deltaTime: float) -> None:
-        super().updateReferences(deltaTime)
-
+    def onEventsRegistered(self, deltaTime: float) -> None:
         # fin de trajectoire
         if (self.upward() and self._flipperCurrentAngle == self._flipperMaxAngle) or (
             self.downward() and self._flipperCurrentAngle == 0

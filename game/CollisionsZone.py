@@ -97,6 +97,13 @@ class CollisionsZone:
                 objectToCheck.potentialCollisionZone(self._timeInterval)
             )
 
+    def __iadd__(self, objectToAdd: objects.Object) -> None:
+        """Ajoute un objet à la zone et redimensionne celle-ci si nécessaire."""
+        self._objects.append(objectToAdd)
+        # objectCollisionZone: lib.AlignedRectangle = objectToAdd.potentialCollisionZone()
+
+        return self
+
     def _solveFirst(self, timeInterval: float) -> float:
         # recherche du moment de la collision
         checkedInterval = 0
@@ -167,6 +174,7 @@ class CollisionsZone:
             # speedsAfter[current] *= (1 - lastCollidedObjects[current].friction()) * (
             #     1 - lastCollidedObjects[other].friction()
             # )
+            lastCollidedObjects[current].onCollision(lastCollidedObjects[other])
             lastCollidedObjects[current].set_vectorialMotionSpeed(speedsAfter[current])
 
             other = current
