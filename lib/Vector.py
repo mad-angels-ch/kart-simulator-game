@@ -24,6 +24,9 @@ class Vector:
         self._y = components[1]
         self._normUptodate = False
 
+    def __bool__(self) -> bool:
+        return self != Vector()
+
     def __len__(self) -> int:
         return 2
 
@@ -153,6 +156,10 @@ class Vector:
     def y(self) -> float:
         return self._y
 
+    def copy(self) -> "Vector":
+        """Retourne une copie"""
+        return Vector(self)
+        
     def CosAngleBetweenTwoVectors(self, other:"Vector") -> float:
         "Retourne le cosinus de l'angle aigu ou optu entre ce vecteur et un autre vecteur donné"
         return self.scalarProduct(other) / self.norm()*other.norm()

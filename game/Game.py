@@ -8,7 +8,6 @@ from .CollisionsZone import CollisionsZone
 
 
 class Game:
-
     _events: List[events.Event]
     _output: "function"
     _dataUrl: str
@@ -30,7 +29,7 @@ class Game:
     def nextFrame(self, elapsedTime: float) -> None:
 
         if elapsedTime > 1 / 50:
-            warning(f"ElapsedTime too big: {elapsedTime}")
+            # warning(f"ElapsedTime too big: {elapsedTime}")
             elapsedTime = 1 / 60
 
         # 1: traiter les events
@@ -53,10 +52,11 @@ class Game:
             obj.onEventsRegistered(deltaTime=elapsedTime)
 
     def simulatePhysics(self, elapsedTime: float) -> None:
-        collisionsZone = CollisionsZone(elapsedTime)
-        for object in self._objects:
-            collisionsZone += object
-        collisionsZone.resolve()
+        zones, others = CollisionsZone.create(self._objects, elapsedTime)
+        for zone in zones:
+            zone.resolve()
+        for other in others:
+            other.updateReferences(elapsedTime)
 
     def callOutput(self) -> None:
         self._output(self._objects)

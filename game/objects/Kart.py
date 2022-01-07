@@ -1,7 +1,6 @@
 import math
 from typing import List
-import lib
-
+import math, lib
 from .Polygon import Polygon
 from .motions import angulars as angularMotions, vectorials as vectorialMotions
 
@@ -41,6 +40,21 @@ class Kart(Polygon):
 
     def updateReferences(self, deltaTime: float) -> None:
         super().updateReferences(deltaTime)
+        # while len(self._accelerationsQueue):
+        #     acceleration = self._accelerationsQueue.pop(0)
+        #     if acceleration > 0:
+        #         self.set_vectorialMotionAcceleration(self._acceleration)
+        #     elif acceleration < 0:
+        #         self.set_vectorialMotionAcceleration(-self._acceleration)
+        #     else:
+        #         self.set_vectorialMotionAcceleration(lib.Vector())
+        # while len(self._turningQueue):
+        #     self._isTurning = self._turningQueue.pop(0)
+        # if self._isTurning < 0:
+        #     self.vectorialMotionAcceleration().rotate(-self._turning * deltaTime)
+        # elif self._isTurning > 0:
+        #     self.vectorialMotionAcceleration().rotate(self._turning * deltaTime)
+
         while len(self._accelerationsQueue):
             acceleration = self._accelerationsQueue.pop(0)
             if acceleration > 0:

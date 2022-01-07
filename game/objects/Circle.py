@@ -119,7 +119,7 @@ class Circle(Object):
         if isinstance(other, Circle):
             translation = lib.Vector.fromPoints(self.center(), other.center())
             translation.set_norm(self.radius())
-            collisionPoint = lib.Point(*self.center())
+            collisionPoint = lib.Point(self.center())
             collisionPoint.translate(translation)
             return (
                 collisionPoint,
