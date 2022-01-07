@@ -53,6 +53,3 @@ class Kart(Polygon):
         for i in range(2):
             acceleration[i] = (targetSpeed[i] - currentSpeed[i]) / self.correctionSpeed
         self.set_vectorialMotionAcceleration(acceleration)
-
-
-6
