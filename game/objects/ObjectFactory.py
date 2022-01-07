@@ -30,7 +30,7 @@ class ObjectFactory:
         elif objectType == "Kart":
             return Kart(**kwds)
         elif objectType == "FinishLine":
-            return FinishLine(**kwds)    
+            return FinishLine(**kwds)
         else:
             raise ValueError(f"{objectType} is not valid")
 
