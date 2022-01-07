@@ -28,8 +28,11 @@ class Kart(Polygon):
 
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
+
+        rCenter = lib.Point(self.vertex(-1))
+        rCenter.translate(lib.Vector.fromPoints(self.vertex(-1), self.vertex(-2)) / 2)
         self._angularMotion = angularMotions.UniformlyAcceleratedCircularMotion(
-            rotationCenter=self.center()
+            rotationCenter=rCenter
         )
         self._vectorialMotion = vectorialMotions.UniformlyAcceleratedMotion()
         self._moving = 0
