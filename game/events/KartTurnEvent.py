@@ -6,6 +6,9 @@ class Kart:
 
 
 class KartTurnEvent(EventOnTarget):
+    """Event permettant de faire tourner le kart correspondant.\n
+    <direction>: -1 = à droite, 0 = tout droit, 1 = à gauche"""
+
     _direction: int
 
     def __init__(

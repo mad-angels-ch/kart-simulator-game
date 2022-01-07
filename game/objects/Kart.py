@@ -12,7 +12,7 @@ class Kart(Polygon):
     Classe des karts.
     Ceux-ci peuvent être contrôlés à l'aide des méthodes request_move() et request_turn().
     Le sens du kart est indiqué par le vecteur (1, 0) lorsque l'angle du premier vaut 0.
-    Les propriétés <movingSpeed>, <movingCorrectionTime>, <turningSpeed> et <turningCorrectionTime>
+    Les propriétés <movingSpeed> (m/s), <movingCorrectionTime>(s), <turningSpeed>(rad/s) et <turningCorrectionTime> (s)
     peuvent être modifiées et représentent les vitesses maximales et temps de correction du kart."""
 
     movingSpeed: float = 30

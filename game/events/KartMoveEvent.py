@@ -6,6 +6,9 @@ class Kart:
 
 
 class KartMoveEvent(EventOnTarget):
+    """Event permettant de mettre le kart correspondant en mouvement.\n
+    <direction>: -1 = en arrière, 0 = arrêté, 1 = en avant"""
+
     _direction: int
 
     def __init__(
