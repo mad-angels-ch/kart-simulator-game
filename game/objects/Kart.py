@@ -27,6 +27,8 @@ class Kart(Polygon):
     _turning: int
 
     def __init__(self, **kwargs) -> None:
+        kwargs["mass"] = 1
+        kwargs["friction"] = 0.01
         super().__init__(**kwargs)
         rCenter = lib.Point(self.vertex(-1))
         rCenter.translate(lib.Vector.fromPoints(self.vertex(-1), self.vertex(-2)) / 2)
@@ -36,8 +38,6 @@ class Kart(Polygon):
         self._vectorialMotion = vectorialMotions.UniformlyAcceleratedMotion()
         self._moving = 0
         self._turning = 0
-        self.set_friction(0.01)
-        self.set_mass(1)
 
     def request_move(self, direction: int) -> None:
         """Met le kart en mouvement
@@ -49,7 +49,7 @@ class Kart(Polygon):
         -1 = à droite, 0 = tout droit, 1 = à gauche"""
         self._turning = direction
 
-    def onCollision(self, other: "Object") -> None:
+    def onCollision(self, other: "Object", timeSinceLastFrame: float) -> None:
         self.set_angularMotionSpeed(0)
         self.set_angularMotionAcceleration(0)
 
@@ -69,4 +69,3 @@ class Kart(Polygon):
                 targetVectorialSpeed[i] - currentVectorialSpeed[i]
             ) / self.movingCorrectionTime
         self.set_vectorialMotionAcceleration(acceleration)
-    

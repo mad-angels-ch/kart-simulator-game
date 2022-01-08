@@ -27,6 +27,8 @@ class Object:
     _potentialCollisionZoneUpToDate: bool
     _potentialCollisionZoneTimeInterval: float
 
+    _solid: bool
+
     def __init__(self, **kwargs) -> None:
         self._name = kwargs.get("name", None)
         self._formID = kwargs["formID"]
@@ -43,10 +45,18 @@ class Object:
         self._mass = kwargs.get("mass", 0)
         self._friction = kwargs.get("friction", 0)
         self._potentialCollisionZoneUpToDate = False
+        self._solid = kwargs.get("solid", True)
 
     def onEventsRegistered(self, deltaTime: float) -> None:
         """Méthode à surcharger"""
         pass
+
+    def onCollision(self, other: "Object", timeSinceLastFrame: float) -> None:
+        """Méthode à surcharger, lancée lors des collisions"""
+
+    def isSolid(self) -> bool:
+        """Si vrai, il rebondit sur les autres objets sinon il les traverse"""
+        return self._solid
 
     def formID(self) -> int:
         return self._formID
@@ -221,9 +231,6 @@ class Object:
         """Retourne une approximation du point par lequel les deux objets se touchent
         ainsi qu'une approximation d'un vecteur directeur de la tangente passant par ce point"""
         raise RuntimeError("This method should be overwritten")
-
-    def onCollision(self, other: "Object") -> None:
-        """Méthode à surcharger, lancée lors des collisions"""
 
     # def xyz(self, other: "Object", deltaTime: float = 0) -> bool:
     #     point, tangent = self.collisionPointAndTangent(other)

@@ -57,6 +57,7 @@ class CollisionsZone:
         return zones, objs
 
     _timeInterval: float
+    _checkedInterval: float
     _objects: List[objects.Object]
     _dimension: lib.AlignedRectangle
     _movingDimension: lib.AlignedRectangle
@@ -171,7 +172,9 @@ class CollisionsZone:
             # speedsAfter[current] *= (1 - lastCollidedObjects[current].friction()) * (
             #     1 - lastCollidedObjects[other].friction()
             # )
-            lastCollidedObjects[current].onCollision(lastCollidedObjects[other])
+            lastCollidedObjects[current].onCollision(
+                lastCollidedObjects[other], self._checkedInterval + checkedInterval
+            )
             lastCollidedObjects[current].set_vectorialMotionSpeed(speedsAfter[current])
 
             other = current
@@ -181,5 +184,8 @@ class CollisionsZone:
 
     def resolve(self) -> None:
         """Détecte précisément les collisions, gère celle-ci et met les objets à jours"""
-        while self._timeInterval > 0:
-            self._timeInterval -= self._solveFirst(self._timeInterval)
+        self._checkedInterval = 0
+        while self._checkedInterval < self._timeInterval:
+            self._checkedInterval += self._solveFirst(
+                self._timeInterval - self._checkedInterval
+            )
