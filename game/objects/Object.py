@@ -46,6 +46,14 @@ class Object:
         self._friction = kwargs.get("friction", 0)
         self._potentialCollisionZoneUpToDate = False
         self._solid = kwargs.get("isSolid", True)
+        self._solid = kwargs.get("isSolid", True)
+
+    def __eq__(self, other: "Object") -> bool:
+        return self.formID() == other.formID()
+
+    def onFrameStart(self, deltaTime: float) -> None:
+        """Méthode destinée à être surchargée, lancée au début de chaque frame"""
+        pass
 
     def onEventsRegistered(self, deltaTime: float) -> None:
         """Méthode à surcharger"""
@@ -53,6 +61,10 @@ class Object:
 
     def onCollision(self, other: "Object", timeSinceLastFrame: float) -> None:
         """Méthode à surcharger, lancée lors des collisions"""
+
+    def onFrameEnd(self, deltaTime: float) -> None:
+        """Méthode destinée à être surchargée, lancée à la fin de chaque frame"""
+        pass
 
     def isSolid(self) -> bool:
         """Si vrai, il rebondit sur les autres objets sinon il les traverse"""

@@ -196,7 +196,6 @@ class CollisionsZone:
             )
             other = current
 
-        print("collision")
         return checkedInterval
 
     def resolve(self) -> None:

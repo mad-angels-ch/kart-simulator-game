@@ -4,6 +4,7 @@ import json
 import time
 
 from . import events, objects
+from .objects import create as Factory
 from .CollisionsZone import CollisionsZone
 
 
@@ -22,15 +23,17 @@ class Game:
 
         with open(dataUrl, "r") as data:
             jsonObject = json.load(data)
-            self._objects = objects.create.fromFabric(
+            self._objects = Factory.fromFabric(
                 jsonObject["objects"], jsonObject["version"]
             )
 
     def nextFrame(self, elapsedTime: float) -> None:
-
         if elapsedTime > 1 / 50:
             # warning(f"ElapsedTime too big: {elapsedTime}")
             elapsedTime = 1 / 60
+
+        for obj in self._objects:
+            obj.onFrameStart(elapsedTime)
 
         # 1: traiter les events
         self.handleEvents(elapsedTime=elapsedTime)
@@ -40,6 +43,9 @@ class Game:
 
         # 3: appeler output
         self.callOutput()
+
+        for obj in self._objects:
+            obj.onFrameEnd(elapsedTime)
 
     def handleEvents(self, elapsedTime: float) -> None:
         for event in self._events:
