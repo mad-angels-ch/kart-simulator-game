@@ -69,3 +69,4 @@ class Kart(Polygon):
                 targetVectorialSpeed[i] - currentVectorialSpeed[i]
             ) / self.movingCorrectionTime
         self.set_vectorialMotionAcceleration(acceleration)
+    
