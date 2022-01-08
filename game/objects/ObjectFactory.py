@@ -41,6 +41,10 @@ class ObjectFactory:
     def fromFabric(
         self, jsonObjects: List[dict], version: str = "4.4.0"
     ) -> List[Object]:
+        gatesCount = 0
+        finishLineCount = 0
+        kartPlaceHolderCount = 0
+
         newObjects = []
         if version == "4.4.0":
             for obj in jsonObjects:
@@ -53,10 +57,14 @@ class ObjectFactory:
                     objectType = "Flipper"
                 elif objectType in ["LGEKartPlaceHolder"]:
                     objectType = "Kart"
+                    kartPlaceHolderCount += 1
                 elif objectType in ["LGEGate"]:
                     objectType = "Gate"
+                    gatesCount += 1
                 elif objectType in ["LGEFinishLine"]:
                     objectType = "FinishLine"
+                    gatesCount += 1
+                    finishLineCount += 1
 
                 kwds = {
                     "name": obj["lge"].get("name"),
@@ -118,7 +126,28 @@ class ObjectFactory:
 
                 newObjects.append(self(objectType, **kwds))
 
+        if gatesCount < 2:
+            raise ObjectCountError("Gate", 2, gatesCount)
+        elif finishLineCount < 1:
+            raise ObjectCountError("Finish line", 1, finishLineCount)
+        elif kartPlaceHolderCount < 1:
+            raise ObjectCountError("Kart placeholder", 1, kartPlaceHolderCount)
+
         return newObjects
+
+
+class ObjectCountError(RuntimeError):
+    _type: str
+    _requiredCount: int
+    _foundCount: int
+
+    def __init__(self, objectType: str, requiredCount: int, foundCount: int) -> None:
+        self._type = objectType
+        self._requiredCount = requiredCount
+        self._foundCount = foundCount
+
+    def message(self) -> str:
+        return f"Nous attendions {self._requiredCount} {self._type} mais trouver seulemenent {self._foundCount}"
 
 
 create = ObjectFactory()
