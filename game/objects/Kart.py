@@ -15,10 +15,10 @@ class Kart(Polygon):
     Les propriétés <movingSpeed> (m/s), <movingCorrectionTime>(s), <turningSpeed>(rad/s) et <turningCorrectionTime> (s)
     peuvent être modifiées et représentent les vitesses maximales et temps de correction du kart."""
 
-    movingSpeed: float = 30
-    movingCorrectionTime: float = 1
-    turningSpeed: float = 1
-    turningCorrectionTime: float = 0.3
+    movingSpeed: float = 500
+    movingCorrectionTime: float = 0.5
+    turningSpeed: float = 4
+    turningCorrectionTime: float = 0.2
 
     # -1 = en arrière, 0 = arrêté, 1 = en avant
     _moving: int
@@ -28,7 +28,6 @@ class Kart(Polygon):
 
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
-
         rCenter = lib.Point(self.vertex(-1))
         rCenter.translate(lib.Vector.fromPoints(self.vertex(-1), self.vertex(-2)) / 2)
         self._angularMotion = angularMotions.UniformlyAcceleratedCircularMotion(
@@ -37,6 +36,8 @@ class Kart(Polygon):
         self._vectorialMotion = vectorialMotions.UniformlyAcceleratedMotion()
         self._moving = 0
         self._turning = 0
+        self.set_friction(0.01)
+        self.set_mass(1)
 
     def request_move(self, direction: int) -> None:
         """Met le kart en mouvement

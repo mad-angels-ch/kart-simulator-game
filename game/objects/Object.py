@@ -196,8 +196,20 @@ class Object:
     def mass(self) -> float:
         return self._mass
 
+    def set_mass(self, newMass: float) -> None:
+        """Change la masse de l'objet.
+        Une mass de 0 signifie qu'il est impossible à influencer."""
+        self._mass = newMass
+
     def friction(self) -> float:
         return self._friction
+
+    def set_friction(self, newFriction: float) -> None:
+        """Change le coefficient de friction de l'objet.
+        Un coefficient de 0 signifie que l'objet n'a aucune perte lors des collisons.
+        Un coefficient de 1 signifie que l'objet est complétement imobile après une collisions. Ne pas utiliser.
+        Un coefficient négatif signifie que l'objet prend de la vitesse lors des collisions."""
+        self._friction = newFriction
 
     def collides(self, other: "Object", timeInterval: float) -> bool:
         """Retourne vrai si les deux objets se collisionnent dans l'intervalle de temps donné
