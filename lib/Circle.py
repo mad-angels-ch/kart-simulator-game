@@ -15,6 +15,9 @@ class Circle(Shape):
         self._center = center
         self._radius = radius
 
+    def copy(self) -> "Circle":
+        return Circle(self.center().copy(), self.radius())
+
     def center(self) -> Point:
         return self._center
 

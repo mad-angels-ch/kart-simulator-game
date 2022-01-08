@@ -44,6 +44,10 @@ class Object:
         self._friction = kwargs.get("friction", 0)
         self._potentialCollisionZoneUpToDate = False
 
+    def onEventsRegistered(self, deltaTime: float) -> None:
+        """Méthode à surcharger"""
+        pass
+
     def formID(self) -> int:
         return self._formID
 
@@ -56,6 +60,8 @@ class Object:
         return self._angle + self.relativeAngle(deltaTime)
 
     def center(self, deltaTime: float = 0) -> lib.Point:
+        """NE PAS MODIFIER
+        Retourne le centre de l'objet."""
         if not deltaTime:
             return self._center
 
@@ -171,7 +177,7 @@ class Object:
         Attention, utilisation avancée uniquement
         Retourne l'accélération vectoriel de l'objet, sans tenir compte de sa rotation.
         """
-        self._vectorialMotion.acceleration(deltaTime=deltaTime)
+        return self._vectorialMotion.acceleration(deltaTime=deltaTime)
 
     def set_vectorialMotionAcceleration(self, newAcceleration: lib.Vector) -> None:
         """Attention, utilisation avancée uniquement
@@ -203,6 +209,9 @@ class Object:
         """Retourne une approximation du point par lequel les deux objets se touchent
         ainsi qu'une approximation d'un vecteur directeur de la tangente passant par ce point"""
         raise RuntimeError("This method should be overwritten")
+
+    def onCollision(self, other: "Object") -> None:
+        """Méthode à surcharger, lancée lors des collisions"""
 
     # def xyz(self, other: "Object", deltaTime: float = 0) -> bool:
     #     point, tangent = self.collisionPointAndTangent(other)

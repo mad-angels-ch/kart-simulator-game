@@ -1,55 +1,66 @@
+from logging import currentframe
+import math
 from typing import List
 import lib
 
-from .Polygon import Polygon
+from .Polygon import Polygon, Object
 from .motions import angulars as angularMotions, vectorials as vectorialMotions
 
 
 class Kart(Polygon):
-    _acceleration = lib.Vector((0, 10))
-    _turning = 1
+    """CREER AVEC LA FACTORY\n
+    Classe des karts.
+    Ceux-ci peuvent être contrôlés à l'aide des méthodes request_move() et request_turn().
+    Le sens du kart est indiqué par le vecteur (1, 0) lorsque l'angle du premier vaut 0.
+    Les propriétés <movingSpeed> (m/s), <movingCorrectionTime>(s), <turningSpeed>(rad/s) et <turningCorrectionTime> (s)
+    peuvent être modifiées et représentent les vitesses maximales et temps de correction du kart."""
 
-    _accelerationsQueue: List[int]
-    _turningQueue: List[int]
-    _isTurning: int
+    movingSpeed: float = 30
+    movingCorrectionTime: float = 1
+    turningSpeed: float = 1
+    turningCorrectionTime: float = 0.3
+
+    # -1 = en arrière, 0 = arrêté, 1 = en avant
+    _moving: int
+
+    # -1 = à droite, 0 = tout droit, 1 = à gauche
+    _turning: int
 
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
-        self.vectorialMotion = vectorialMotions.UniformlyAcceleratedMotion()
-        self._accelerationsQueue = []
-        self._turningQueue = []
-        self._isTurning = 0
 
-    def addAcceleration(self, acceleration: int) -> None:
-        """Demande à change "l'accélération" du kart.
-        <acceleration> fonctionnne de la manière suivante:
-        <0 -> ralentir (freins / reculer), 0 -> frottements seulement, >0 -> accélérer"""
-        self._accelerationsQueue.append(acceleration)
+        rCenter = lib.Point(self.vertex(-1))
+        rCenter.translate(lib.Vector.fromPoints(self.vertex(-1), self.vertex(-2)) / 2)
+        self._angularMotion = angularMotions.UniformlyAcceleratedCircularMotion(
+            rotationCenter=rCenter
+        )
+        self._vectorialMotion = vectorialMotions.UniformlyAcceleratedMotion()
+        self._moving = 0
+        self._turning = 0
 
-    def addTurning(self, turning: int) -> None:
-        """Demande à change la "direction" du kart".
-        <turning> fonctionnne de la manière suivante:
-        <0 -> droite, 0 -> tout droit, >0 -> gauche"""
-        self._turningQueue.append(turning)
+    def request_move(self, direction: int) -> None:
+        """Met le kart en mouvement
+        -1 = en arrière, 0 = arrêté, 1 = en avant"""
+        self._moving = direction
 
-    def isTurning(self) -> int:
-        """Retourne -1 si le kart est en train de tourner à droite,
-        0 s'il va tout droit et 1 s'il tourne à gauche"""
-        return self._isTurning
+    def request_turn(self, direction: int) -> None:
+        """Fait tourner le kart
+        -1 = à droite, 0 = tout droit, 1 = à gauche"""
+        self._turning = direction
 
-    def updateReferences(self, deltaTime: float) -> None:
-        super().updateReferences(deltaTime)
-        while len(self._accelerationsQueue):
-            acceleration = self._accelerationsQueue.pop(0)
-            if acceleration > 0:
-                self.set_vectorialMotionAcceleration(self._acceleration)
-            elif acceleration < 0:
-                self.set_vectorialMotionAcceleration(-self._acceleration)
-            else:
-                self.set_vectorialMotionAcceleration(lib.Vector())
-        while len(self._turningQueue):
-            self._isTurning = self._turningQueue.pop(0)
-        if self._isTurning < 0:
-            self.vectorialMotionAcceleration().rotate(-self._turning * deltaTime)
-        elif self._isTurning > 0:
-            self.vectorialMotionAcceleration().rotate(self._turning * deltaTime)
+    def onEventsRegistered(self, deltaTime: float) -> None:
+        targetASpeed = self._turning * self.turningSpeed
+        currentASpeed = self.angularMotionSpeed()
+        self.set_angularMotionAcceleration(
+            (targetASpeed - currentASpeed) / self.turningCorrectionTime
+        )
+
+        targetVectorialSpeed = lib.Vector((self._moving * self.movingSpeed, 0))
+        targetVectorialSpeed.rotate(self.angle())
+        currentVectorialSpeed = self.vectorialMotionSpeed()
+        acceleration = lib.Vector()
+        for i in range(2):
+            acceleration[i] = (
+                targetVectorialSpeed[i] - currentVectorialSpeed[i]
+            ) / self.movingCorrectionTime
+        self.set_vectorialMotionAcceleration(acceleration)

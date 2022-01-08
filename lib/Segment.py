@@ -9,6 +9,10 @@ class Segment(Line):
     def __init__(self, begin: Point, vectorOrEnd: "Vector | Point") -> None:
         super().__init__(begin, vectorOrEnd)
 
+    def copy(self) -> "Segment":
+        """Retourne une copie"""
+        return Segment(self.point().copy(), self.vector().copy())
+
     def begin(self) -> Point:
         """Retourne une extrémité du segment"""
         return self.point()

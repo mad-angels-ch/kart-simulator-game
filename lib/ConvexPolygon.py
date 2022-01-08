@@ -14,6 +14,9 @@ class ConvexPolygon(Polygon):
     def __init__(self, *vertices: Point) -> None:
         super().__init__(*vertices)
 
+    def copy(self) -> "ConvexPolygon":
+        return ConvexPolygon(*[vertex.copy() for vertex in self.vertices()])
+
     def collides(self, other: Shape) -> bool:
         if isinstance(other, Circle):
             return self._separatingAxisTheoremCircle(other)
