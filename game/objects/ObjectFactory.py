@@ -63,15 +63,7 @@ class ObjectFactory:
                     "mass": obj["lge"]["mass"],
                 }
                 if objectType != "FinishLine":
-                    if kwds["fill"][0] != "#":
-                        f = kwds["fill"][4:-1].split(",")
-                        l = list()
-                        for i in f:
-                            l.append(int(i))
-                        kwds["fill"] = "#%02x%02x%02x" % (l[0], l[1], l[2])
                     scaleX, scaleY = obj["scaleX"], obj["scaleY"]
-                # elif objectType == "FinishLine":
-                #     kwds["fill"] = "repeat"
                 if obj["flipX"]:
                     scaleX *= -1
                 if obj["flipY"]:
@@ -118,7 +110,6 @@ class ObjectFactory:
                     ] = motions.vectorials.createVectorialMotion.fromFabric(
                         obj["lge"]["motion"]["vector"]
                     )
-                
 
                 newObjects.append(self(objectType, **kwds))
 
