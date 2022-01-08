@@ -50,8 +50,9 @@ class Kart(Polygon):
         self._turning = direction
 
     def onCollision(self, other: "Object", timeSinceLastFrame: float) -> None:
-        self.set_angularMotionSpeed(0)
-        self.set_angularMotionAcceleration(0)
+        if other.isSolid():
+            self.set_angularMotionSpeed(0)
+            self.set_angularMotionAcceleration(0)
 
     def onEventsRegistered(self, deltaTime: float) -> None:
         targetASpeed = self._turning * self.turningSpeed
