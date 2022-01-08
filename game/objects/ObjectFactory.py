@@ -10,6 +10,7 @@ from .Polygon import Polygon
 from .Flipper import Flipper
 from .Kart import Kart
 from .FinishLine import FinishLine
+from .Gate import Gate
 from . import motions
 from .fill import createFill
 
@@ -30,6 +31,8 @@ class ObjectFactory:
             return Flipper(**kwds)
         elif objectType == "Kart":
             return Kart(**kwds)
+        elif objectType == "Gate":
+            return Gate(**kwds)
         elif objectType == "FinishLine":
             return FinishLine(**kwds)
         else:
@@ -50,6 +53,8 @@ class ObjectFactory:
                     objectType = "Flipper"
                 elif objectType in ["LGEKartPlaceHolder"]:
                     objectType = "Kart"
+                elif objectType in ["LGEGate"]:
+                    objectType = "Gate"
                 elif objectType in ["LGEFinishLine"]:
                     objectType = "FinishLine"
 
@@ -72,7 +77,7 @@ class ObjectFactory:
                 if objectType in ["Circle"]:
                     kwds["radius"] = obj["radius"] * min(scaleX, scaleY)
 
-                if objectType in ["Polygon", "Flipper", "Kart", "FinishLine"]:
+                if objectType in ["Polygon", "Flipper", "Kart", "Gate", "FinishLine"]:
                     kwds["vertices"] = [
                         lib.Point((point["x"], point["y"])) for point in obj["points"]
                     ]
