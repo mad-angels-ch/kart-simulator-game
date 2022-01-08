@@ -147,7 +147,7 @@ class ObjectCountError(RuntimeError):
         self._foundCount = foundCount
 
     def message(self) -> str:
-        return f"Nous attendions {self._requiredCount} {self._type} mais trouver seulemenent {self._foundCount}"
+        return f"Nous attendions {self._requiredCount} {self._type} mais trouvé seulemenent {self._foundCount}"
 
 
 create = ObjectFactory()
