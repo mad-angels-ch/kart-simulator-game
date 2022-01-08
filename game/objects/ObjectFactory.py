@@ -128,7 +128,7 @@ class ObjectFactory:
 
         if gatesCount < 2:
             raise ObjectCountError("Gate", 2, gatesCount)
-        elif finishLineCount < 1:
+        elif finishLineCount == 1:
             raise ObjectCountError("Finish line", 1, finishLineCount)
         elif kartPlaceHolderCount < 1:
             raise ObjectCountError("Kart placeholder", 1, kartPlaceHolderCount)
@@ -147,7 +147,7 @@ class ObjectCountError(RuntimeError):
         self._foundCount = foundCount
 
     def message(self) -> str:
-        return f"Nous attendions {self._requiredCount} {self._type} mais trouvé seulemenent {self._foundCount}"
+        return f"Nous attendions {self._requiredCount} {self._type} mais trouvé {self._foundCount}"
 
 
 create = ObjectFactory()
