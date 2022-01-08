@@ -45,7 +45,7 @@ class Object:
         self._mass = kwargs.get("mass", 0)
         self._friction = kwargs.get("friction", 0)
         self._potentialCollisionZoneUpToDate = False
-        self._solid = kwargs.get("solid", True)
+        self._solid = kwargs.get("isSolid", True)
 
     def onEventsRegistered(self, deltaTime: float) -> None:
         """Méthode à surcharger"""

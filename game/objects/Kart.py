@@ -28,7 +28,7 @@ class Kart(Polygon):
 
     def __init__(self, **kwargs) -> None:
         kwargs["mass"] = 1
-        kwargs["friction"] = 0.01
+        kwargs["friction"] = 0.6
         super().__init__(**kwargs)
         rCenter = lib.Point(self.vertex(-1))
         rCenter.translate(lib.Vector.fromPoints(self.vertex(-1), self.vertex(-2)) / 2)
