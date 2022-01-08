@@ -4,6 +4,7 @@ import math
 import lib
 
 from . import motions
+from .fill import Fill, createFill
 
 
 class Object:
@@ -17,7 +18,7 @@ class Object:
     _angularMotion: motions.angulars.AngularMotion
     _vectorialMotion: motions.vectorials.VectorialMotion
 
-    _fill: str
+    _fill: Fill
     _opacity: float
     _mass: float
     _friction: float
@@ -37,7 +38,7 @@ class Object:
         self._vectorialMotion = kwargs.get(
             "vectorialMotion", motions.vectorials.VectorialMotion()
         )
-        self._fill = kwargs.get("fill", "")
+        self._fill = kwargs.get("fill", createFill(type="Hex", hexColor="#000000"))
         self._opacity = kwargs.get("opacity", 1)
         self._mass = kwargs.get("mass", 0)
         self._friction = kwargs.get("friction", 0)
@@ -184,11 +185,11 @@ class Object:
         self._vectorialMotion.set_acceleration(newAcceleration=newAcceleration)
         self._potentialCollisionZoneUpToDate = False
 
-    def fill(self) -> str:
+    def fill(self) -> Fill:
         return self._fill
 
-    def set_fill(self, color: str) -> None:
-        self._fill = color
+    def set_fill(self, newFill: Fill) -> None:
+        self._fill = newFill
 
     def opacity(self) -> float:
         return self._opacity

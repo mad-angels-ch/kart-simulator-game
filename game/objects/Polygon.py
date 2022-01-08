@@ -171,9 +171,6 @@ class Polygon(Object):
             return False
 
         elif isinstance(other, Circle):
-            # if self.fill() == "#ff00ff":
-            #     print("here")
-
             newSelf = lib.Polygon(*self.vertices(timeInterval))
             newOther = lib.Circle(other.center(timeInterval), other.radius())
             if newSelf.collides(newOther):
@@ -262,3 +259,12 @@ class Polygon(Object):
 
         else:
             return other.collisionPointAndTangent(self)
+
+    def verticesBeforeRotation(self):
+        listOfVerticesBeforeRotation = []
+        for vertex in self._vertices:
+            vertexPoint = lib.Point(vertex)
+            vertexPoint.translate(lib.Vector(self.center()))
+            listOfVerticesBeforeRotation.append((vertexPoint[0],vertexPoint[1]))
+            
+        return listOfVerticesBeforeRotation

@@ -11,6 +11,7 @@ from .Flipper import Flipper
 from .Kart import Kart
 from .FinishLine import FinishLine
 from . import motions
+from .fill import createFill
 
 
 class ObjectFactory:
@@ -56,7 +57,7 @@ class ObjectFactory:
                     "name": obj["lge"].get("name"),
                     "center": lib.Point((obj["left"], obj["top"])),
                     "angle": radians(obj["angle"]),
-                    "fill": obj["fill"],
+                    "fill": createFill.fromFabric(obj["fill"]),
                     "opacity": obj["opacity"],
                     "friction": obj["lge"]["friction"],
                     "mass": obj["lge"]["mass"],
