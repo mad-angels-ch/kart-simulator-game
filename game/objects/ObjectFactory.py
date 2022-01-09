@@ -108,6 +108,9 @@ class ObjectFactory:
 
                         kwds["vertices"][i] = pointV
 
+                    if objectType in ["FinishLine"]:
+                        kwds["numberOfLaps"] = obj["lge"]["numberOfLaps"]
+
                 if objectType in ["Flipper"]:
                     kwds["flipperMaxAngle"] = obj["lge"]["flipperMaxAngle"]
                     kwds["flipperUpwardSpeed"] = obj["lge"]["flipperUpwardSpeed"]
