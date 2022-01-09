@@ -111,6 +111,11 @@ class ObjectFactory:
                     if objectType in ["FinishLine"]:
                         kwds["numberOfLaps"] = obj["lge"]["numberOfLaps"]
 
+                    elif objectType in ["Kart"]:
+                        kwds["vertices"] = [lib.Point((-25,-8)), lib.Point((-25,8)), lib.Point((25,8)), lib.Point((25,-8))]
+                        # for i in range(len(kwds["vertices"])):
+                        #     kwds["vertices"][i].translate(toOrigin)
+
                 if objectType in ["Flipper"]:
                     kwds["flipperMaxAngle"] = obj["lge"]["flipperMaxAngle"]
                     kwds["flipperUpwardSpeed"] = obj["lge"]["flipperUpwardSpeed"]
