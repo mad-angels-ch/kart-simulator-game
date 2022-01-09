@@ -27,4 +27,4 @@ class Gate(Polygon):
 
     def passagesCount(self, kartFormID: int) -> int:
         """Indique le nombre de fois que le kart a franchi le portillon"""
-        return self._passagesCount[kartFormID]
+        return self._passagesCount.get(kartFormID, 0)
