@@ -9,6 +9,7 @@ from .Polygon import Polygon
 from .Flipper import Flipper
 from .Kart import Kart
 from .FinishLine import FinishLine
+from .Lava import Lava
 from .Gate import Gate
 from . import motions
 from .fill import createFill
@@ -28,6 +29,8 @@ class ObjectFactory:
             return Polygon(**kwds)
         elif objectType == "Flipper":
             return Flipper(**kwds)
+        elif objectType == "Lava":
+            return Lava(**kwds)
         elif objectType == "Kart":
             return Kart(**kwds)
         elif objectType == "Gate":
@@ -54,6 +57,8 @@ class ObjectFactory:
                     objectType = "Polygon"
                 elif objectType in ["LGEFlipper"]:
                     objectType = "Flipper"
+                elif objectType in ["LGELava"]:
+                    objectType = "Lava"
                 elif objectType in ["LGEKartPlaceHolder"]:
                     objectType = "Kart"
                     kartPlaceHolderCount += 1
@@ -69,13 +74,18 @@ class ObjectFactory:
                     "name": obj["lge"].get("name"),
                     "center": lib.Point((obj["left"], obj["top"])),
                     "angle": radians(obj["angle"]),
-                    "fill": createFill.fromFabric(obj["fill"]),
                     "opacity": obj["opacity"],
                     "friction": obj["lge"]["friction"],
                     "mass": obj["lge"]["mass"],
                 }
+                if objectType == "Lava":
+                    kwds["fill"] = createFill.fromFabric("#FFA500")
+                else:
+                    kwds["fill"] = createFill.fromFabric(obj["fill"])
+
                 if objectType != "FinishLine":
                     scaleX, scaleY = obj["scaleX"], obj["scaleY"]
+
                 if obj["flipX"]:
                     scaleX *= -1
                 if obj["flipY"]:

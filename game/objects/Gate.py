@@ -23,7 +23,6 @@ class Gate(Polygon):
             self._passagesCount[other.formID()] = (
                 self._passagesCount.get(other.formID(), 0) + 1
             )
-            print(self._passagesCount[other.formID()])
 
     def passagesCount(self, kartFormID: int) -> int:
         """Indique le nombre de fois que le kart a franchi le portillon"""
