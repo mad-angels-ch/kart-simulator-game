@@ -4,6 +4,7 @@ from typing import List
 import lib
 
 from .Polygon import Polygon, Object
+from .Lava import Lava
 from .motions import angulars as angularMotions, vectorials as vectorialMotions
 
 
@@ -28,6 +29,8 @@ class Kart(Polygon):
 
     _lastGate: int
 
+    _burned: bool
+
     def __init__(self, **kwargs) -> None:
         kwargs["mass"] = 1
         kwargs["friction"] = 0.6
@@ -35,6 +38,7 @@ class Kart(Polygon):
         self._lastGate = 0
         self._moving = 0
         self._turning = 0
+        self._burned = False
 
     def lastGate(self) -> int:
         """Retourne le formID du dernier portillon que le kart a traversé"""
@@ -43,6 +47,10 @@ class Kart(Polygon):
     def set_lastGate(self, newLastGameFormID: int) -> None:
         """Modifie le dernier portillon que le kart a traversé"""
         self._lastGate = newLastGameFormID
+
+    def hasBurned(self) -> bool:
+        """Retourne vrai si le kart s'est fait brûlé par la lave"""
+        return self._burned
 
     def request_move(self, direction: int) -> None:
         """Met le kart en mouvement
@@ -56,6 +64,8 @@ class Kart(Polygon):
 
     def onCollision(self, other: "Object", timeSinceLastFrame: float) -> None:
         if other.isSolid():
+            if isinstance(other, Lava):
+                self._burned = True
             self.set_angularMotionSpeed(0)
             self.set_angularMotionAcceleration(0)
 
