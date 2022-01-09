@@ -72,7 +72,7 @@ class ObjectFactory:
                 if objectType in ["Circle"]:
                     kwds["radius"] = obj["radius"] * min(scaleX, scaleY)
 
-                if objectType in ["Polygon", "Flipper", "Kart", "FinishLine"]:
+                if objectType in ["Polygon", "Flipper", "FinishLine"]:
                     kwds["vertices"] = [
                         lib.Point((point["x"], point["y"])) for point in obj["points"]
                     ]
@@ -94,6 +94,11 @@ class ObjectFactory:
                         pointV.scaleY(scaleY)
 
                         kwds["vertices"][i] = pointV
+
+                elif objectType in ["Kart"]:
+                    kwds["vertices"] = [lib.Point((-25,-8)), lib.Point((-25,8)), lib.Point((25,8)), lib.Point((25,-8))]
+                    # for i in range(len(kwds["vertices"])):
+                    #     kwds["vertices"][i].translate(toOrigin)
 
                 if objectType in ["Flipper"]:
                     kwds["flipperMaxAngle"] = obj["lge"]["flipperMaxAngle"]
