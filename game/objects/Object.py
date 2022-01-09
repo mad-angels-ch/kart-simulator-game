@@ -91,6 +91,12 @@ class Object:
         newCenter.translate(self.relativePosition(deltaTime))
         return newCenter
 
+    def rotationCenter(self, deltaTime: float = 0) -> lib.Point:
+        """Retourne le centre de rotation de l'objet à l'instant donné"""
+        rCenter = lib.Point(self.center(deltaTime))
+        rCenter.translate(self._angularMotion.center())
+        return rCenter
+
     def potentialCollisionZone(self, timeInterval: float) -> lib.AlignedRectangle:
         """Retourne un rectangle aligné avec les axes englobant toutes les positions de l'objet pendant l'intervalle donné."""
         if (
@@ -115,7 +121,7 @@ class Object:
 
     def relativePosition(self, deltaTime: float) -> lib.Vector:
         fromRotationCenterBefore = lib.Vector.fromPoints(
-            self._angularMotion.center(), self.center()
+            self.rotationCenter(), self.center()
         )
         fromRotationCenterAfter = lib.Vector(fromRotationCenterBefore)
         fromRotationCenterAfter.rotate(self.relativeAngle(deltaTime))
@@ -126,12 +132,21 @@ class Object:
         )
 
     def speedAtPoint(self, point: lib.Point, deltaTime: float = 0) -> lib.Vector:
-        return self._angularMotion.speedAtPoint(
-            point, deltaTime
-        ) + self._vectorialMotion.speed(deltaTime)
+        normal = lib.Vector.fromPoints(self.rotationCenter(), point)
+        rtanSpeed = lib.Vector((0, self.angularMotionSpeed(deltaTime) * normal.norm()))
+        rtanSpeed.rotate(normal.direction())
+        return rtanSpeed + self.vectorialMotionSpeed(deltaTime)
 
     def centerSpeed(self, deltaTime: float = 0) -> lib.Vector:
         return self.speedAtPoint(self.center(deltaTime), deltaTime)
+
+    def accelerationAtPoint(self, point: lib.Point, deltaTime: float = 0) -> lib.Vector:
+        normal = lib.Vector.fromPoints(self.rotationCenter(), point)
+        rTanAcceleration = lib.Vector(
+            (0, self.angularMotionAcceleration(deltaTime) * normal.norm())
+        )
+        rTanAcceleration.rotate(normal.direction())
+        return rTanAcceleration + self.vectorialMotionAcceleration(deltaTime)
 
     def set_angle(self, newAngle: float) -> None:
         self._angle = newAngle
@@ -154,9 +169,6 @@ class Object:
         self.translate(self.relativePosition(deltaTime))
 
         self._angularMotion.updateReferences(deltaTime)
-        self._angularMotion.center().translate(
-            self._vectorialMotion.relativePosition(deltaTime)
-        )
         self._vectorialMotion.updateReferences(deltaTime)
 
     def angularMotionSpeed(self, deltaTime: float = 0) -> float:
@@ -248,12 +260,6 @@ class Object:
     #     point, tangent = self.collisionPointAndTangent(other)
     #     selfNetForce = self.netForceAtPoint()
     #     if selfNetForce:
-
-    # def netForceAtPoint(self, point: lib.Point, deltaTime: float = 0) -> lib.Vector:
-    #     return self.mass() * (
-    #         self._angularMotion.accelerationAtPoint(point, deltaTime)
-    #         + self._vectorialMotion.acceleration(deltaTime)
-    #     )
 
     def vectorialMotion(self):
         return self._vectorialMotion
