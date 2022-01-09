@@ -1,6 +1,5 @@
 from math import radians
 from typing import Any, List
-from game.objects.FinishLine import FinishLine
 
 import lib
 
@@ -106,6 +105,25 @@ class ObjectFactory:
                         pointV.scaleY(scaleY)
 
                         kwds["vertices"][i] = pointV
+
+                    if objectType in ["FinishLine"]:
+                        kwds["numberOfLaps"] = obj["lge"]["numberOfLaps"]
+
+                    elif objectType in ["Kart"]:
+                        kwds["vertices"] = [
+                            lib.Vector((-25, -8)),
+                            lib.Vector((-25, 8)),
+                            lib.Vector((25, 8)),
+                            lib.Vector((25, -8)),
+                        ]
+                        kwds[
+                            "angularMotion"
+                        ] = motions.angulars.UniformlyAcceleratedCircularMotion(
+                            rotationCenter=lib.Vector((-25, 0))
+                        )
+                        kwds[
+                            "vectorialMotion"
+                        ] = motions.vectorials.UniformlyAcceleratedMotion()
 
                 if objectType in ["Flipper"]:
                     kwds["flipperMaxAngle"] = obj["lge"]["flipperMaxAngle"]

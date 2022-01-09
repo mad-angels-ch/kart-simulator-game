@@ -33,12 +33,6 @@ class Kart(Polygon):
         kwargs["friction"] = 0.6
         super().__init__(**kwargs)
         self._lastGate = 0
-        rCenter = lib.Point(self.vertex(-1))
-        rCenter.translate(lib.Vector.fromPoints(self.vertex(-1), self.vertex(-2)) / 2)
-        self._angularMotion = angularMotions.UniformlyAcceleratedCircularMotion(
-            rotationCenter=rCenter
-        )
-        self._vectorialMotion = vectorialMotions.UniformlyAcceleratedMotion()
         self._moving = 0
         self._turning = 0
 
