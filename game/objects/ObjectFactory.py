@@ -14,10 +14,9 @@ from .Gate import Gate
 from . import motions
 from .fill import createFill
 
-
+from kivy.app import App
 class ObjectFactory:
     objectsCreatedCount = 0
-
     def __call__(self, objectType, **kwds: Any) -> Object:
         ObjectFactory.objectsCreatedCount += 1
 
@@ -125,13 +124,13 @@ class ObjectFactory:
                     )
 
                 newObjects.append(self(objectType, **kwds))
-
+                
         if gatesCount < 2:
             raise ObjectCountError("Gate", 2, gatesCount)
         elif finishLineCount != 1:
             raise ObjectCountError("Finish line", 1, finishLineCount)
         elif kartPlaceHolderCount < 1:
-            raise ObjectCountError("Kart placeholder", 1, kartPlaceHolderCount)
+           raise ObjectCountError("Kart placeholder", 1, kartPlaceHolderCount)
 
         return newObjects
 
@@ -147,7 +146,15 @@ class ObjectCountError(RuntimeError):
         self._foundCount = foundCount
 
     def message(self) -> str:
-        return f"{self._requiredCount} {self._type} were expected but {self._foundCount} were found"
-
+        if self._requiredCount == 1:
+            if self._foundCount == 1:
+                return f"{self._requiredCount} {self._type} was expected but {self._foundCount} was found"
+            else:
+                return f"{self._requiredCount} {self._type} was expected but {self._foundCount} were found"
+        else:
+            if self._foundCount == 1:
+                return f"{self._requiredCount} {self._type} were expected but {self._foundCount} was found"
+            else:
+                return f"{self._requiredCount} {self._type} were expected but {self._foundCount} were found"
 
 create = ObjectFactory()
