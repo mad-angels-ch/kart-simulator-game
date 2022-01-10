@@ -70,8 +70,7 @@ class Polygon(Object):
         self.updateAngleCosSin()
 
     def vertex(self, vertexIndex: int, deltaTime: float = 0) -> lib.Point:
-        """NE PAS MODIFIER
-        Retourne le sommet correspondant"""
+        """Retourne le sommet correspondant"""
         vertexV = lib.Vector(self._vertices[vertexIndex])
         vertexV.rotateCosSin(*self.angleCosSin(deltaTime))
         vertex = lib.Point(vertexV)
@@ -79,8 +78,7 @@ class Polygon(Object):
         return vertex
 
     def vertices(self, deltaTime: float = 0) -> List[lib.Point]:
-        """NE PAS MODIFIER
-        Retourne la liste des sommets"""
+        """Retourne la liste des sommets"""
         return [self.vertex(i, deltaTime) for i in range(len(self))]
 
     def edge(self, startVertexIndex: int, deltaTime: float = 0) -> lib.Segment:
