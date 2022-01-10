@@ -78,7 +78,7 @@ class ObjectFactory:
                     "mass": obj["lge"]["mass"],
                 }
                 if objectType == "Lava":
-                    kwds["fill"] = createFill.fromFabric("#FFA500")
+                    kwds["fill"] = createFill.fromFabric("#ffa500")
                 else:
                     kwds["fill"] = createFill.fromFabric(obj["fill"])
 
