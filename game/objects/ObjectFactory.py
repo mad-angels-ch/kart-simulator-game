@@ -93,7 +93,7 @@ class ObjectFactory:
                 if objectType in ["Circle"]:
                     kwds["radius"] = obj["radius"] * min(scaleX, scaleY)
 
-                if objectType in ["Polygon", "Flipper", "Kart", "Gate", "FinishLine"]:
+                if objectType in ["Polygon", "Flipper", "Kart", "Gate", "FinishLine", "Lava"]:
                     kwds["vertices"] = [
                         lib.Point((point["x"], point["y"])) for point in obj["points"]
                     ]
