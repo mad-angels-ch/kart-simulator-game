@@ -123,48 +123,7 @@ class Polygon(Object):
             )
         return super().updatePotentialCollisionZone(timeInterval)
 
-    # def potentialCollisionZone(self, timeInterval: float) -> lib.Circle:
-    #     translation = self.relativePosition(timeInterval)
-    #     vertices = self.vertices()
-    #     if self.isStatic():
-    #         xes = [point.x() for point in vertices]
-    #         yes = [point.y() for point in vertices]
-    #         left = min(xes)
-    #         right = max(xes)
-    #         bottom = min(yes)
-    #         top = max(yes)
-    #         halfWidth = (right - left) / 2
-    #         halfHeight = (top - bottom) / 2
-    #         return lib.Circle(
-    #             lib.Point((left + halfWidth, bottom + halfHeight)),
-    #             max(halfWidth, halfHeight),
-    #         )
-
-    #     else:
-    #         endVertices = self.vertices(timeInterval)
-    #         xes = [point.x() for point in vertices + endVertices]
-    #         yes = [point.y() for point in vertices + endVertices]
-    #         left = min(xes)
-    #         right = max(xes)
-    #         bottom = min(yes)
-    #         top = max(yes)
-    #         halfWidth = (right - left) / 2
-    #         halfHeight = (top - bottom) / 2
-    #         return lib.Circle(
-    #             lib.Point((left + halfWidth, bottom + halfHeight)),
-    #             max(halfWidth, halfHeight),
-    #         )
-
     def collides(self, other: "Object", timeInterval: float) -> bool:
-        if not other.mass():
-            pass
-            # if self.vectorialMotion().speed().norm() and self.mass():
-            #     tan = self.collisionPointAndTangent(other)[1].unitVector()
-            #     cos = self.vectorialMotion().speed().CosAngleBetweenTwoVectors(tan)
-            #     new_norm = self.vectorialMotion().speed().norm()
-            #     new_speed = tan*cos*new_norm
-            #     self.set_vectorialMotionSpeed(newSpeed=new_speed)
-
         if not (self.mass() or other.mass()):
             return False
 
