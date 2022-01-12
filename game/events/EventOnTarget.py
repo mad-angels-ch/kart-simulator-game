@@ -4,6 +4,10 @@ from .Event import Event, Object
 
 
 class EventOnTarget(Event):
+    """Evènement destinné à un ou plusieurs objets.
+    Sert notamment à transmettre les inputs des utilisateurs aux objets associés.\n
+    Ne pas utiliser directement, mais dériver et surchager le constructeur ainsi que la méthode applyOn()."""
+
     _target: Any
     _method: str
 
@@ -21,7 +25,7 @@ class EventOnTarget(Event):
             raise KeyError("Neither targetFormID or targetsName was given")
 
     def method(self) -> str:
-        """Retourne la méthode d'itentification de la cible"""
+        """Retourne la méthode d'itentification de la ou les cibles"""
         return self._method
 
     def target(self) -> Any:
@@ -29,7 +33,7 @@ class EventOnTarget(Event):
         return self._target
 
     def apply(self, objects: List[Object]):
-        """Méthode à ne pas surcharger, sert à sélectionner les éléments cibles"""
+        """NE PAS SURCHARGER, sert à sélectionner les éléments cibles et appele applyOn() sur ceux-ci"""
         for obj in objects:
             if self.method() == "formID" and obj.formID() == self.target():
                 self.applyOn(obj)
@@ -37,5 +41,5 @@ class EventOnTarget(Event):
                 self.applyOn(obj)
 
     def applyOn(self, target: Object) -> None:
-        """Méthode à surcharger."""
-        pass
+        """Méthode à surcharger.
+        Lors du traitement des évènements, cette méthode est appliqué sur chaques objets cibles, passés comme argument"""

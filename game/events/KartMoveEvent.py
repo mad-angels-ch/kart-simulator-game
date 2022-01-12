@@ -2,12 +2,13 @@ from .EventOnTarget import EventOnTarget
 
 
 class Kart:
-    pass
+    """Sert uniquement à indiquer de type d'éléments cibles attendus et éviter une importation inutile"""
 
 
 class KartMoveEvent(EventOnTarget):
-    """Event permettant de mettre le kart correspondant en mouvement.\n
-    <direction>: -1 = en arrière, 0 = arrêté, 1 = en avant"""
+    """Evènement demandant la mise en mouvement avant-arrière des karts.\n
+    L'argument direction fonction de la manière suivante:
+    -1 = en arrière, 0 = arrêté, 1 = en avant"""
 
     _direction: int
 

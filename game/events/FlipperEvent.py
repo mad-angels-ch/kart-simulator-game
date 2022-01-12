@@ -2,10 +2,12 @@ from .EventOnTarget import EventOnTarget, Object
 
 
 class Flipper:
-    pass
+    """Sert uniquement à indiquer de type d'éléments cibles attendus et éviter une importation inutile"""
 
 
 class FlipperEvent(EventOnTarget):
+    """Evènement demandant la mise en mouvement des flippers."""
+
     _upward: bool
 
     def __init__(
