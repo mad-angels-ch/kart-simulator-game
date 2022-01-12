@@ -27,6 +27,8 @@ class Object:
     _potentialCollisionZoneUpToDate: bool
     _potentialCollisionZoneTimeInterval: float
 
+    _solid: bool
+
     def __init__(self, **kwargs) -> None:
         self._name = kwargs.get("name", None)
         self._formID = kwargs["formID"]
@@ -43,10 +45,30 @@ class Object:
         self._mass = kwargs.get("mass", 0)
         self._friction = kwargs.get("friction", 0)
         self._potentialCollisionZoneUpToDate = False
+        self._solid = kwargs.get("isSolid", True)
+        self._solid = kwargs.get("isSolid", True)
+
+    def __eq__(self, other: "Object") -> bool:
+        return self.formID() == other.formID()
+
+    def onFrameStart(self, deltaTime: float) -> None:
+        """Méthode destinée à être surchargée, lancée au début de chaque frame"""
+        pass
 
     def onEventsRegistered(self, deltaTime: float) -> None:
         """Méthode à surcharger"""
         pass
+
+    def onCollision(self, other: "Object", timeSinceLastFrame: float) -> None:
+        """Méthode à surcharger, lancée lors des collisions"""
+
+    def onFrameEnd(self, deltaTime: float) -> None:
+        """Méthode destinée à être surchargée, lancée à la fin de chaque frame"""
+        pass
+
+    def isSolid(self) -> bool:
+        """Si vrai, il rebondit sur les autres objets sinon il les traverse"""
+        return self._solid
 
     def formID(self) -> int:
         return self._formID
@@ -68,6 +90,12 @@ class Object:
         newCenter = lib.Point(self.center())
         newCenter.translate(self.relativePosition(deltaTime))
         return newCenter
+
+    def rotationCenter(self, deltaTime: float = 0) -> lib.Point:
+        """Retourne le centre de rotation de l'objet à l'instant donné"""
+        rCenter = lib.Point(self.center(deltaTime))
+        rCenter.translate(self._angularMotion.center())
+        return rCenter
 
     def potentialCollisionZone(self, timeInterval: float) -> lib.AlignedRectangle:
         """Retourne un rectangle aligné avec les axes englobant toutes les positions de l'objet pendant l'intervalle donné."""
@@ -93,7 +121,7 @@ class Object:
 
     def relativePosition(self, deltaTime: float) -> lib.Vector:
         fromRotationCenterBefore = lib.Vector.fromPoints(
-            self._angularMotion.center(), self.center()
+            self.rotationCenter(), self.center()
         )
         fromRotationCenterAfter = lib.Vector(fromRotationCenterBefore)
         fromRotationCenterAfter.rotate(self.relativeAngle(deltaTime))
@@ -104,12 +132,21 @@ class Object:
         )
 
     def speedAtPoint(self, point: lib.Point, deltaTime: float = 0) -> lib.Vector:
-        return self._angularMotion.speedAtPoint(
-            point, deltaTime
-        ) + self._vectorialMotion.speed(deltaTime)
+        normal = lib.Vector.fromPoints(self.rotationCenter(), point)
+        rtanSpeed = lib.Vector((0, self.angularMotionSpeed(deltaTime) * normal.norm()))
+        rtanSpeed.rotate(normal.direction())
+        return rtanSpeed + self.vectorialMotionSpeed(deltaTime)
 
     def centerSpeed(self, deltaTime: float = 0) -> lib.Vector:
         return self.speedAtPoint(self.center(deltaTime), deltaTime)
+
+    def accelerationAtPoint(self, point: lib.Point, deltaTime: float = 0) -> lib.Vector:
+        normal = lib.Vector.fromPoints(self.rotationCenter(), point)
+        rTanAcceleration = lib.Vector(
+            (0, self.angularMotionAcceleration(deltaTime) * normal.norm())
+        )
+        rTanAcceleration.rotate(normal.direction())
+        return rTanAcceleration + self.vectorialMotionAcceleration(deltaTime)
 
     def set_angle(self, newAngle: float) -> None:
         self._angle = newAngle
@@ -132,9 +169,6 @@ class Object:
         self.translate(self.relativePosition(deltaTime))
 
         self._angularMotion.updateReferences(deltaTime)
-        self._angularMotion.center().translate(
-            self._vectorialMotion.relativePosition(deltaTime)
-        )
         self._vectorialMotion.updateReferences(deltaTime)
 
     def angularMotionSpeed(self, deltaTime: float = 0) -> float:
@@ -222,19 +256,10 @@ class Object:
         ainsi qu'une approximation d'un vecteur directeur de la tangente passant par ce point"""
         raise RuntimeError("This method should be overwritten")
 
-    def onCollision(self, other: "Object") -> None:
-        """Méthode à surcharger, lancée lors des collisions"""
-
     # def xyz(self, other: "Object", deltaTime: float = 0) -> bool:
     #     point, tangent = self.collisionPointAndTangent(other)
     #     selfNetForce = self.netForceAtPoint()
     #     if selfNetForce:
-
-    # def netForceAtPoint(self, point: lib.Point, deltaTime: float = 0) -> lib.Vector:
-    #     return self.mass() * (
-    #         self._angularMotion.accelerationAtPoint(point, deltaTime)
-    #         + self._vectorialMotion.acceleration(deltaTime)
-    #     )
 
     def vectorialMotion(self):
         return self._vectorialMotion

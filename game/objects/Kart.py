@@ -4,6 +4,7 @@ from typing import List
 import lib
 
 from .Polygon import Polygon, Object
+from .Lava import Lava
 from .motions import angulars as angularMotions, vectorials as vectorialMotions
 
 
@@ -26,18 +27,30 @@ class Kart(Polygon):
     # -1 = à droite, 0 = tout droit, 1 = à gauche
     _turning: int
 
+    _lastGate: int
+
+    _burned: bool
+
     def __init__(self, **kwargs) -> None:
+        kwargs["mass"] = 1
+        kwargs["friction"] = 0.6
         super().__init__(**kwargs)
-        rCenter = lib.Point(self.vertex(-1))
-        rCenter.translate(lib.Vector.fromPoints(self.vertex(-1), self.vertex(-2)) / 2)
-        self._angularMotion = angularMotions.UniformlyAcceleratedCircularMotion(
-            rotationCenter=rCenter
-        )
-        self._vectorialMotion = vectorialMotions.UniformlyAcceleratedMotion()
+        self._lastGate = 0
         self._moving = 0
         self._turning = 0
-        self.set_friction(0.01)
-        self.set_mass(1)
+        self._burned = False
+
+    def lastGate(self) -> int:
+        """Retourne le formID du dernier portillon que le kart a traversé"""
+        return self._lastGate
+
+    def set_lastGate(self, newLastGameFormID: int) -> None:
+        """Modifie le dernier portillon que le kart a traversé"""
+        self._lastGate = newLastGameFormID
+
+    def hasBurned(self) -> bool:
+        """Retourne vrai si le kart s'est fait brûlé par la lave"""
+        return self._burned
 
     def request_move(self, direction: int) -> None:
         """Met le kart en mouvement
@@ -49,9 +62,12 @@ class Kart(Polygon):
         -1 = à droite, 0 = tout droit, 1 = à gauche"""
         self._turning = direction
 
-    def onCollision(self, other: "Object") -> None:
-        self.set_angularMotionSpeed(0)
-        self.set_angularMotionAcceleration(0)
+    def onCollision(self, other: "Object", timeSinceLastFrame: float) -> None:
+        if other.isSolid():
+            if isinstance(other, Lava):
+                self._burned = True
+            self.set_angularMotionSpeed(0)
+            self.set_angularMotionAcceleration(0)
 
     def onEventsRegistered(self, deltaTime: float) -> None:
         targetASpeed = self._turning * self.turningSpeed
@@ -69,4 +85,3 @@ class Kart(Polygon):
                 targetVectorialSpeed[i] - currentVectorialSpeed[i]
             ) / self.movingCorrectionTime
         self.set_vectorialMotionAcceleration(acceleration)
-    

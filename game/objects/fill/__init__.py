@@ -1,1 +1,1 @@
-from .FillFactory import createFill, Fill
+from .FillFactory import createFill, Fill, Hex, Pattern

@@ -5,7 +5,6 @@ import time
 import math
 from game.objects.Object import Object
 
-from lib import Point, Vector
 import lib
 
 from . import objects
@@ -13,6 +12,8 @@ from . import objects
 
 class CollisionsZone:
     timePrecision = 1e-3
+    # Plus réaliste, mais cause beaucoup de crash
+    useFriction: bool = False
 
     def create(
         objectsList: List[objects.Object], timeInterval: float
@@ -57,13 +58,16 @@ class CollisionsZone:
         return zones, objs
 
     _timeInterval: float
+    _checkedInterval: float
     _objects: List[objects.Object]
     _dimension: lib.AlignedRectangle
     _movingDimension: lib.AlignedRectangle
+    _ignoringList: List[Tuple[objects.Object, objects.Object]]
 
     def __init__(self, timeInterval: float, *objectsInside: objects.Object) -> None:
         super().__init__()
         self._timeInterval = timeInterval
+        self._ignoringList = []
         if len(objectsInside) < 2:
             raise SyntaxError("A collision zone must contain at least 2 objects")
         elif objectsInside[0].isStatic():
@@ -109,8 +113,11 @@ class CollisionsZone:
         def getCollidedObjects(objects: List[objects.Object]):
             for first in range(len(objects) - 1):
                 for second in range(first + 1, len(objects)):
-                    if objects[first].collides(objects[second], halfWorkingInterval):
-                        return (objects[first], objects[second])
+                    pair = objects[first], objects[second]
+                    if pair not in self._ignoringList and pair[0].collides(
+                        pair[1], halfWorkingInterval
+                    ):
+                        return pair
             return None
 
         checkedInterval = 0
@@ -131,55 +138,70 @@ class CollisionsZone:
             halfWorkingInterval /= 2
 
         # gestion de la collision
-        # print("Collision entre", lastCollidedObjects[0].formID(), "et", lastCollidedObjects[1].formID())
-        point, tangent = lastCollidedObjects[0].collisionPointAndTangent(
-            lastCollidedObjects[1]
-        )
-        angle = tangent.direction()
+        if sum([lastCollidedObjects[i].isSolid() for i in range(2)]) < 2:
+            self._ignoringList.append(lastCollidedObjects)
 
-        masses = [obj.mass() for obj in lastCollidedObjects]
-        objSpeeds = [obj.vectorialMotionSpeed() for obj in lastCollidedObjects]
-        pointSpeeds = [obj.speedAtPoint(point) for obj in lastCollidedObjects]
-        speedsBefore = objSpeeds.copy()
-        speedsBefore.extend(pointSpeeds)
-        for speed in speedsBefore:
-            speed.rotate(-angle)
-        speedsAfter = [Vector(speed) for speed in objSpeeds]
+        else:
+            point, tangent = lastCollidedObjects[0].collisionPointAndTangent(
+                lastCollidedObjects[1]
+            )
+            angle = tangent.direction()
 
-        other = len(masses) - 1
-        for current in range(len(masses)):
-            m1 = masses[current]
-            m2 = masses[other]
-            v1 = objSpeeds[current][1]
-            v2 = pointSpeeds[other][1]
+            masses = [obj.mass() for obj in lastCollidedObjects]
+            objSpeeds = [obj.vectorialMotionSpeed() for obj in lastCollidedObjects]
+            pointSpeeds = [obj.speedAtPoint(point) for obj in lastCollidedObjects]
+            speedsBefore = objSpeeds.copy()
+            speedsBefore.extend(pointSpeeds)
+            for speed in speedsBefore:
+                speed.rotate(-angle)
+            speedsAfter = [lib.Vector(speed) for speed in objSpeeds]
 
-            if m1:
-                if m2:
-                    speedsAfter[current][1] = 2 * (m1 * v1 + m2 * v2) / (m1 + m2) - v1
+            other = 1
+            for current in range(2):
+                m1 = masses[current]
+                m2 = masses[other]
+                v1 = objSpeeds[current][1]
+                v2 = pointSpeeds[other][1]
+
+                if m1:
+                    if m2:
+                        speedsAfter[current][1] = (
+                            2 * (m1 * v1 + m2 * v2) / (m1 + m2) - v1
+                        )
+                    else:
+                        speedsAfter[current][1] = 2 * v2 - v1
                 else:
-                    speedsAfter[current][1] = 2 * v2 - v1
-            else:
-                if m2:
-                    speedsAfter[current][1] = v1
-                else:
-                    raise "Collision between two fixed objects"
+                    if m2:
+                        speedsAfter[current][1] = v1
+                    else:
+                        raise "Collision between two fixed objects"
 
+                other = current
+
+            for current in range(2):
+                speedsAfter[current].rotate(angle)
+                if self.useFriction:
+                    speedsAfter[current] *= (
+                        1 - lastCollidedObjects[current].friction()
+                    ) * (1 - lastCollidedObjects[other].friction())
+                lastCollidedObjects[current].set_vectorialMotionSpeed(
+                    speedsAfter[current]
+                )
+                other = current
+
+        other = 1
+        for current in range(2):
+            lastCollidedObjects[current].onCollision(
+                lastCollidedObjects[other], self._checkedInterval + checkedInterval
+            )
             other = current
 
-        for current in range(len(masses)):
-            speedsAfter[current].rotate(angle)
-            # speedsAfter[current] *= (1 - lastCollidedObjects[current].friction()) * (
-            #     1 - lastCollidedObjects[other].friction()
-            # )
-            lastCollidedObjects[current].onCollision(lastCollidedObjects[other])
-            lastCollidedObjects[current].set_vectorialMotionSpeed(speedsAfter[current])
-
-            other = current
-
-        print("collision")
         return checkedInterval
 
     def resolve(self) -> None:
-        """Détecte précisément les collisions, gère celle-ci et met les objets à jours"""
-        while self._timeInterval > 0:
-            self._timeInterval -= self._solveFirst(self._timeInterval)
+        """Détecte précisément les collisions, gère celles-ci et met les objets à jours"""
+        self._checkedInterval = 0
+        while self._checkedInterval < self._timeInterval:
+            self._checkedInterval += self._solveFirst(
+                self._timeInterval - self._checkedInterval
+            )
