@@ -14,17 +14,12 @@ class Game:
     _dataUrl: str
     _objects: List[objects.Object]
 
-    _frameTimer: float
-    _gameTimer: float
-    _updateGameTimer: bool
-
     def __init__(
         self, dataUrl: str, events: List[events.Event], output: "function"
     ) -> None:
         self._dataUrl = dataUrl
         self._events = events
         self._output = output
-        self._frameTimer = 0
         self._updateGameTimer = False
 
         with open(dataUrl, "r") as data:
@@ -33,26 +28,11 @@ class Game:
                 jsonObject["objects"], jsonObject["version"]
             )
 
-    def startGameTimer(self, startAt: float = 0) -> None:
-        """Démarre le timer du jeu, indépendant de l'instanciation de la partie"""
-        self._updateGameTimer = True
-        self._gameTimer = startAt
-
-    def resumeGameTimer(self) -> None:
-        """Reprend le timer du jeu, indépendant de l'instanciation de la partie"""
-        self._updateGameTimer
-
-    def stopGameTimer(self) -> None:
-        """Arrête le timer du jeu, indépendant de l'instanciation de la partie"""
-        self._updateGameTimer = False
-
     def nextFrame(self, elapsedTime: float) -> None:
+        """Avance le temps d'<elapsedTime> miliseconde et affiche le jeu à cet instant."""
         if elapsedTime > 1 / 50:
             # warning(f"ElapsedTime too big: {elapsedTime}")
             elapsedTime = 1 / 60
-        self._frameTimer += elapsedTime
-        if self._updateGameTimer:
-            self._gameTimer += elapsedTime
 
         # 1: traiter les events
         self.handleEvents(elapsedTime=elapsedTime)
@@ -64,6 +44,7 @@ class Game:
         self.callOutput()
 
     def handleEvents(self, elapsedTime: float) -> None:
+        """Récupère et gère les évènements"""
         for event in self._events:
             if isinstance(event, events.EventOnTarget):
                 event.apply(self._objects)
@@ -74,6 +55,7 @@ class Game:
             obj.onEventsRegistered(deltaTime=elapsedTime)
 
     def _simulatePhysics(self, elapsedTime: float) -> None:
+        """Attention, c'est là que ça se passe!"""
         zones, others = CollisionsZone.create(self._objects, elapsedTime)
         for zone in zones:
             zone.resolve()
@@ -81,4 +63,5 @@ class Game:
             other.updateReferences(elapsedTime)
 
     def callOutput(self) -> None:
+        """Met l'affichage à jour"""
         self._output(self._objects)

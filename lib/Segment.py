@@ -6,6 +6,7 @@ from .Line import Line
 
 
 class Segment(Line):
+    """Pour les segments"""
     def __init__(self, begin: Point, vectorOrEnd: "Vector | Point") -> None:
         super().__init__(begin, vectorOrEnd)
 

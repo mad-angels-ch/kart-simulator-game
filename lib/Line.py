@@ -6,6 +6,7 @@ from .Point import Point
 
 
 class Line:
+    """Pour les droites"""
     precision = 1e-6
 
     _point: Point

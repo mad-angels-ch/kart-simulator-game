@@ -11,6 +11,8 @@ from . import objects
 
 
 class CollisionsZone:
+    """Une zone de collision est un regroupement d'objets proches les un des autres pouvant potentiellenent se rentrer dedans."""
+
     timePrecision = 1e-3
     # Plus réaliste, mais cause beaucoup de crash
     useFriction: bool = False
@@ -109,6 +111,7 @@ class CollisionsZone:
         return self
 
     def _solveFirst(self, timeInterval: float) -> float:
+        """Détecte les collions, gère la première est retourne le moment de celle-ci."""
         # recherche du moment de la collision
         def getCollidedObjects(objects: List[objects.Object]):
             for first in range(len(objects) - 1):
