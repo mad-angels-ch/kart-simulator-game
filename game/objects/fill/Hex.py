@@ -2,18 +2,17 @@ import lib
 
 from .Fill import Fill
 
+
 class Hex(Fill):
+    """Remplissage uniforme de coleur exprimé en hex (ex. #000000)"""
+
     _value: str
 
-    def __init__(self, type: str, hexColor: str) -> None:
-        self._type = type
+    def __init__(self, hexColor: str) -> None:
         self._value = hexColor
 
     def type(self) -> str:
-        if self._type != "Hex":
-            raise "Le pattern attendu est ""Pattern"", or celui reçu est:" + self._type
-        else:
-            return self._type
+        return "Hex"
 
     def value(self) -> str:
         """Retourne la couleur (en hex) de remplissage"""
