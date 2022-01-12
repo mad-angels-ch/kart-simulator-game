@@ -82,8 +82,7 @@ class ObjectFactory:
                 else:
                     kwds["fill"] = createFill.fromFabric(obj["fill"])
 
-                if objectType != "FinishLine":
-                    scaleX, scaleY = obj["scaleX"], obj["scaleY"]
+                scaleX, scaleY = obj["scaleX"], obj["scaleY"]
 
                 if obj["flipX"]:
                     scaleX *= -1
