@@ -5,6 +5,7 @@ from .UniformlyAcceleratedMotion import UniformlyAcceleratedMotion
 
 
 class VectorialMotionFactory:
+    """Factory function pour les mouvements linéaire, ne pas utiliser leurs constructeurs"""
     def __call__(self, type: str, **kwargs) -> VectorialMotion:
         if type == "none":
             vectorialMotion = VectorialMotion()
@@ -22,6 +23,7 @@ class VectorialMotionFactory:
         return UniformlyAcceleratedMotion(initialSpeed, acceleration)
 
     def fromFabric(self, jsonObject) -> VectorialMotion:
+        """Créé et retourne à partir du format utilisé dans les jsons donnés le mouvement linéaire correspondant."""
         type = jsonObject["type"]
         kwargs = {}
         if type in ["uam"]:

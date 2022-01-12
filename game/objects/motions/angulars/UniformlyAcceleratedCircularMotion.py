@@ -4,6 +4,8 @@ from .AngularMotion import AngularMotion
 
 
 class UniformlyAcceleratedCircularMotion(AngularMotion):
+    """Mouvements angulaires uniforméments accélérés."""
+
     _acceleration: float
 
     def __init__(

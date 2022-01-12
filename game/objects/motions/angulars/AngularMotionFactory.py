@@ -5,7 +5,10 @@ from .UniformlyAcceleratedCircularMotion import UniformlyAcceleratedCircularMoti
 
 
 class AngularMotionFactory:
+    """Factory function pour les mouvements angulaires, ne pas utiliser leurs constructeurs"""
+
     def __call__(self, type: str, **kwargs) -> AngularMotion:
+        """Créé et retourne à partir des argments donnés le mouvement angulaire correspondant."""
         if type == "none":
             angularMotion = AngularMotion()
         elif type == "uacm":
@@ -25,12 +28,13 @@ class AngularMotionFactory:
         return UniformlyAcceleratedCircularMotion(center, initialSpeed, acceleration)
 
     def fromFabric(self, jsonObject) -> AngularMotion:
+        """Créé et retourne à partir du format utilisé dans les jsons donnés le mouvement angulaire correspondant."""
         type = jsonObject["type"]
         kwargs = {}
         if type in ["uacm"]:
-            kwargs["center"] = lib.Point((
-                float(jsonObject["center"]["x"]), float(jsonObject["center"]["y"])
-            ))
+            kwargs["center"] = lib.Point(
+                (float(jsonObject["center"]["x"]), float(jsonObject["center"]["y"]))
+            )
             kwargs["initialSpeed"] = jsonObject["velocity"]
             kwargs["acceleration"] = jsonObject["acceleration"]
 

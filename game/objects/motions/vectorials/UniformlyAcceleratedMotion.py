@@ -4,6 +4,10 @@ from .VectorialMotion import VectorialMotion
 
 
 class UniformlyAcceleratedMotion(VectorialMotion):
+    """Classe exprimant un movement angulaire à vitesse constante.
+    Peut être dérivée pour exprimé des mouvements angulaires plus complexes.\n
+    Le centre de rotation est relatif au centre de l'objet associé, et pour des raisons pratiques est exprimé à l'aide d'un vecteur."""
+    
     _acceleration: lib.Vector
 
     def __init__(
