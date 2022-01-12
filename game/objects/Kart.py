@@ -1,11 +1,7 @@
-from logging import currentframe
-import math
-from typing import List
 import lib
 
 from .Polygon import Polygon, Object
 from .Lava import Lava
-from .motions import angulars as angularMotions, vectorials as vectorialMotions
 
 
 class Kart(Polygon):

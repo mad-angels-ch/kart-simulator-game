@@ -12,6 +12,8 @@ from .Circle import Circle
 
 
 class Polygon(Object):
+    """Classe des polygons."""
+
     counter = 0
     precision = 1e-6
 
@@ -41,13 +43,16 @@ class Polygon(Object):
         return len(self._vertices)
 
     def convex(self) -> bool:
-        """Retourne True si le polygon est convexe"""
+        """Retourne True si le polygon est convexe.
+        Actuellement pas implémenté."""
         return self._convex
 
     def updateAngleCosSin(self) -> None:
+        """Met angleCosSin() à jour, appelée automatiquement."""
         self._angleCosSin = [fun(self.angle()) for fun in [cos, sin]]
 
     def angleCosSin(self, deltaTime: float = 0) -> List[float]:
+        """Retourne les valeurs de respectivement cos et sin de l'angle de l'objet au temps donné."""
         if not deltaTime:
             return self._angleCosSin
         angle = super().angle(deltaTime=deltaTime)
@@ -56,7 +61,6 @@ class Polygon(Object):
         elif math.isclose(angle, self._angleCosSin2Angle, abs_tol=Polygon.precision):
             return self._angleCosSin2
         else:
-            # info(f"{__name__}.angleCosSin(): {self.formID()} has changed his angle!")
             self._angleCosSin2 = [fun(angle) for fun in [cos, sin]]
             self._angleCosSin2Angle = angle
             return self._angleCosSin2
@@ -70,7 +74,7 @@ class Polygon(Object):
         self.updateAngleCosSin()
 
     def vertex(self, vertexIndex: int, deltaTime: float = 0) -> lib.Point:
-        """Retourne le sommet correspondant"""
+        """Retourne le sommet correspondant, tient compte de l'angle et du centre de l'objet."""
         vertexV = lib.Vector(self._vertices[vertexIndex])
         vertexV.rotateCosSin(*self.angleCosSin(deltaTime))
         vertex = lib.Point(vertexV)
@@ -78,12 +82,12 @@ class Polygon(Object):
         return vertex
 
     def vertices(self, deltaTime: float = 0) -> List[lib.Point]:
-        """Retourne la liste des sommets"""
+        """Retourne la liste des sommets, tient compte de l'angle et du centre de l'objet."""
         return [self.vertex(i, deltaTime) for i in range(len(self))]
 
     def edge(self, startVertexIndex: int, deltaTime: float = 0) -> lib.Segment:
         """NE PAS MODIFIER
-        Retourne le côté reliant le sommet correspondant et le suivant"""
+        Retourne le côté reliant le sommet correspondant et le suivant, tient compte de l'angle et du centre de l'objet."""
         endVertexIndex = startVertexIndex + 1
         if endVertexIndex == len(self):
             endVertexIndex = 0
@@ -94,7 +98,7 @@ class Polygon(Object):
 
     def edges(self, deltaTime: float = 0) -> List[lib.Segment]:
         """NE PAS MODIFER
-        Retourne la liste des côtés"""
+        Retourne la liste des côtés, tient compte de l'angle et du centre de l'objet."""
         edges = []
         vertices = self.vertices(deltaTime)
         second = len(vertices) - 1
@@ -222,6 +226,6 @@ class Polygon(Object):
         for vertex in self._vertices:
             vertexPoint = lib.Point(vertex)
             vertexPoint.translate(lib.Vector(self.center()))
-            listOfVerticesBeforeRotation.append((vertexPoint[0],vertexPoint[1]))
-            
+            listOfVerticesBeforeRotation.append((vertexPoint[0], vertexPoint[1]))
+
         return listOfVerticesBeforeRotation

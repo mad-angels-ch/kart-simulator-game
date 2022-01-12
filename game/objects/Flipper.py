@@ -9,6 +9,8 @@ from .Polygon import Polygon
 
 
 class Flipper(Polygon):
+    """Classe des flippers, uniquement pour l'easter egg (à vous de le trouver!)"""
+
     _flipperMaxAngle: float
     _flipperUpwardSpeed: float
     _flipperCurrentAngle: float

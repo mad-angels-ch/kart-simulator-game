@@ -8,6 +8,9 @@ from .fill import Fill, createFill
 
 
 class Object:
+    """Classes des objets composants les différents mondes.
+    Ne pas utiliser directement, utiliser les classes filles."""
+
     precision = 1e-6
 
     _name: str
@@ -49,41 +52,37 @@ class Object:
         self._solid = kwargs.get("isSolid", True)
 
     def __eq__(self, other: "Object") -> bool:
+        """Retourne vrai s'il s'agit du même objet"""
         return self.formID() == other.formID()
 
-    def onFrameStart(self, deltaTime: float) -> None:
-        """Méthode destinée à être surchargée, lancée au début de chaque frame"""
-        pass
-
     def onEventsRegistered(self, deltaTime: float) -> None:
-        """Méthode à surcharger"""
-        pass
+        """Méthode à surcharger, lancée une fois les évènements traités"""
 
     def onCollision(self, other: "Object", timeSinceLastFrame: float) -> None:
         """Méthode à surcharger, lancée lors des collisions"""
 
-    def onFrameEnd(self, deltaTime: float) -> None:
-        """Méthode destinée à être surchargée, lancée à la fin de chaque frame"""
-        pass
-
     def isSolid(self) -> bool:
-        """Si vrai, il rebondit sur les autres objets sinon il les traverse"""
+        """Si vrai, l'objet rebondit sur les autres objets sinon il les traverse"""
         return self._solid
 
     def formID(self) -> int:
+        """Retourne un identifiant unique pour l'objet. Ne changera jamais."""
         return self._formID
 
     def name(self) -> str:
+        """Retourne le nom de l'objet.\n
+        Ne correspond pas à la classe, mais à une chaîne de caractères définie par le propriétaire du monde."""
         return self._name
 
     def angle(self, deltaTime: float = 0) -> float:
+        """Retourne la rotation de l'objet par rapport à son centre à l'instant donné."""
         if not deltaTime:
             return self._angle
         return self._angle + self.relativeAngle(deltaTime)
 
     def center(self, deltaTime: float = 0) -> lib.Point:
-        """NE PAS MODIFIER
-        Retourne le centre de l'objet."""
+        """NE PAS MODIFIER\n
+        Retourne le centre de l'objet à l'instant donné."""
         if not deltaTime:
             return self._center
 
@@ -92,7 +91,7 @@ class Object:
         return newCenter
 
     def rotationCenter(self, deltaTime: float = 0) -> lib.Point:
-        """Retourne le centre de rotation de l'objet à l'instant donné"""
+        """Retourne le centre de rotation de l'objet à l'instant donné."""
         rCenter = lib.Point(self.center(deltaTime))
         rCenter.translate(self._angularMotion.center())
         return rCenter
@@ -114,33 +113,35 @@ class Object:
         self._potentialCollisionZoneUpToDate = True
 
     def isStatic(self) -> bool:
+        """Retourne vrai si l'objet est imobile"""
         return self._angularMotion.isStatic() and self._vectorialMotion.isStatic()
 
-    def relativeAngle(self, deltaTime: float) -> float:
-        return self._angularMotion.relativeAngle(deltaTime)
+    def relativeAngle(self, timeInterval: float) -> float:
+        """Retourne la rotation de l'objet durant l'intervalle donné."""
+        return self._angularMotion.relativeAngle(timeInterval)
 
-    def relativePosition(self, deltaTime: float) -> lib.Vector:
+    def relativePosition(self, timeInterval: float) -> lib.Vector:
+        """Retourne la transtion de l'objet durant l'intervalle donné."""
         fromRotationCenterBefore = lib.Vector.fromPoints(
             self.rotationCenter(), self.center()
         )
         fromRotationCenterAfter = lib.Vector(fromRotationCenterBefore)
-        fromRotationCenterAfter.rotate(self.relativeAngle(deltaTime))
+        fromRotationCenterAfter.rotate(self.relativeAngle(timeInterval))
         return (
-            self._vectorialMotion.relativePosition(deltaTime)
+            self._vectorialMotion.relativePosition(timeInterval)
             - fromRotationCenterBefore
             + fromRotationCenterAfter
         )
 
     def speedAtPoint(self, point: lib.Point, deltaTime: float = 0) -> lib.Vector:
+        """Retourne la vitesse linéaire d'un point donné (tient compte de sa vitesse angulaire)"""
         normal = lib.Vector.fromPoints(self.rotationCenter(), point)
         rtanSpeed = lib.Vector((0, self.angularMotionSpeed(deltaTime) * normal.norm()))
         rtanSpeed.rotate(normal.direction())
         return rtanSpeed + self.vectorialMotionSpeed(deltaTime)
 
-    def centerSpeed(self, deltaTime: float = 0) -> lib.Vector:
-        return self.speedAtPoint(self.center(deltaTime), deltaTime)
-
     def accelerationAtPoint(self, point: lib.Point, deltaTime: float = 0) -> lib.Vector:
+        """Retourne l'accélération linéaire d'un point donné (tient compte de son accélération angulaire)"""
         normal = lib.Vector.fromPoints(self.rotationCenter(), point)
         rTanAcceleration = lib.Vector(
             (0, self.angularMotionAcceleration(deltaTime) * normal.norm())
@@ -149,22 +150,27 @@ class Object:
         return rTanAcceleration + self.vectorialMotionAcceleration(deltaTime)
 
     def set_angle(self, newAngle: float) -> None:
+        """Change l'angle de l'objet au temps 0"""
         self._angle = newAngle
         self._potentialCollisionZoneUpToDate = False
 
     def set_center(self, newCenter: lib.Point) -> None:
+        """Change le centre de l'objet au temps 0"""
         self._center = newCenter
         self._potentialCollisionZoneUpToDate = False
 
     def rotate(self, angle: float) -> None:
+        """Effectue une rotation sur l'objet"""
         self._angle += angle
         self._potentialCollisionZoneUpToDate = False
 
     def translate(self, vector: lib.Vector) -> None:
+        """Effectue une translation sur l'objet"""
         self._center.translate(vector)
         self._potentialCollisionZoneUpToDate = False
 
     def updateReferences(self, deltaTime: float) -> None:
+        """Avance les références: avance l'instant correspondant au temps 0 de deltaTime"""
         self.rotate(self.relativeAngle(deltaTime))
         self.translate(self.relativePosition(deltaTime))
 
@@ -220,27 +226,36 @@ class Object:
         self._potentialCollisionZoneUpToDate = False
 
     def fill(self) -> Fill:
+        """Retourne la méthode de remplissage de l'objet."""
         return self._fill
 
     def set_fill(self, newFill: Fill) -> None:
+        """Change la méthode de remplissage de l'objet."""
         self._fill = newFill
 
     def opacity(self) -> float:
+        """Retourne la transparance de l'objet."""
         return self._opacity
 
     def mass(self) -> float:
+        """Retourne la masse de l'objet.
+        Une mass de 0 signifie que ses mouvements ne seront pas influencés par les autres objets."""
         return self._mass
 
     def set_mass(self, newMass: float) -> None:
         """Change la masse de l'objet.
-        Une mass de 0 signifie qu'il est impossible à influencer."""
+        Une mass de 0 signifie que ses mouvements ne seront pas influencés par les autres objets."""
         self._mass = newMass
 
     def friction(self) -> float:
+        """Retourne le coeffiction de frottement de l'objet.\n
+        Un coefficient de 0 signifie que l'objet n'a aucune perte lors des collisons.
+        Un coefficient de 1 signifie que l'objet est complétement imobile après une collisions. Ne pas utiliser.
+        Un coefficient négatif signifie que l'objet prend de la vitesse lors des collisions."""
         return self._friction
 
     def set_friction(self, newFriction: float) -> None:
-        """Change le coefficient de friction de l'objet.
+        """Change le coefficient de friction de l'objet.\n
         Un coefficient de 0 signifie que l'objet n'a aucune perte lors des collisons.
         Un coefficient de 1 signifie que l'objet est complétement imobile après une collisions. Ne pas utiliser.
         Un coefficient négatif signifie que l'objet prend de la vitesse lors des collisions."""
@@ -255,11 +270,3 @@ class Object:
         """Retourne une approximation du point par lequel les deux objets se touchent
         ainsi qu'une approximation d'un vecteur directeur de la tangente passant par ce point"""
         raise RuntimeError("This method should be overwritten")
-
-    # def xyz(self, other: "Object", deltaTime: float = 0) -> bool:
-    #     point, tangent = self.collisionPointAndTangent(other)
-    #     selfNetForce = self.netForceAtPoint()
-    #     if selfNetForce:
-
-    def vectorialMotion(self):
-        return self._vectorialMotion

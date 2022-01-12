@@ -54,9 +54,6 @@ class Game:
         if self._updateGameTimer:
             self._gameTimer += elapsedTime
 
-        for obj in self._objects:
-            obj.onFrameStart(elapsedTime)
-
         # 1: traiter les events
         self.handleEvents(elapsedTime=elapsedTime)
 
@@ -65,9 +62,6 @@ class Game:
 
         # 3: appeler output
         self.callOutput()
-
-        for obj in self._objects:
-            obj.onFrameEnd(elapsedTime)
 
     def handleEvents(self, elapsedTime: float) -> None:
         for event in self._events:

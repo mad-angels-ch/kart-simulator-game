@@ -14,10 +14,14 @@ from .Gate import Gate
 from . import motions
 from .fill import createFill
 
-from kivy.app import App
+
 class ObjectFactory:
+    """Classe permettant la création de la factory function des objest."""
+
     objectsCreatedCount = 0
+
     def __call__(self, objectType, **kwds: Any) -> Object:
+        """Créé et retourne l'objet selon les paramètres passés. Ne pas utiliser les contructeurs de ceux-ci."""
         ObjectFactory.objectsCreatedCount += 1
 
         kwds["formID"] = ObjectFactory.objectsCreatedCount
@@ -42,6 +46,8 @@ class ObjectFactory:
     def fromFabric(
         self, jsonObjects: List[dict], version: str = "4.4.0"
     ) -> List[Object]:
+        """Charge et retourne les objets selon le json créé par le créateur.\n
+        La création de ce json est basé sur http://fabricjs.com/ avec des ajouts sous la propriété 'lge'."""
         gatesCount = 0
         finishLineCount = 0
         kartPlaceHolderCount = 0
@@ -92,7 +98,14 @@ class ObjectFactory:
                 if objectType in ["Circle"]:
                     kwds["radius"] = obj["radius"] * min(scaleX, scaleY)
 
-                if objectType in ["Polygon", "Flipper", "Kart", "Gate", "FinishLine", "Lava"]:
+                if objectType in [
+                    "Polygon",
+                    "Flipper",
+                    "Kart",
+                    "Gate",
+                    "FinishLine",
+                    "Lava",
+                ]:
                     kwds["vertices"] = [
                         lib.Point((point["x"], point["y"])) for point in obj["points"]
                     ]
@@ -151,18 +164,20 @@ class ObjectFactory:
                     )
 
                 newObjects.append(self(objectType, **kwds))
-                
+
         if gatesCount < 2:
             raise ObjectCountError("Gate", 2, gatesCount)
         elif finishLineCount != 1:
             raise ObjectCountError("Finish line", 1, finishLineCount)
         elif kartPlaceHolderCount < 1:
-           raise ObjectCountError("Kart placeholder", 1, kartPlaceHolderCount)
+            raise ObjectCountError("Kart placeholder", 1, kartPlaceHolderCount)
 
         return newObjects
 
 
 class ObjectCountError(RuntimeError):
+    """Classe pour les erreurs dans le fabric json."""
+
     _type: str
     _requiredCount: int
     _foundCount: int
@@ -173,6 +188,7 @@ class ObjectCountError(RuntimeError):
         self._foundCount = foundCount
 
     def message(self) -> str:
+        """Message de l'erreur."""
         if self._requiredCount == 1:
             if self._foundCount == 1:
                 return f"{self._requiredCount} {self._type} was expected but {self._foundCount} was found"
@@ -183,5 +199,6 @@ class ObjectCountError(RuntimeError):
                 return f"{self._requiredCount} {self._type} were expected but {self._foundCount} was found"
             else:
                 return f"{self._requiredCount} {self._type} were expected but {self._foundCount} were found"
+
 
 create = ObjectFactory()

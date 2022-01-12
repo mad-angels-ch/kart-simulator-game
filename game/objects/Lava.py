@@ -1,6 +1,4 @@
-import lib
-
-from .Polygon import Object, Polygon
+from .Polygon import Polygon
 
 
 class Lava(Polygon):

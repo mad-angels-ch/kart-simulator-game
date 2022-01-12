@@ -1,6 +1,4 @@
-from typing import Dict, List
-
-import lib
+from typing import Dict
 
 from .Polygon import Object, Polygon
 from .Kart import Kart

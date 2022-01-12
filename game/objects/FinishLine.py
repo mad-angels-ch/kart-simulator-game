@@ -6,6 +6,7 @@ from .Gate import Object, Gate, Kart
 
 
 class FinishLine(Gate):
+    """Classe de la ligne d'arrivée."""
 
     _numberOfLaps: int
 
