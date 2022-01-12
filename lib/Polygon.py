@@ -61,8 +61,6 @@ class Polygon(Shape):
                             <= other.radius() * other.radius()
                         ):
                             return True
-                except:
-                    print("hey")
                 finally:
                     second = first
 
