@@ -51,6 +51,7 @@ class ObjectFactory:
         gatesCount = 0
         finishLineCount = 0
         kartPlaceHolderCount = 0
+        flippersCount = 0
 
         newObjects = []
         if version == "4.4.0":
@@ -62,6 +63,7 @@ class ObjectFactory:
                     objectType = "Polygon"
                 elif objectType in ["LGEFlipper"]:
                     objectType = "Flipper"
+                    flippersCount += 1
                 elif objectType in ["LGELava"]:
                     objectType = "Lava"
                 elif objectType in ["LGEKartPlaceHolder"]:
@@ -165,12 +167,13 @@ class ObjectFactory:
 
                 newObjects.append(self(objectType, **kwds))
 
-        if gatesCount < 2:
-            raise ObjectCountError("Gate", 2, gatesCount)
-        elif finishLineCount != 1:
-            raise ObjectCountError("Finish line", 1, finishLineCount)
-        elif kartPlaceHolderCount < 1:
-            raise ObjectCountError("Kart placeholder", 1, kartPlaceHolderCount)
+        if not flippersCount:
+            if gatesCount < 2:
+                raise ObjectCountError("Gate", 2, gatesCount)
+            elif finishLineCount != 1:
+                raise ObjectCountError("Finish line", 1, finishLineCount)
+            elif kartPlaceHolderCount < 1:
+                raise ObjectCountError("Kart placeholder", 1, kartPlaceHolderCount)
 
         return newObjects
 
