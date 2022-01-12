@@ -10,6 +10,7 @@ from .Circle import Circle
 
 
 class Polygon(Shape):
+    """Polygone quelconque"""
     _vertices: List[Point]
 
     def __init__(self, *vertices: Point) -> None:
@@ -19,6 +20,7 @@ class Polygon(Shape):
         return Polygon(*[vertex.copy() for vertex in self.vertices()])
 
     def __len__(self) -> int:
+        """Nombre de sommets"""
         return len(self._vertices)
 
     def vertex(self, vertexIndex: int) -> Point:
@@ -30,9 +32,11 @@ class Polygon(Shape):
         return self._vertices
 
     def edge(self, startVertexIndex: int) -> Segment:
+        """Retourne le segment correspondant du polygone"""
         return Segment(self.vertex(startVertexIndex), self.vertex(startVertexIndex - 1))
 
     def edges(self) -> List[Segment]:
+        """Retourne la liste de tous les segments du polygone"""
         return [self.edge(i) for i in range(len(self))]
 
     def collides(self, other: Shape) -> bool:

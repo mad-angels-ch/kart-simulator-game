@@ -9,6 +9,7 @@ from .ConvexPolygon import ConvexPolygon
 
 
 class Rectangle(ConvexPolygon):
+    """Rectangle"""
     def __init__(self, v0: Point, v1: Point, v2: Point) -> None:
         v3 = Point(v2)
         v3.translate(Vector.fromPoints(v1, v0))

@@ -1,13 +1,10 @@
-from .Point import Point
-from .Vector import Vector
-from .Line import Line
-from .Segment import Segment
-
-
 class Shape:
+    """Classe parent pour tous les formes géométriques, sert à donner les méthodes communes."""
+
     def copy(self) -> "Shape":
         """Retourne une copie"""
-        pass
+        raise RuntimeError()
 
     def collides(self, other: "Shape") -> bool:
-        pass
+        """Retourne vrai s'ils se coupent ou touchent"""
+        raise RuntimeError()

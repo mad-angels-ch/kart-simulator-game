@@ -11,6 +11,7 @@ from .Polygon import Polygon
 
 
 class ConvexPolygon(Polygon):
+    """Polygon convex"""
     def __init__(self, *vertices: Point) -> None:
         super().__init__(*vertices)
 
@@ -32,6 +33,7 @@ class ConvexPolygon(Polygon):
         return self.edges()
 
     def _separatingAxisTheoremCircle(self, circle: Circle) -> bool:
+        """Méthode plus performante pour les collisions, voir _separatingAxisTheoremConvexPolygon()"""
         # trouver le sommet le plus proche du cercle
         minDistance = inf
         for vertex in self.vertices():

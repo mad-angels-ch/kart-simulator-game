@@ -8,6 +8,7 @@ from .Shape import Shape
 
 
 class Circle(Shape):
+    """Cercle géométrique"""
     _center: Point
     _radius: float
 
@@ -19,12 +20,16 @@ class Circle(Shape):
         return Circle(self.center().copy(), self.radius())
 
     def center(self) -> Point:
+        """NE PAS MODIFIER\n
+        Centre du cercle."""
         return self._center
 
     def radius(self) -> float:
+        """Rayon du cercle."""
         return self._radius
 
     def translate(self, vector: Vector) -> None:
+        """Translation du cercle,"""
         self._center.translate(vector)
 
     def collides(self, other: Shape) -> bool:
