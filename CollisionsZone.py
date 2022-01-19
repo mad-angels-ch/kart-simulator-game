@@ -95,11 +95,11 @@ class CollisionsZone:
     def collides(self, objectToCheck: objects.Object) -> bool:
         """Retourne vrai si l'objet donné en paramètre se trouve dans la zone."""
         if objectToCheck.isStatic():
-            return self._movingDimension.collides(
+            return self._dimension.collides(
                 objectToCheck.potentialCollisionZone(self._timeInterval)
             )
         else:
-            return self._dimension.collides(
+            return self._movingDimension.collides(
                 objectToCheck.potentialCollisionZone(self._timeInterval)
             )
 
