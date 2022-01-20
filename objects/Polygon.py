@@ -12,7 +12,7 @@ from .Circle import Circle
 
 
 class Polygon(Object):
-    """Classe des polygons."""
+    """Classe des polygones."""
 
     counter = 0
     precision = 1e-6
