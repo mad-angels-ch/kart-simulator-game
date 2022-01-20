@@ -167,13 +167,13 @@ class ObjectFactory:
 
                 newObjects.append(self(objectType, **kwds))
 
-        if not flippersCount:
-            if gatesCount < 2:
-                raise ObjectCountError("Gate", 2, gatesCount)
-            elif finishLineCount != 1:
-                raise ObjectCountError("Finish line", 1, finishLineCount)
-            elif kartPlaceHolderCount < 1:
-                raise ObjectCountError("Kart placeholder", 1, kartPlaceHolderCount)
+        # if not flippersCount:
+        #     if gatesCount < 2:
+        #         raise ObjectCountError("Gate", 2, gatesCount)
+        #     elif finishLineCount != 1:
+        #         raise ObjectCountError("Finish line", 1, finishLineCount)
+        #     elif kartPlaceHolderCount < 1:
+        #         raise ObjectCountError("Kart placeholder", 1, kartPlaceHolderCount)
 
         return newObjects
 
