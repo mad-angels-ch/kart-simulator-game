@@ -50,9 +50,11 @@ class CollisionsZone:
                         if zones[-1].collides(objs[tested]):
                             obj = objs.pop(tested)
                             zones[-1] += obj
-                            if not obj.isStatic():
-                                tested = 0
-                        tested += 1
+                        #     if not obj.isStatic():
+                        #         tested = 0
+                            tested = 0
+                        else:
+                            tested += 1
                     break
                 tested += 1
             current -= 1
@@ -95,11 +97,11 @@ class CollisionsZone:
     def collides(self, objectToCheck: objects.Object) -> bool:
         """Retourne vrai si l'objet donné en paramètre se trouve dans la zone."""
         if objectToCheck.isStatic():
-            return self._dimension.collides(
+            return self._movingDimension.collides(
                 objectToCheck.potentialCollisionZone(self._timeInterval)
             )
         else:
-            return self._movingDimension.collides(
+            return self._dimension.collides(
                 objectToCheck.potentialCollisionZone(self._timeInterval)
             )
 
