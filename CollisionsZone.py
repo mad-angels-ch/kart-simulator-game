@@ -1,4 +1,5 @@
 from logging import info
+from turtle import left
 from typing import List, Tuple
 import os
 import time
@@ -58,7 +59,7 @@ class CollisionsZone:
                     break
                 tested += 1
             current -= 1
-
+        
         return zones, objs
 
     _timeInterval: float
@@ -93,6 +94,7 @@ class CollisionsZone:
                 objectToAdd.potentialCollisionZone(self._timeInterval)
             )
         return self
+    
 
     def collides(self, objectToCheck: objects.Object) -> bool:
         """Retourne vrai si l'objet donné en paramètre se trouve dans la zone."""
@@ -105,12 +107,6 @@ class CollisionsZone:
                 objectToCheck.potentialCollisionZone(self._timeInterval)
             )
 
-    def __iadd__(self, objectToAdd: objects.Object) -> None:
-        """Ajoute un objet à la zone et redimensionne celle-ci si nécessaire."""
-        self._objects.append(objectToAdd)
-        # objectCollisionZone: lib.AlignedRectangle = objectToAdd.potentialCollisionZone()
-
-        return self
 
     def _solveFirst(self, timeInterval: float) -> float:
         """Détecte les collions, gère la première est retourne le moment de celle-ci."""
@@ -210,3 +206,4 @@ class CollisionsZone:
             self._checkedInterval += self._solveFirst(
                 self._timeInterval - self._checkedInterval
             )
+
