@@ -9,16 +9,12 @@ from .CollisionsZone import CollisionsZone
 
 
 class Game:
-    _events: List[events.Event]
     _output: "function"
     _dataUrl: str
     _objects: List[objects.Object]
 
-    def __init__(
-        self, dataUrl: str, events: List[events.Event], output: "function"
-    ) -> None:
+    def __init__(self, dataUrl: str, output: "function") -> None:
         self._dataUrl = dataUrl
-        self._events = events
         self._output = output
         self._updateGameTimer = False
 
@@ -28,14 +24,14 @@ class Game:
                 jsonObject["objects"], jsonObject["version"]
             )
 
-    def nextFrame(self, elapsedTime: float) -> None:
+    def nextFrame(self, elapsedTime: float, newEvents: List[events.Event] = []) -> None:
         """Avance le temps d'<elapsedTime> miliseconde et affiche le jeu à cet instant."""
         if elapsedTime > 1 / 50:
             # warning(f"ElapsedTime too big: {elapsedTime}")
             elapsedTime = 1 / 60
 
         # 1: traiter les events
-        self.handleEvents(elapsedTime=elapsedTime)
+        self.handleEvents(elapsedTime=elapsedTime, newEvents=newEvents)
 
         # 2: appliquer la physique sur les objects
         self._simulatePhysics(elapsedTime)
@@ -43,12 +39,11 @@ class Game:
         # 3: appeler output
         self.callOutput()
 
-    def handleEvents(self, elapsedTime: float) -> None:
+    def handleEvents(self, elapsedTime: float, newEvents: List[events.Event]) -> None:
         """Récupère et gère les évènements"""
-        for event in self._events:
+        for event in newEvents:
             if isinstance(event, events.EventOnTarget):
                 event.apply(self._objects)
-                self._events.remove(event)
             else:
                 raise ValueError(f"{event} is not from a supported event type")
         for obj in self._objects:
