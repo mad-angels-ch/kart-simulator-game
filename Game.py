@@ -44,6 +44,8 @@ class Game:
         for event in newEvents:
             if isinstance(event, events.EventOnTarget):
                 event.apply(self._objects)
+            elif isinstance(event, events.EventByLauncher):
+                event.apply(self._objects)
             else:
                 raise ValueError(f"{event} is not from a supported event type")
         for obj in self._objects:
