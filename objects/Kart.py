@@ -2,6 +2,7 @@ import lib
 
 from .Polygon import Polygon, Object
 from .Lava import Lava
+from .FireBall import FireBall
 
 
 class Kart(Polygon):
@@ -35,6 +36,8 @@ class Kart(Polygon):
         self._moving = 0
         self._turning = 0
         self._burned = False
+        self.FireBallsLaunched = 0
+        self.maxFireBalls = kwargs.get("munitions", 5)
 
     def lastGate(self) -> int:
         """Retourne le formID du dernier portillon que le kart a traversé"""
@@ -60,7 +63,7 @@ class Kart(Polygon):
 
     def onCollision(self, other: "Object", timeSinceLastFrame: float) -> None:
         if other.isSolid():
-            if isinstance(other, Lava):
+            if isinstance(other, Lava) or isinstance(other, FireBall):
                 self._burned = True
             self.set_angularMotionSpeed(0)
             self.set_angularMotionAcceleration(0)
