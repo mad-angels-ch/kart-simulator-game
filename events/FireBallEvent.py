@@ -23,7 +23,7 @@ class FireBallEvent(EventByLauncher):
     def createFrom(self, launcherObject: Object, velocity: VectorialMotion) -> None:
         position = launcherObject.center().copy()
         position.translate(velocity.unitVector()*40)
-        kwds={"vectorialMotion":motions.vectorials.VectorialMotion(velocity), "center":position, "formID":-launcherObject.FireBallsLaunched, "radius":10, "mass": 1}
+        kwds={"vectorialMotion":motions.vectorials.VectorialMotion(velocity), "center":position, "formID":-launcherObject.FireBallsLaunched, "radius":10, "mass": 0}
         launcherObject.FireBallsLaunched += 1
         return FireBall(**kwds)
         
