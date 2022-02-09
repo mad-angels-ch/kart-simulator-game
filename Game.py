@@ -10,19 +10,16 @@ from .CollisionsZone import CollisionsZone
 
 class Game:
     _output: "function"
-    _dataUrl: str
     _objects: List[objects.Object]
 
-    def __init__(self, dataUrl: str, output: "function") -> None:
-        self._dataUrl = dataUrl
+    def __init__(self, fabric: str, output: "function") -> None:
         self._output = output
         self._updateGameTimer = False
 
-        with open(dataUrl, "r") as data:
-            jsonObject = json.load(data)
-            self._objects = Factory.fromFabric(
-                jsonObject["objects"], jsonObject["version"]
-            )
+        jsonObject = json.load(fabric)
+        self._objects = Factory.fromFabric(
+            jsonObject["objects"], jsonObject["version"]
+        )
 
     def nextFrame(self, elapsedTime: float, newEvents: List[events.Event] = []) -> None:
         """Avance le temps d'<elapsedTime> miliseconde et affiche le jeu à cet instant."""
