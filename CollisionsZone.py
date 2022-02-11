@@ -1,5 +1,4 @@
 from logging import info
-from turtle import left
 from typing import List, Tuple
 import os
 import time

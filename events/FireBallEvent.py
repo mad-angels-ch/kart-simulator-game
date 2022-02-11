@@ -1,4 +1,3 @@
-from msilib.schema import LaunchCondition
 from game.objects import motions
 from game.objects.FireBall import FireBall
 from game.objects.motions.vectorials.VectorialMotion import VectorialMotion
