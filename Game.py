@@ -16,7 +16,7 @@ class Game:
         self._output = output
         self._updateGameTimer = False
 
-        jsonObject = json.load(fabric)
+        jsonObject = json.loads(fabric)
         self._objects = Factory.fromFabric(
             jsonObject["objects"], jsonObject["version"]
         )
