@@ -84,7 +84,7 @@ class Object:
         """NE PAS MODIFIER\n
         Retourne le centre de l'objet à l'instant donné."""
         if not deltaTime:
-            return self._center
+            return self._center     
 
         newCenter = lib.Point(self.center())
         newCenter.translate(self.relativePosition(deltaTime))

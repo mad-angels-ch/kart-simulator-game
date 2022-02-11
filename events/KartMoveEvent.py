@@ -7,7 +7,7 @@ class Kart:
 
 class KartMoveEvent(EventOnTarget):
     """Evènement demandant la mise en mouvement avant-arrière des karts.\n
-    L'argument direction fonction de la manière suivante:
+    L'argument direction fonctionne de la manière suivante:
     -1 = en arrière, 0 = arrêté, 1 = en avant"""
 
     _direction: int
