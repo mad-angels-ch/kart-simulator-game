@@ -22,7 +22,15 @@ class Flipper(Polygon):
         self._flipperUpwardSpeed = kwargs["flipperUpwardSpeed"]
         self._flipperCurrentAngle = 0
         self._flipperMovementsQueue = []
+        self._name = kwargs["name"]
 
+
+
+    def name(self) -> str:
+        """Retourne le nom de l'objet.\n
+        Ne correspond pas à la classe, mais à la fonction du flipper "rightFlipper" ou "leftFlipper"."""
+        return self._name
+    
     def addMovement(self, upward: bool) -> None:
         """Ajoute un nouveau mouvement dans la file d'attente"""
         self._flipperMovementsQueue.append(upward)
