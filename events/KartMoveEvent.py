@@ -15,10 +15,9 @@ class KartMoveEvent(EventOnTarget):
     def __init__(
         self,
         direction: int,
-        targetFormID: "int | None" = None,
-        targetsName: "str | None" = None,
+        targetFormID: "int | None" = None
     ) -> None:
-        super().__init__(targetFormID=targetFormID, targetsName=targetsName)
+        super().__init__(targetFormID=targetFormID)
         self._direction = direction
 
     def applyOn(self, target: Kart) -> None:

@@ -14,15 +14,14 @@ class FireBallEvent(EventByLauncher):
 
     def __init__(
         self,
-        launcherFormID: "int | None" = None,
-        launchersName: "str | None" = None,
+        launcherFormID: int,
     ) -> None:
-        super().__init__(launcherFormID=launcherFormID, launchersName=launchersName)
+        super().__init__(launcherFormID=launcherFormID)
 
-    def createFrom(self, launcherObject: Object, velocity: VectorialMotion) -> None:
+    def createCharacteristics(self, launcherObject: Object, velocity: VectorialMotion) -> None:
         position = launcherObject.center().copy()
         position.translate(velocity.unitVector()*40)
-        kwds={"vectorialMotion":motions.vectorials.VectorialMotion(velocity), "center":position, "formID":-launcherObject.FireBallsLaunched, "radius":10, "mass": 0}
-        launcherObject.FireBallsLaunched += 1
-        return FireBall(**kwds)
+        kwds={"vectorialMotion":motions.vectorials.VectorialMotion(velocity), "center":position, "radius":10, "mass": 0}
+        launcherObject.add_fireBall()
+        return kwds
         

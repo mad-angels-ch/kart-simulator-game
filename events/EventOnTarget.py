@@ -1,4 +1,7 @@
 from typing import Any, List
+from game.objects import Flipper
+
+from game.objects.ObjectFactory import ObjectFactory
 
 from .Event import Event, Object
 
@@ -9,36 +12,38 @@ class EventOnTarget(Event):
     Ne pas utiliser directement, mais dériver et surchager le constructeur ainsi que la méthode applyOn()."""
 
     _target: Any
-    _method: str
 
     def __init__(
-        self, targetFormID: "int | None" = None, targetsName: "str | None" = None
+        self, targetFormID: int = None,
+        targetsName = None
     ) -> None:
         super().__init__()
         if targetFormID:
-            self._method = "formID"
-            self._target = targetFormID
+            self._targetID = targetFormID
+            self._targetsName = None
         elif targetsName:
-            self._method = "name"
-            self._target = targetsName
+            self._targetsName = targetsName
+            self._targetID = None
         else:
-            raise KeyError("Neither targetFormID or targetsName was given")
+            raise KeyError("No targetFormID was given")
 
-    def method(self) -> str:
-        """Retourne la méthode d'itentification de la ou les cibles"""
-        return self._method
+    def targetID(self) -> Any:
+        """Retourne la clé permettant l'identification"""
+        return self._targetID
+    
+    def targetsName(self):
+        return self._targetsName
 
-    def target(self) -> Any:
-        """Retourne la clé permettant l'identification, dépendant de la méthode"""
-        return self._target
-
-    def apply(self, objects: List[Object]):
+    def apply(self, factory: ObjectFactory):
         """NE PAS SURCHARGER, sert à sélectionner les éléments cibles et appele applyOn() sur ceux-ci"""
-        for obj in objects:
-            if self.method() == "formID" and obj.formID() == self.target():
-                self.applyOn(obj)
-            elif self.method() == "name" and obj.name() == self.target():
-                self.applyOn(obj)
+        if self._targetsName in ["rightFlipper", "leftFlipper"]:
+            for flipper in factory.objectsByType(Flipper):
+                if flipper.name() == self.targetsName():
+                    self.applyOn(flipper)
+        else:
+            for obj in factory.objects():
+                if obj.formID() == self.targetID():
+                    self.applyOn(obj)
 
     def applyOn(self, target: Object) -> None:
         """Méthode à surcharger.
