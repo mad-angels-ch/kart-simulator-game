@@ -1,0 +1,3 @@
+from .HarmonicMotion import HarmonicMotion
+from .UniformlyAcceleratedHarmonicMotion import UniformlyAcceleratedHarmonicMotion
+from .HarmonicMotionFactory import createHarmonicMotion
