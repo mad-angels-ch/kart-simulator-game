@@ -80,13 +80,13 @@ class ObjectFactory:
                 self.createObjectMotions(obj=obj, objectType=objectType, kwds=kwds)
                 self.create(objectType, **kwds)
 
-        # if not self.flippersCount:
-        #     if self.gatesCount < 2:
-        #         raise ObjectCountError("Gate", 2, self.gatesCount)
-        #     elif self.finishLineCount != 1:
-        #         raise ObjectCountError("Finish line", 1, self.finishLineCount)
-        #     elif self.kartPlaceHolderCount < 1:
-        #         raise ObjectCountError("Kart placeholder", 1, self.kartPlaceHolderCount)
+        if not self.flippersCount:
+            if self.gatesCount < 2:
+                raise ObjectCountError("Gate", 2, self.gatesCount)
+            elif self.finishLineCount != 1:
+                raise ObjectCountError("Finish line", 1, self.finishLineCount)
+            elif self.kartPlaceHolderCount < 1:
+                raise ObjectCountError("Kart placeholder", 1, self.kartPlaceHolderCount)
         
         
         return self._objectsDict.values()
