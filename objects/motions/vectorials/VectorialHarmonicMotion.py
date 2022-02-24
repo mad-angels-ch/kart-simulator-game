@@ -18,8 +18,8 @@ class VectorialHarmonicMotion(VectorialMotion):
     _phase: float
     _static: bool
 
-    def __init__(self, frequency: float = 0, amplitude: lib.Vector = lib.Vector(), phase: float = 0) -> None:
-        self._angularFrequency = 2*math.pi*frequency
+    def __init__(self, period: float = 0, amplitude: lib.Vector = lib.Vector(), phase: float = 0) -> None:
+        self._angularFrequency = 2*math.pi*1/period
         self._amplitude = amplitude
         self._phase = phase
         self._speed = self.speed()

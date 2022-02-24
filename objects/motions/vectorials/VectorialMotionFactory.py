@@ -29,9 +29,9 @@ class VectorialMotionFactory:
     ) -> VectorialHarmonicMotion:
         amplitude = kwargs.get("amplitude", 0)
         phase = kwargs.get("phase", 0)
-        frequency = kwargs.get("frequency", 0)
+        period = kwargs.get("period", 0)
 
-        return VectorialHarmonicMotion(amplitude=amplitude, phase=phase, frequency=frequency)
+        return VectorialHarmonicMotion(amplitude=amplitude, phase=phase, period=period)
 
     
     def fromFabric(self, jsonObject) -> VectorialMotion:
@@ -44,7 +44,7 @@ class VectorialMotionFactory:
         elif type in ["vhm"]:
             kwargs["amplitude"] = lib.Vector(list(jsonObject["amplitude"].values()))
             kwargs["phase"] = jsonObject["phase"]
-            kwargs["frequency"] = jsonObject["frequency"]
+            kwargs["period"] = jsonObject["period"]
 
         return self.__call__(type=type, **kwargs)
 

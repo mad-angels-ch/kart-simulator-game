@@ -33,10 +33,10 @@ class AngularMotionFactory:
     def _angularHarmonicMotion(self, **kwargs) -> AngularHarmonicMotion:
         amplitude = kwargs.get("amplitude", 0)
         phase = kwargs.get("phase", 0)
-        frequency = kwargs.get("frequency", 0)
+        period = kwargs.get("period", 0)
         center = kwargs.get("center", lib.Point())
 
-        return AngularHarmonicMotion(amplitude=amplitude, phase=phase, frequency=frequency, center=center)  
+        return AngularHarmonicMotion(amplitude=amplitude, phase=phase, period=period, center=center)  
     
     def fromFabric(self, jsonObject) -> AngularMotion:
         """Créé et retourne à partir du format utilisé dans les jsons donnés le mouvement angulaire correspondant."""
@@ -51,7 +51,7 @@ class AngularMotionFactory:
         elif type in ["ahm"]:
             kwargs["amplitude"] = jsonObject["amplitude"]
             kwargs["phase"] = jsonObject["phase"]
-            kwargs["frequency"] = jsonObject["frequency"]
+            kwargs["period"] = jsonObject["period"]
             kwargs["center"] = lib.Point(
                 (float(jsonObject["center"]["x"]), float(jsonObject["center"]["y"]))
             )

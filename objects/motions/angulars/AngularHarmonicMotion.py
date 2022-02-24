@@ -18,8 +18,8 @@ class AngularHarmonicMotion(AngularMotion):
     _center: lib.Point
     _static: bool
 
-    def __init__(self, frequency: float = 0, amplitude: float = 0, phase: float = 0,  center=lib.Point()) -> None:
-        self._angularFrequency = 2*math.pi*frequency
+    def __init__(self, period: float = 0, amplitude: float = 0, phase: float = 0,  center=lib.Point()) -> None:
+        self._angularFrequency = 2*math.pi*1/period
         self._amplitude = amplitude
         self._center = center
         self._phase = phase
