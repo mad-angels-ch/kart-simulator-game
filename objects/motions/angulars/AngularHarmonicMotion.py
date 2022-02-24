@@ -1,10 +1,10 @@
 from logging import warning
 import math
-
+from .AngularMotion import AngularMotion
 import lib
 
 
-class HarmonicMotion:
+class AngularHarmonicMotion(AngularMotion):
     """Classe exprimant un movement harmoniques simples.
     Peut être dérivée pour exprimé des mouvements harmoniques plus complexes.\n
     Le centre de rotation est relatif au centre de l'objet associé, et pour des raisons pratiques est exprimé à l'aide d'un vecteur."""
@@ -15,44 +15,34 @@ class HarmonicMotion:
     _angularFrequency: float
     _amplitude: float
     _phase: float
-    _center: lib.Vector
+    _center: lib.Point
     _static: bool
-    _time: float
 
-    def __init__(self, angularFrequency: float = 0, amplitude: float = 0, phase: float = 0,  center=lib.Vector((0, 0))) -> None:
-        self._angularFrequency = angularFrequency
+    def __init__(self, frequency: float = 0, amplitude: float = 0, phase: float = 0,  center=lib.Point()) -> None:
+        self._angularFrequency = 2*math.pi*frequency
         self._amplitude = amplitude
         self._center = center
-        if self._angularFrequency != 0:
-            self._time = 0 + phase/self._angularFrequency
-        else:
-            self._time = 0
+        self._phase = phase
+        self._speed = self.speed()
         
         self.updateIsStatic()
 
     def updateReferences(self, deltaTime: float) -> None:
         """Avance les références: avance de deltaTime le temps écoulé depuis le lancement de l'oscillation"""
         self._speed = self.speed(deltaTime)
+        self._phase = self.phase(deltaTime)
         self.updateIsStatic()
-
-    def center(self) -> lib.Vector:
-        """Centre de rotation. Relatif au centre de l'objet."""
-        return self._center
-
-    def set_center(self, newCenter: lib.Vector) -> None:
-        """Change le centre de rotation."""
-        self._center = newCenter
-
+    
     def speed(self, deltaTime: float = 0) -> float:
-        """Vitesse angulaire à l'instant donné"""
-        return self._amplitude * self._angularFrequency * math.cos(self._angularFrequency * (self._time + deltaTime))
+        """Vitesse vectorielle à l'instant donné"""
+        return self.amplitude() * self.angularFrequency() * math.cos(self.phase(deltaTime))
 
     def angularFrequency(self, deltaTime: float = 0) -> float:
-        """Retourne l'accélération au temps donné"""
-        return 0
+        """Retourne la fréquence angulaire au temps donné"""
+        return self._angularFrequency
     
     def set_angularFrequency(self, newFrequency: float) -> None:
-        """Change la vitesse instantanée au temps 0"""
+        """Change la fréquence angulaire instantanée au temps 0"""
         self._angularFrequency = newFrequency
         self.updateIsStatic()
     
@@ -65,11 +55,19 @@ class HarmonicMotion:
         self._amplitude = newAmplitude
         self.updateIsStatic()
 
+    def phase(self, deltaTime: float = 0) -> float:
+        """Déphasage é l'instant donné"""
+        return (self._phase + self.angularFrequency()*deltaTime) % (2*math.pi)
+    
+    def set_phase(self, newPhase: float) -> None:
+        """Change de déphasage instantané ai temps 0"""
+        self._phase = newPhase % (2*math.pi)
+    
     def updateIsStatic(self) -> None:
         """Met la propriété lié à isStatic() à jour, appelée automatiquement."""
         self._static = math.isclose(
             self.speed(), 0, abs_tol=self.precision
-        ) and math.isclose(self.acceleration(), 0, abs_tol=self.precision) and math.isclose(self.amplitude(), 0, abs_tol=self.precision)
+        ) and math.isclose(self.angularFrequency(), 0, abs_tol=self.precision) and math.isclose(self.amplitude(), 0, abs_tol=self.precision)
 
     def isStatic(self) -> bool:
         """Retourne vrai si l'objet est immobile (rotation uniquement)"""

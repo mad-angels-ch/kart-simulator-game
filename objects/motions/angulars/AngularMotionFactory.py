@@ -2,6 +2,7 @@ import lib
 
 from .AngularMotion import AngularMotion
 from .UniformlyAcceleratedCircularMotion import UniformlyAcceleratedCircularMotion
+from .AngularHarmonicMotion import AngularHarmonicMotion
 
 
 class AngularMotionFactory:
@@ -13,6 +14,8 @@ class AngularMotionFactory:
             angularMotion = AngularMotion()
         elif type == "uacm":
             angularMotion = self._uniformlyAcceleratedCircularMotion(**kwargs)
+        elif type == "ahm":
+            angularMotion = self._angularHarmonicMotion(**kwargs)
         else:
             raise ValueError(f"{type} is not a valid type!")
 
@@ -21,12 +24,20 @@ class AngularMotionFactory:
     def _uniformlyAcceleratedCircularMotion(
         self, **kwargs
     ) -> UniformlyAcceleratedCircularMotion:
-        center = kwargs.get("center", lib.Point((0, 0)))
+        center = kwargs.get("center", lib.Point())
         initialSpeed = kwargs.get("initialSpeed", 0)
         acceleration = kwargs.get("acceleration", 0)
 
         return UniformlyAcceleratedCircularMotion(center, initialSpeed, acceleration)
 
+    def _angularHarmonicMotion(self, **kwargs) -> AngularHarmonicMotion:
+        amplitude = kwargs.get("amplitude", 0)
+        phase = kwargs.get("phase", 0)
+        frequency = kwargs.get("frequency", 0)
+        center = kwargs.get("center", lib.Point())
+
+        return AngularHarmonicMotion(amplitude=amplitude, phase=phase, frequency=frequency, center=center)  
+    
     def fromFabric(self, jsonObject) -> AngularMotion:
         """Créé et retourne à partir du format utilisé dans les jsons donnés le mouvement angulaire correspondant."""
         type = jsonObject["type"]
@@ -37,7 +48,13 @@ class AngularMotionFactory:
             )
             kwargs["initialSpeed"] = jsonObject["velocity"]
             kwargs["acceleration"] = jsonObject["acceleration"]
-
+        elif type in ["ahm"]:
+            kwargs["amplitude"] = jsonObject["amplitude"]
+            kwargs["phase"] = jsonObject["phase"]
+            kwargs["frequency"] = jsonObject["frequency"]
+            kwargs["center"] = lib.Point(
+                (float(jsonObject["center"]["x"]), float(jsonObject["center"]["y"]))
+            )
         return self.__call__(type=type, **kwargs)
 
 

@@ -18,8 +18,8 @@ class VectorialHarmonicMotion(VectorialMotion):
     _phase: float
     _static: bool
 
-    def __init__(self, angularFrequency: float = 0, amplitude: lib.Vector = lib.Vector((0,0)), phase: float = 0) -> None:
-        self._angularFrequency = angularFrequency
+    def __init__(self, frequency: float = 0, amplitude: lib.Vector = lib.Vector(), phase: float = 0) -> None:
+        self._angularFrequency = 2*math.pi*frequency
         self._amplitude = amplitude
         self._phase = phase
         self._speed = self.speed()
@@ -55,7 +55,7 @@ class VectorialHarmonicMotion(VectorialMotion):
         """Amplitude à l'instant donné"""
         return self._amplitude
     
-    def set_amplitude(self, newAmplitude: float) -> None:
+    def set_amplitude(self, newAmplitude: lib.Vector) -> None:
         """Chamge l'amplitude instantanée au temps 0"""
         self._amplitude = newAmplitude
         self.updateIsStatic()

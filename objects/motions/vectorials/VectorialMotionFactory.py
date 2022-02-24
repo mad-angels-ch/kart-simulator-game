@@ -12,7 +12,7 @@ class VectorialMotionFactory:
         elif type == "uam":
             vectorialMotion = self._uniformlyAcceleratedMotion(**kwargs)
         elif type == "vhm":
-            vectorialMotion = self._harmonicMotion(**kwargs)
+            vectorialMotion = self._vectorialHarmonicMotion(**kwargs)
         else:
             raise ValueError(f"{type} is not a valid type!")
 
@@ -24,14 +24,14 @@ class VectorialMotionFactory:
 
         return UniformlyAcceleratedMotion(initialSpeed, acceleration)
 
-    def _harmonicMotion(
+    def _vectorialHarmonicMotion(
         self, **kwargs
     ) -> VectorialHarmonicMotion:
         amplitude = kwargs.get("amplitude", 0)
         phase = kwargs.get("phase", 0)
-        angularFrequency = kwargs.get("angularFrequency", 0)
+        frequency = kwargs.get("frequency", 0)
 
-        return VectorialHarmonicMotion(amplitude=amplitude, phase=phase, angularFrequency=angularFrequency)
+        return VectorialHarmonicMotion(amplitude=amplitude, phase=phase, frequency=frequency)
 
     
     def fromFabric(self, jsonObject) -> VectorialMotion:
@@ -44,7 +44,7 @@ class VectorialMotionFactory:
         elif type in ["vhm"]:
             kwargs["amplitude"] = lib.Vector(list(jsonObject["amplitude"].values()))
             kwargs["phase"] = jsonObject["phase"]
-            kwargs["angularFrequency"] = jsonObject["angularFrequency"]
+            kwargs["frequency"] = jsonObject["frequency"]
 
         return self.__call__(type=type, **kwargs)
 
