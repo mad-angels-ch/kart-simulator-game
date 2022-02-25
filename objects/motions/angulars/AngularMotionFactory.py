@@ -14,7 +14,7 @@ class AngularMotionFactory:
             angularMotion = AngularMotion()
         elif type == "uacm":
             angularMotion = self._uniformlyAcceleratedCircularMotion(**kwargs)
-        elif type == "ahm":
+        elif type == "sahm":
             angularMotion = self._angularHarmonicMotion(**kwargs)
         else:
             raise ValueError(f"{type} is not a valid type!")
@@ -48,7 +48,7 @@ class AngularMotionFactory:
             )
             kwargs["initialSpeed"] = jsonObject["velocity"]
             kwargs["acceleration"] = jsonObject["acceleration"]
-        elif type in ["ahm"]:
+        elif type in ["sahm"]:
             kwargs["amplitude"] = jsonObject["amplitude"]
             kwargs["phase"] = jsonObject["phase"]
             kwargs["period"] = jsonObject["period"]

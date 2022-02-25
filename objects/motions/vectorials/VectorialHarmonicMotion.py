@@ -26,20 +26,17 @@ class VectorialHarmonicMotion(VectorialMotion):
         self.updateIsStatic()
 
     def updateReferences(self, deltaTime: float) -> None:
-        """Avance les références: avance de deltaTime le temps écoulé depuis le lancement de l'oscillation"""
+        """Avance les références: avance la phase écoulée depuis le lancement de l'oscillation"""
         self._speed = self.speed(deltaTime)
         self._phase = self.phase(deltaTime)
         self.updateIsStatic()
-
+    
     def relativePosition(self, deltaTime: float = 0) -> lib.Vector:
         """Retourne la translation durant le temps donné"""
-        return self.amplitude() * math.sin(self.phase(deltaTime))
+        return self.amplitude() * math.sin(self.phase(deltaTime)) - self.amplitude() * math.sin(self.phase())
 
     def speed(self, deltaTime: float = 0) -> float:
         """Vitesse vectorielle à l'instant donné"""
-
-
-
         return self.amplitude() * self.angularFrequency() * math.cos(self.phase(deltaTime))
 
     def angularFrequency(self, deltaTime: float = 0) -> float:

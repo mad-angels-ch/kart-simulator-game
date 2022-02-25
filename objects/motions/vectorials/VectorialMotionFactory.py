@@ -11,7 +11,7 @@ class VectorialMotionFactory:
             vectorialMotion = VectorialMotion()
         elif type == "uam":
             vectorialMotion = self._uniformlyAcceleratedMotion(**kwargs)
-        elif type == "vhm":
+        elif type == "svhm":
             vectorialMotion = self._vectorialHarmonicMotion(**kwargs)
         else:
             raise ValueError(f"{type} is not a valid type!")
@@ -41,7 +41,7 @@ class VectorialMotionFactory:
         if type in ["uam"]:
             kwargs["initialSpeed"] = lib.Vector(list(jsonObject["velocity"].values()))
             kwargs["acceleration"] = lib.Vector(list(jsonObject["acceleration"].values()))
-        elif type in ["vhm"]:
+        elif type in ["svhm"]:
             kwargs["amplitude"] = lib.Vector(list(jsonObject["amplitude"].values()))
             kwargs["phase"] = jsonObject["phase"]
             kwargs["period"] = jsonObject["period"]

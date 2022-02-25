@@ -38,29 +38,38 @@ class ObjectFactory:
         if objectType == "Circle":
             circle = Circle(**kwds)
             self._objectsDict[circle.formID()] = circle
+            return circle
         elif objectType == "Polygon":
             polygon = Polygon(**kwds)
             self._objectsDict[polygon.formID()] = polygon
+            return polygon
         elif objectType == "Flipper":
             flipper = Flipper(**kwds)
             self._objectsDict[flipper.formID()] = flipper
+            return flipper
         elif objectType == "Lava":
             lava = Lava(**kwds)
             self._objectsDict[lava.formID()] = lava
+            return lava
         elif objectType == "Kart":
             kart = Kart(**kwds)
             self._objectsDict[kart.formID()] = kart
+            return kart
         elif objectType == "Gate":
             gate = Gate(**kwds)
             self._objectsDict[gate.formID()] = gate
+            return gate
         elif objectType == "FinishLine":
             finishLine = FinishLine(**kwds)
             self._objectsDict[finishLine.formID()] = finishLine
+            return finishLine
         elif objectType == "FireBall":
             fireBall = FireBall(**kwds)
             self._objectsDict[fireBall.formID()] = fireBall
+            return fireBall
         else:
             raise ValueError(f"{objectType} is not valid")
+    
 
     def fromFabric(
         self, jsonObjects: List[dict], version: str = "4.4.0"
@@ -80,13 +89,13 @@ class ObjectFactory:
                 self.createObjectMotions(obj=obj, objectType=objectType, kwds=kwds)
                 self.create(objectType, **kwds)
 
-        # if not self.flippersCount:
-        #     if self.gatesCount < 2:
-        #         raise ObjectCountError("Gate", 2, self.gatesCount)
-        #     elif self.finishLineCount != 1:
-        #         raise ObjectCountError("Finish line", 1, self.finishLineCount)
-        #     elif self.kartPlaceHolderCount < 1:
-        #         raise ObjectCountError("Kart placeholder", 1, self.kartPlaceHolderCount)
+        if not self.flippersCount:
+            if self.gatesCount < 2:
+                raise ObjectCountError("Gate", 2, self.gatesCount)
+            elif self.finishLineCount != 1:
+                raise ObjectCountError("Finish line", 1, self.finishLineCount)
+            elif self.kartPlaceHolderCount < 1:
+                raise ObjectCountError("Kart placeholder", 1, self.kartPlaceHolderCount)
         
         
         return self._objectsDict.values()
@@ -209,35 +218,33 @@ class ObjectFactory:
             kwds["flipperUpwardSpeed"] = obj["lge"]["flipperUpwardSpeed"]
 
 
-    def createFromPattern(self, jsonObjects: List[dict], center: lib.Point, rotationCenter: lib.Point, angle: float, vectorialMotion: VectorialMotion, vectorialAcceleration: UniformlyAcceleratedMotion, angularMotion: AngularMotion, angularAcceleration: UniformlyAcceleratedCircularMotion, version: str = "4.4.0"):
+    def createFromPattern(self, jsonObjects: List[dict], position: lib.Point = lib.Point(), angle: float = 0, vectorialMotion: VectorialMotion = None, angularMotion: AngularMotion = None, jsonID: int = None, version: str = "4.4.0"):
+        """Ajoute des objets à partir d'un nouveau json à la position 'position'"""
         self._jsonLoadedCount += 1
         if version == "4.4.0":
             for obj in jsonObjects:
                 objectType = self.get_objectType(obj)
                 kwds = self.createObjectCharachteristics(object=obj, objectType=objectType)
-                kwds["center"] += center
+                kwds["center"] += position
                 kwds["angle"] += angle
-                self.create(objectType, **kwds)
-        for obj in self.objects():
-            if str(obj.formID())[0] == self._jsonLoadedCount:
+                obj = self.create(objectType, **kwds)
                 if vectorialMotion:
-                    obj.set_vectorialMotionSpeed(vectorialMotion)
-                if vectorialAcceleration:
-                    obj.set_vectorialMotionAcceleration(vectorialAcceleration)
+                    obj._vectorialMotion = vectorialMotion
                 if angularMotion:
-                    obj.set_angularMotionSpeed(angularMotion)
-                if angularAcceleration:
-                    obj.set_angularMotionAcceleration(angularAcceleration)
-                if rotationCenter:
-                    obj._angularMotion.set_center(rotationCenter)
+                    obj._angularMotion = angularMotion
 
+    def deleteObjectsFromJson(self, jsonID: int):
+        """Supprime tous les objets crées à partir du json dont l'id est 'jsonID'"""
+        for obj in self.objects():
+            if str(obj.formID())[0] == jsonID:
+                self.removeObject(obj.formID())
 
     def clearAll(self):
         """Remet à zéro la factory, c'est-à-dire retire tous les objets de la liste d'objets et remet le décompte du nombre d'objets à zéro."""
         self._objectsCreatedCount = 0
         self._objectsDict = {}
     
-    def clearObject(self, objectID: int):
+    def removeObject(self, objectID: int):
         """Retire l'objet dont l'ID est 'ObjectID' de la liste des objets."""
         del self._objectsDict[objectID]
 

@@ -28,7 +28,7 @@ class AngularHarmonicMotion(AngularMotion):
         self.updateIsStatic()
 
     def updateReferences(self, deltaTime: float) -> None:
-        """Avance les références: avance de deltaTime le temps écoulé depuis le lancement de l'oscillation"""
+        """Avance les références: avance la phase écoulée depuis le lancement de l'oscillation"""
         self._speed = self.speed(deltaTime)
         self._phase = self.phase(deltaTime)
         self.updateIsStatic()
