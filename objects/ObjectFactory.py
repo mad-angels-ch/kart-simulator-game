@@ -22,14 +22,16 @@ class ObjectFactory:
     """Classe permettant la création de la factory function des objest."""
     _objectsCreatedCount: int
     _objectsDict: Dict[int, Object]
+    _deletedObjectsDict: Dict[int, Object]
     _jsonLoadedCount: int
     
     def __init__(self) -> None:
         self._objectsCreatedCount = 0
         self._objectsDict = {}
+        self._deletedObjectsDict = {}
         self._jsonLoadedCount = 0
         
-    def create(self, objectType, **kwds: Any) -> Object:
+    def create(self, objectType, **kwds: Any) -> None:
         """Créé et enregistre l'objet selon les paramètres passés. Ne pas utiliser les contructeurs de ceux-ci."""
         self._objectsCreatedCount += 1
         
@@ -61,6 +63,7 @@ class ObjectFactory:
             self._objectsDict[fireBall.formID()] = fireBall
         else:
             raise ValueError(f"{objectType} is not valid")
+    
 
     def fromFabric(
         self, jsonObjects: List[dict], version: str = "4.4.0"
@@ -209,38 +212,44 @@ class ObjectFactory:
             kwds["flipperUpwardSpeed"] = obj["lge"]["flipperUpwardSpeed"]
 
 
-    def createFromPattern(self, jsonObjects: List[dict], center: lib.Point, rotationCenter: lib.Point, angle: float, vectorialMotion: VectorialMotion, vectorialAcceleration: UniformlyAcceleratedMotion, angularMotion: AngularMotion, angularAcceleration: UniformlyAcceleratedCircularMotion, version: str = "4.4.0"):
+    def createFromPattern(self, jsonObjects: List[dict], position: lib.Point = lib.Point(), angle: float = 0, jsonID: int = None, version: str = "4.4.0"):
+        """Ajoute des objets à partir d'un nouveau json à la position 'position'"""
         self._jsonLoadedCount += 1
         if version == "4.4.0":
             for obj in jsonObjects:
                 objectType = self.get_objectType(obj)
                 kwds = self.createObjectCharachteristics(object=obj, objectType=objectType)
-                kwds["center"] += center
+                kwds["center"] += position
                 kwds["angle"] += angle
+                self.createObjectMotions(obj=obj, objectType=objectType, kwds=kwds)
                 self.create(objectType, **kwds)
-        for obj in self.objects():
-            if str(obj.formID())[0] == self._jsonLoadedCount:
-                if vectorialMotion:
-                    obj.set_vectorialMotionSpeed(vectorialMotion)
-                if vectorialAcceleration:
-                    obj.set_vectorialMotionAcceleration(vectorialAcceleration)
-                if angularMotion:
-                    obj.set_angularMotionSpeed(angularMotion)
-                if angularAcceleration:
-                    obj.set_angularMotionAcceleration(angularAcceleration)
-                if rotationCenter:
-                    obj._angularMotion.set_center(rotationCenter)
+                
 
+    def deleteObjectsFromJson(self, jsonID: int):
+        """Supprime tous les objets crées à partir du json dont l'id est 'jsonID'"""
+        for obj in self.objects():
+            if obj.get_parentJsonID() == jsonID:
+                self.removeObject(obj.formID())
 
     def clearAll(self):
         """Remet à zéro la factory, c'est-à-dire retire tous les objets de la liste d'objets et remet le décompte du nombre d'objets à zéro."""
         self._objectsCreatedCount = 0
         self._objectsDict = {}
     
-    def clearObject(self, objectID: int):
+    def removeObject(self, objectID: int):
         """Retire l'objet dont l'ID est 'ObjectID' de la liste des objets."""
-        del self._objectsDict[objectID]
-
+        try:
+            self._deletedObjectsDict[objectID] = self._objectsDict
+            del self._objectsDict[objectID]
+        except:
+            raise ValueError("There is no object with such an ID.")
+        
+    def object(self, objectID: int) -> Object:
+        try:
+            return self._objectsDict[objectID]
+        except:
+            raise ValueError("There is no object with such an ID.")
+        
     def objectsDict(self):
         return self._objectsDict
     
@@ -254,7 +263,8 @@ class ObjectFactory:
                 listobj.append(obj)
         return listobj
     
-    
+    def deletedObjects(self):
+        return self._deletedObjectsDict
     
 class ObjectCountError(RuntimeError):
     """Classe pour les erreurs dans le fabric json."""

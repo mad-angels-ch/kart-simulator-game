@@ -263,3 +263,6 @@ class Object:
         """Retourne une approximation du point par lequel les deux objets se touchent
         ainsi qu'une approximation d'un vecteur directeur de la tangente passant par ce point"""
         raise RuntimeError("This method should be overwritten")
+
+    def get_parentJsonID(self):
+        return self.formID()//1000000

@@ -57,4 +57,4 @@ class Game:
 
     def callOutput(self) -> None:
         """Met l'affichage à jour"""
-        self._output(self.Factory.objects())
+        self._output(self.Factory)
