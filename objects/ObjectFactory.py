@@ -34,7 +34,6 @@ class ObjectFactory:
     def create(self, objectType, **kwds: Any) -> None:
         """Créé et enregistre l'objet selon les paramètres passés. Ne pas utiliser les contructeurs de ceux-ci."""
         self._objectsCreatedCount += 1
-        
         kwds["formID"] = 1000000 * self._jsonLoadedCount + self._objectsCreatedCount
 
         if objectType == "Circle":
@@ -212,25 +211,28 @@ class ObjectFactory:
             kwds["flipperUpwardSpeed"] = obj["lge"]["flipperUpwardSpeed"]
 
 
-    def createFromPattern(self, jsonObjects: List[dict], position: lib.Point = lib.Point(), angle: float = 0, jsonID: int = None, version: str = "4.4.0"):
-        """Ajoute des objets à partir d'un nouveau json à la position 'position'"""
+    def createFromPattern(self, jsonObjects: List[dict], position: lib.Point = lib.Point(), angle: float = 0, version: str = "4.4.0"):
+        """Ajoute des objets à partir d'un nouveau json à la position 'position'."""
         self._jsonLoadedCount += 1
         if version == "4.4.0":
             for obj in jsonObjects:
                 objectType = self.get_objectType(obj)
                 kwds = self.createObjectCharachteristics(object=obj, objectType=objectType)
-                kwds["center"] += position
+                kwds["center"].translate(lib.Vector.fromPoints(lib.Vector(),position))
                 kwds["angle"] += angle
                 self.createObjectMotions(obj=obj, objectType=objectType, kwds=kwds)
                 self.create(objectType, **kwds)
                 
 
-    def deleteObjectsFromJson(self, jsonID: int):
+    def removeObjectsFromJson(self, jsonID: int):
         """Supprime tous les objets crées à partir du json dont l'id est 'jsonID'"""
+        objsToDel = []
         for obj in self.objects():
             if obj.get_parentJsonID() == jsonID:
-                self.removeObject(obj.formID())
-
+                objsToDel.append(obj.formID())      #Pour ne pas changer le dictionnaire lors de l'itérations sur ses éléments
+        for id in objsToDel:
+            self.removeObject(id)
+            
     def clearAll(self):
         """Remet à zéro la factory, c'est-à-dire retire tous les objets de la liste d'objets et remet le décompte du nombre d'objets à zéro."""
         self._objectsCreatedCount = 0
