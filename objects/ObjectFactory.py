@@ -39,35 +39,27 @@ class ObjectFactory:
         if objectType == "Circle":
             circle = Circle(**kwds)
             self._objectsDict[circle.formID()] = circle
-            return circle
         elif objectType == "Polygon":
             polygon = Polygon(**kwds)
             self._objectsDict[polygon.formID()] = polygon
-            return polygon
         elif objectType == "Flipper":
             flipper = Flipper(**kwds)
             self._objectsDict[flipper.formID()] = flipper
-            return flipper
         elif objectType == "Lava":
             lava = Lava(**kwds)
             self._objectsDict[lava.formID()] = lava
-            return lava
         elif objectType == "Kart":
             kart = Kart(**kwds)
             self._objectsDict[kart.formID()] = kart
-            return kart
         elif objectType == "Gate":
             gate = Gate(**kwds)
             self._objectsDict[gate.formID()] = gate
-            return gate
         elif objectType == "FinishLine":
             finishLine = FinishLine(**kwds)
             self._objectsDict[finishLine.formID()] = finishLine
-            return finishLine
         elif objectType == "FireBall":
             fireBall = FireBall(**kwds)
             self._objectsDict[fireBall.formID()] = fireBall
-            return fireBall
         else:
             raise ValueError(f"{objectType} is not valid")
     
