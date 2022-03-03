@@ -218,7 +218,7 @@ class ObjectFactory:
             kwds["flipperUpwardSpeed"] = obj["lge"]["flipperUpwardSpeed"]
 
 
-    def createFromPattern(self, jsonObjects: List[dict], position: lib.Point = lib.Point(), angle: float = 0, vectorialMotion: VectorialMotion = None, angularMotion: AngularMotion = None, jsonID: int = None, version: str = "4.4.0"):
+    def createFromPattern(self, jsonObjects: List[dict], position: lib.Point = lib.Point(), angle: float = 0, vectorialMotion: VectorialMotion = None, angularMotion: AngularMotion = None, version: str = "4.4.0"):
         """Ajoute des objets à partir d'un nouveau json à la position 'position'"""
         self._jsonLoadedCount += 1
         if version == "4.4.0":
