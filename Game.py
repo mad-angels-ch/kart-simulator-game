@@ -4,20 +4,19 @@ import json
 import time
 
 from . import events, objects
-from .objects import create as Factory
+from .objects.ObjectFactory import ObjectFactory
 from .CollisionsZone import CollisionsZone
-
 
 class Game:
     _output: "function"
-    _objects: List[objects.Object]
 
     def __init__(self, fabric: str, output: "function") -> None:
         self._output = output
         self._updateGameTimer = False
 
         jsonObject = json.loads(fabric)
-        self._objects = Factory.fromFabric(
+        self.Factory = ObjectFactory()
+        self.Factory.fromFabric(
             jsonObject["objects"], jsonObject["version"]
         )
 
@@ -40,17 +39,17 @@ class Game:
         """Récupère et gère les évènements"""
         for event in newEvents:
             if isinstance(event, events.EventOnTarget):
-                event.apply(self._objects)
+                event.apply(self.Factory)
             elif isinstance(event, events.EventByLauncher):
-                event.apply(self._objects)
+                event.apply(self.Factory)
             else:
                 raise ValueError(f"{event} is not from a supported event type")
-        for obj in self._objects:
+        for obj in self.Factory.objects():
             obj.onEventsRegistered(deltaTime=elapsedTime)
 
     def _simulatePhysics(self, elapsedTime: float) -> None:
         """Attention, c'est là que ça se passe!"""
-        zones, others = CollisionsZone.create(self._objects, elapsedTime)
+        zones, others = CollisionsZone.create(self.Factory.objects(), elapsedTime)
         for zone in zones:
             zone.resolve()
         for other in others:
@@ -58,4 +57,4 @@ class Game:
 
     def callOutput(self) -> None:
         """Met l'affichage à jour"""
-        self._output(self._objects)
+        self._output(self.Factory)

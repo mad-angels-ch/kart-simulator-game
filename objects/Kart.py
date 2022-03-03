@@ -36,9 +36,18 @@ class Kart(Polygon):
         self._moving = 0
         self._turning = 0
         self._burned = False
-        self.FireBallsLaunched = 0
-        self.maxFireBalls = kwargs.get("munitions", 5)
-
+        self._fireBallsLaunched = 0
+        self._maxFireBalls = kwargs.get("munitions", 5)
+    
+    def fireBallsLaunched(self):
+        return self._fireBallsLaunched
+    
+    def maxFireBalls(self):
+        return self._maxFireBalls
+    
+    def add_fireBall(self):
+        self._fireBallsLaunched += 1
+    
     def lastGate(self) -> int:
         """Retourne le formID du dernier portillon que le kart a traversé"""
         return self._lastGate

@@ -2,7 +2,7 @@ import lib
 
 from .VectorialMotion import VectorialMotion
 from .UniformlyAcceleratedMotion import UniformlyAcceleratedMotion
-
+from .VectorialHarmonicMotion import VectorialHarmonicMotion
 
 class VectorialMotionFactory:
     """Factory function pour les mouvements linéaire, ne pas utiliser leurs constructeurs"""
@@ -11,6 +11,8 @@ class VectorialMotionFactory:
             vectorialMotion = VectorialMotion()
         elif type == "uam":
             vectorialMotion = self._uniformlyAcceleratedMotion(**kwargs)
+        elif type == "svhm":
+            vectorialMotion = self._vectorialHarmonicMotion(**kwargs)
         else:
             raise ValueError(f"{type} is not a valid type!")
 
@@ -22,6 +24,16 @@ class VectorialMotionFactory:
 
         return UniformlyAcceleratedMotion(initialSpeed, acceleration)
 
+    def _vectorialHarmonicMotion(
+        self, **kwargs
+    ) -> VectorialHarmonicMotion:
+        amplitude = kwargs.get("amplitude", 0)
+        phase = kwargs.get("phase", 0)
+        period = kwargs.get("period", 0)
+
+        return VectorialHarmonicMotion(amplitude=amplitude, phase=phase, period=period)
+
+    
     def fromFabric(self, jsonObject) -> VectorialMotion:
         """Créé et retourne à partir du format utilisé dans les jsons donnés le mouvement linéaire correspondant."""
         type = jsonObject["type"]
@@ -29,6 +41,10 @@ class VectorialMotionFactory:
         if type in ["uam"]:
             kwargs["initialSpeed"] = lib.Vector(list(jsonObject["velocity"].values()))
             kwargs["acceleration"] = lib.Vector(list(jsonObject["acceleration"].values()))
+        elif type in ["svhm"]:
+            kwargs["amplitude"] = lib.Vector(list(jsonObject["amplitude"].values()))
+            kwargs["phase"] = jsonObject["phase"]
+            kwargs["period"] = jsonObject["period"]
 
         return self.__call__(type=type, **kwargs)
 

@@ -13,7 +13,6 @@ class Object:
 
     precision = 1e-6
 
-    _name: str
     _formID: int
 
     _angle: float
@@ -33,7 +32,6 @@ class Object:
     _solid: bool
 
     def __init__(self, **kwargs) -> None:
-        self._name = kwargs.get("name", None)
         self._formID = kwargs["formID"]
         self._angle = kwargs.get("angle", 0)
         self._center = kwargs.get("center", lib.Point())
@@ -68,11 +66,6 @@ class Object:
     def formID(self) -> int:
         """Retourne un identifiant unique pour l'objet. Ne changera jamais."""
         return self._formID
-
-    def name(self) -> str:
-        """Retourne le nom de l'objet.\n
-        Ne correspond pas à la classe, mais à une chaîne de caractères définie par le propriétaire du monde."""
-        return self._name
 
     def angle(self, deltaTime: float = 0) -> float:
         """Retourne la rotation de l'objet par rapport à son centre à l'instant donné."""
@@ -270,3 +263,6 @@ class Object:
         """Retourne une approximation du point par lequel les deux objets se touchent
         ainsi qu'une approximation d'un vecteur directeur de la tangente passant par ce point"""
         raise RuntimeError("This method should be overwritten")
+
+    def get_parentJsonID(self):
+        return self.formID()//1000000
