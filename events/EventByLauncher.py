@@ -32,6 +32,7 @@ class EventByLauncher(Event):
         if velocity.norm() != 0 and obj.fireBallsLaunched() < obj.maxFireBalls():
             Factory.create("FireBall", **self.createCharacteristics(launcherObject=obj, velocity=velocity))
 
-    def createCharacteristics(self, launcherObject: Object, velocity: VectorialMotion) -> None:
+    def createCharacteristics(self, launcherObject: Object, velocity: VectorialMotion) -> dict:
         """Méthode à surcharger.
         Lors du traitement des évènements, cette méthode est appliqué sur l'objet cible, passé comme argument"""
+        raise "Must be overloaded"

@@ -264,5 +264,7 @@ class Object:
         ainsi qu'une approximation d'un vecteur directeur de la tangente passant par ce point"""
         raise RuntimeError("This method should be overwritten")
 
-    def get_parentJsonID(self):
-        return self.formID()//1000000
+    def groupID(self) -> int:
+        """Return the id of this object's group"""
+        from .ObjectFactory import ObjectFactory
+        return self.formID() // ObjectFactory.maxObjectsPerGroup

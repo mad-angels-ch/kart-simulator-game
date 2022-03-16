@@ -18,7 +18,7 @@ class FireBallEvent(EventByLauncher):
     ) -> None:
         super().__init__(launcherFormID=launcherFormID)
 
-    def createCharacteristics(self, launcherObject: Object, velocity: VectorialMotion) -> None:
+    def createCharacteristics(self, launcherObject: Object, velocity: VectorialMotion) -> dict:
         position = launcherObject.center().copy()
         position.translate(velocity.unitVector()*40)
         kwds={"vectorialMotion":motions.vectorials.VectorialMotion(velocity), "center":position, "radius":10, "mass": 0}
