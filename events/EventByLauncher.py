@@ -11,7 +11,7 @@ from game.objects import Object
 class EventByLauncher(Event):
     """Evènement destinné à un ou plusieurs objets.
     Sert notamment à transmettre les inputs des utilisateurs aux objets associés.\n
-    Ne pas utiliser directement, mais dériver et surchager le constructeur ainsi que la méthode applyOn()."""
+    Ne pas utiliser directement, mais dériver et surchager le constructeur ainsi que la méthode apply()."""
 
     _launcher: Any
 
