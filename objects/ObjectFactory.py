@@ -276,17 +276,15 @@ class ObjectFactory:
 
     def _createObjectMotions(self, obj, objectType, kwds):
         if objectType in ["Kart"]:
-            kwds["angularMotion"] = motions.angulars.UniformlyAcceleratedCircularMotion(
+            kwds["angularMotion"] = UniformlyAcceleratedCircularMotion(
                 rotationCenter=lib.Vector((-25, 0))
             )
-            kwds["vectorialMotion"] = motions.vectorials.UniformlyAcceleratedMotion()
+            kwds["vectorialMotion"] = UniformlyAcceleratedMotion()
         else:
-            kwds["angularMotion"] = motions.angulars.createAngularMotion._fromFabric(
+            kwds["angularMotion"] = self._fromFabricAngularMotion(
                 obj["lge"]["motion"]["angle"]
             )
-            kwds[
-                "vectorialMotion"
-            ] = motions.vectorials.createVectorialMotion._fromFabric(
+            kwds["vectorialMotion"] = self._fromFabricVectorialMotion(
                 obj["lge"]["motion"]["vector"]
             )
         if objectType in ["Flipper"]:
