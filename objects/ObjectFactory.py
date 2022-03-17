@@ -1,9 +1,6 @@
 import json
 from math import radians
 from typing import Any, Dict, List
-from game.objects.FireBall import FireBall
-from game.objects.motions.vectorials import *
-from game.objects.motions.angulars import *
 import lib
 
 from .Object import Object
@@ -14,8 +11,19 @@ from .Kart import Kart
 from .FinishLine import FinishLine
 from .Lava import Lava
 from .Gate import Gate
-from . import motions
-from .fill import createFill, Fill, Hex, Pattern
+from .FireBall import FireBall
+
+from .fill import Fill, Hex, Pattern
+from .motions.angulars import (
+    AngularMotion,
+    UniformlyAcceleratedCircularMotion,
+    AngularHarmonicMotion,
+)
+from .motions.vectorials import (
+    VectorialMotion,
+    UniformlyAcceleratedMotion,
+    VectorialHarmonicMotion,
+)
 
 
 class ObjectFactory:
@@ -40,7 +48,8 @@ class ObjectFactory:
     def _create(self, objectType, **kwds: Any) -> None:
         """Créé et enregistre l'objet selon les paramètres passés. Ne pas utiliser les contructeurs de ceux-ci."""
         kwds["formID"] = (
-            ObjectFactory.maxObjectsPerGroup * self._objectGroupCount + self._objectsCreatedCount
+            ObjectFactory.maxObjectsPerGroup * self._objectGroupCount
+            + self._objectsCreatedCount
         )
         self._objectsCreatedCount += 1
 
@@ -156,9 +165,9 @@ class ObjectFactory:
             "mass": object["lge"]["mass"],
         }
         if objectType == "Lava":
-            kwds["fill"] = createFill._fromFabric("#ffa500")
+            kwds["fill"] = self._fromFabricFill("#ffa500")
         else:
-            kwds["fill"] = createFill._fromFabric(object["fill"])
+            kwds["fill"] = self._fromFabricFill(object["fill"])
 
         scaleX, scaleY = object["scaleX"], object["scaleY"]
 
@@ -224,13 +233,46 @@ class ObjectFactory:
                 fabricFill = "#%02x%02x%02x" % (l[0], l[1], l[2])
             return Hex(fabricFill)
         elif fabricFill["type"] == "pattern":
-            # kwds["repeat"] = fabricFill["repeat"]
-            # kwds["sourceURL"] = fabricFill["source"]
             return Pattern(**fabricFill)
         else:
             raise RuntimeError("jsonObject is not in a supported format")
 
-        return self.__call__(type, **kwds)
+    def _fromFabricAngularMotion(self, fabricAngle: dict) -> AngularMotion:
+        """Créé et retourne le mouvement de rotation à partir du format exporté par le créateur"""
+        center = lib.Point(fabricAngle["center"].values())
+        if fabricAngle["type"] in ["uacm"]:
+            return UniformlyAcceleratedCircularMotion(
+                center, fabricAngle["velocity"], fabricAngle["acceleration"]
+            )
+
+        elif fabricAngle["type"] in ["sahm"]:
+            return AngularHarmonicMotion(
+                fabricAngle["period"],
+                fabricAngle["amplitude"],
+                fabricAngle["phase"],
+                center,
+            )
+
+        else:
+            return AngularMotion(fabricAngle["velocity"], center)
+
+    def _fromFabricVectorialMotion(self, fabricVector: dict) -> VectorialMotion:
+        """Créé et retourne le mouvement de translation à partir du format exporté par le créateur"""
+        if fabricVector["type"] in ["uam"]:
+            return UniformlyAcceleratedMotion(
+                lib.Vector(fabricVector["velocity"].values()),
+                lib.Vector(fabricVector["acceleration"].values()),
+            )
+
+        elif fabricVector["type"] in ["svhm"]:
+            return VectorialHarmonicMotion(
+                fabricVector["period"],
+                lib.Vector(fabricVector["amplitude"].values()),
+                fabricVector["phase"],
+            )
+
+        else:
+            return VectorialMotion(lib.Vector(fabricVector["velocity"].values()))
 
     def _createObjectMotions(self, obj, objectType, kwds):
         if objectType in ["Kart"]:
