@@ -33,55 +33,43 @@ class ObjectFactory:
 
     maxObjectsPerGroup: int = 1000000
 
-    _objectsCreatedCount: int
-    _objectsDict: Dict[int, Object]
-    _deletedObjectsDict: Dict[int, Object]
-    _objectGroupCount: int
+    _currentGroup: int
+    _currentIndex: int
+
+    _classes = {
+        c.__nam__: c
+        for c in [Circle, Polygon, Flipper, Lava, Kart, Gate, FinishLine, FireBall]
+    }
+
+    _objects: Dict[int, Object]
+    _deletedObjects: Dict[int, Object]
+    # _kartPlaceHolders: List[]
+    _groupsCount: int
+    _objectsInGroupCount: int
 
     def __init__(self, fabric: str) -> None:
-        self._objectsCreatedCount = 0
-        self._objectsDict = {}
-        self._deletedObjectsDict = {}
-        self._objectGroupCount = 0
+        self._objects = {}
+        self._deletedObjects = {}
+        self._groupsCount = 0
+        self._objectsInGroupCount = 0
         self._fromFabric(fabric)
+
+    def _groupCompleted(self) -> None:
+        """Ferme le group actuel et prépare le suivant"""
+        self._groupsCount += 1
+        self._objectsInGroupCount = 0
 
     def _create(self, objectType, **kwds: Any) -> None:
         """Créé et enregistre l'objet selon les paramètres passés. Ne pas utiliser les contructeurs de ceux-ci."""
-        kwds["formID"] = (
-            ObjectFactory.maxObjectsPerGroup * self._objectGroupCount
-            + self._objectsCreatedCount
+        formID = (
+            self.maxObjectsPerGroup * self._objectGroupCount + self._objectsCreatedCount
         )
-        self._objectsCreatedCount += 1
-
-        if objectType == "Circle":
-            circle = Circle(**kwds)
-            self._objectsDict[circle.formID()] = circle
-        elif objectType == "Polygon":
-            polygon = Polygon(**kwds)
-            self._objectsDict[polygon.formID()] = polygon
-        elif objectType == "Flipper":
-            flipper = Flipper(**kwds)
-            self._objectsDict[flipper.formID()] = flipper
-        elif objectType == "Lava":
-            lava = Lava(**kwds)
-            self._objectsDict[lava.formID()] = lava
-        elif objectType == "Kart":
-            kart = Kart(**kwds)
-            self._objectsDict[kart.formID()] = kart
-        elif objectType == "Gate":
-            gate = Gate(**kwds)
-            self._objectsDict[gate.formID()] = gate
-        elif objectType == "FinishLine":
-            finishLine = FinishLine(**kwds)
-            self._objectsDict[finishLine.formID()] = finishLine
-        elif objectType == "FireBall":
-            fireBall = FireBall(**kwds)
-            self._objectsDict[fireBall.formID()] = fireBall
-        else:
-            raise ValueError(f"{objectType} is not valid")
+        self._objects[formID] = self._classes[objectType](formID=formID, **kwds)
+        self._objectsInGroupCount += 1
 
     def _fromFabric(self, fabric: str) -> None:
         """Charge un json d'un monde créé par le créateur (https://lj44.ch/creator/kart)"""
+        objectsCount = 0
         gatesCount = 0
         finishLineCount = 0
         kartPlaceHolderCount = 0
@@ -93,6 +81,7 @@ class ObjectFactory:
 
         if version == "4.4.0":
             for obj in jsonObjects:
+                objectsCount += 1
                 objectType = obj["type"]
                 if objectType in ["circle", "LGECircle"]:
                     objectType = "Circle"
@@ -113,6 +102,9 @@ class ObjectFactory:
                     objectType = "FinishLine"
                     gatesCount += 1
                     finishLineCount += 1
+                else:
+                    # pour garde la compatibilité en cas d'ajout d'une nouvelle classe
+                    continue
                 kwds = self._createObjectCharachteristics(
                     object=obj, objectType=objectType
                 )
