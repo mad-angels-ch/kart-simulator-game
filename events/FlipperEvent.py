@@ -1,23 +1,16 @@
-from .EventOnTarget import EventOnTarget, Object
+from .Event import Event, ObjectFactory
 
 
-class Flipper:
-    """Sert uniquement à indiquer de type d'éléments cibles attendus et éviter une importation inutile"""
-
-
-class FlipperEvent(EventOnTarget):
+class FlipperEvent(Event):
     """Evènement demandant la mise en mouvement des flippers."""
 
     _upward: bool
+    _name: str
 
-    def __init__(
-        self,
-        upward: bool,
-        targetFormID: "int | None" = None,
-        targetsName: "str | None" = None,
-    ) -> None:
-        super().__init__(targetFormID=targetFormID, targetsName=targetsName)
+    def __init__(self, upward: bool, name: str) -> None:
+        super().__init__()
         self._upward = upward
+        self._name = name
 
-    def applyOn(self, target: Flipper) -> None:
-        target.addMovement(self._upward)
+    def apply(self, factory: ObjectFactory) -> None:
+        factory.objectsByName(self._name).addMovement(self._upward)

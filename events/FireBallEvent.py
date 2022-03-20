@@ -1,27 +1,17 @@
-from game.objects import motions
-from game.objects.FireBall import FireBall
-from game.objects.motions.vectorials.VectorialMotion import VectorialMotion
-from .EventByLauncher import EventByLauncher
-from lib import Vector
-from .Event import Event, Object
-from game.objects.Lava import Lava
+from .Event import Event, ObjectFactory
 
-class FireBallEvent(EventByLauncher):
-    """Evènement demandant la création d'un projectile enflamé.\n
-    L'argument vitesse donne la vitesse vectorielle à laquelle est tirée la boule de feu"""
 
-    _vitesse: int
+class FireBallEvent(Event):
+    """Evènement demandant le lancement d'une boulle de feu"""
+
+    _launcher: int
 
     def __init__(
         self,
-        launcherFormID: int,
+        launcher: int,
     ) -> None:
-        super().__init__(launcherFormID=launcherFormID)
+        super().__init__()
+        self._launcher = launcher
 
-    def createCharacteristics(self, launcherObject: Object, velocity: VectorialMotion) -> dict:
-        position = launcherObject.center().copy()
-        position.translate(velocity.unitVector()*40)
-        kwds={"vectorialMotion":motions.vectorials.VectorialMotion(velocity), "center":position, "radius":10, "mass": 0}
-        launcherObject.add_fireBall()
-        return kwds
-        
+    def apply(self, factory: ObjectFactory) -> None:
+        factory.createFireBall(self._launcher)

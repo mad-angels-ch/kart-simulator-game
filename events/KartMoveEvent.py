@@ -1,24 +1,18 @@
-from .EventOnTarget import EventOnTarget
+from .Event import Event, ObjectFactory
 
 
-class Kart:
-    """Sert uniquement à indiquer de type d'éléments cibles attendus et éviter une importation inutile"""
-
-
-class KartMoveEvent(EventOnTarget):
+class KartMoveEvent(Event):
     """Evènement demandant la mise en mouvement avant-arrière des karts.\n
     L'argument direction fonctionne de la manière suivante:
     -1 = en arrière, 0 = arrêté, 1 = en avant"""
 
     _direction: int
+    _kart: int
 
-    def __init__(
-        self,
-        direction: int,
-        targetFormID: "int | None" = None
-    ) -> None:
-        super().__init__(targetFormID=targetFormID)
+    def __init__(self, direction: int, kart: int) -> None:
+        super().__init__()
         self._direction = direction
+        self._kart = kart
 
-    def applyOn(self, target: Kart) -> None:
-        target.request_move(self._direction)
+    def apply(self, factory: ObjectFactory) -> None:
+        factory[self._kart].request_move(self._direction)
