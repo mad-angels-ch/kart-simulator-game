@@ -28,6 +28,9 @@ class Kart(Polygon):
 
     _burned: bool
 
+    _username: "str | None"
+    _image: "str | None"
+
     def __init__(self, **kwargs) -> None:
         kwargs["mass"] = 1
         kwargs["friction"] = 0.6
@@ -38,16 +41,34 @@ class Kart(Polygon):
         self._burned = False
         self._fireBallsLaunched = 0
         self._maxFireBalls = kwargs.get("munitions", 5)
-    
+        self._username = kwargs.get("username")
+        self._image = kwargs.get("image")
+
+    def username(self) -> str:
+        """Retourne le nom d'utilisateur du joueur du kart"""
+        return self._username
+
+    def set_username(self, newUsername: str) -> None:
+        """Nom explicite"""
+        self._username = newUsername
+
+    def image(self) -> str:
+        """Nom de l'image du kart à charger (avec l'extension)"""
+        return self._image
+
+    def set_image(self, newImage) -> None:
+        """Nom explicite"""
+        self._image = newImage
+
     def fireBallsLaunched(self):
         return self._fireBallsLaunched
-    
+
     def maxFireBalls(self):
         return self._maxFireBalls
-    
+
     def add_fireBall(self):
         self._fireBallsLaunched += 1
-    
+
     def lastGate(self) -> int:
         """Retourne le formID du dernier portillon que le kart a traversé"""
         return self._lastGate

@@ -37,19 +37,20 @@ class ObjectFactory:
     _currentIndex: int
 
     _classes = {
-        c.__nam__: c
+        c.__name__: c
         for c in [Circle, Polygon, Flipper, Lava, Kart, Gate, FinishLine, FireBall]
     }
 
     _objects: Dict[int, Object]
     _deletedObjects: Dict[int, Object]
-    # _kartPlaceHolders: List[]
+    _kartPlaceHolders: Dict[int, Kart]
     _groupsCount: int
     _objectsInGroupCount: int
 
     def __init__(self, fabric: str) -> None:
         self._objects = {}
         self._deletedObjects = {}
+        self._kartPlaceHolders = {}
         self._groupsCount = 0
         self._objectsInGroupCount = 0
         self._fromFabric(fabric)
@@ -64,7 +65,13 @@ class ObjectFactory:
         formID = (
             self.maxObjectsPerGroup * self._objectGroupCount + self._objectsCreatedCount
         )
-        self._objects[formID] = self._classes[objectType](formID=formID, **kwds)
+        if objectType == "KartPlaceHolder":
+            self._kartPlaceHolders[formID] = self._classes["Kart"](
+                formID=formID, **kwds
+            )
+        else:
+            self._objects[formID] = self._classes[objectType](formID=formID, **kwds)
+
         self._objectsInGroupCount += 1
 
     def _fromFabric(self, fabric: str) -> None:
@@ -93,7 +100,7 @@ class ObjectFactory:
                 elif objectType in ["LGELava"]:
                     objectType = "Lava"
                 elif objectType in ["LGEKartPlaceHolder"]:
-                    objectType = "Kart"
+                    objectType = "KartPlaceHolder"
                     kartPlaceHolderCount += 1
                 elif objectType in ["LGEGate"]:
                     objectType = "Gate"
@@ -122,7 +129,7 @@ class ObjectFactory:
             elif kartPlaceHolderCount < 1:
                 raise ObjectCountError("Kart placeholder", 1, kartPlaceHolderCount)
 
-        self._objectGroupCount += 1
+        self._groupCompleted()
 
     def _get_objectType(self, object: dict) -> str:
         objectType = object["type"]
@@ -345,10 +352,25 @@ class ObjectFactory:
         return self._deletedObjectsDict
 
     def loadKart(self, username: str, img: str, placeHolder: int = None) -> int:
-        pass
+        """Créé un kart à l'emplacement donné par le placeHolder.
+        Si le placeHolder n'est pas donné, il est séléctionné au hasard parmis les restants"""
+        if placeHolder == None:
+            placeHolder = self._kartPlaceHolders.keys()[0]
+
+        kart = self._kartPlaceHolders.pop(placeHolder)
+        kart.set_username(username)
+        kart.set_image(img)
+        self._objects[placeHolder] = kart
+        return placeHolder
 
     def unloadKart(self, placeHolder: int) -> None:
-        pass
+        """Supprime le kart du jeu, peut à tout moment être recréé avec loadKart()"""
+        kart = self._objects.pop(placeHolder)
+        if not isinstance(kart, Kart):
+            self._objects[placeHolder] = kart
+            raise RuntimeError("Invalid placeHolder")
+
+        self._kartPlaceHolders[placeHolder] = kart
 
     def createFireBall(self, launcher: Kart) -> int:
         pass
