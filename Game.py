@@ -50,10 +50,19 @@ class Game:
         """Attention, c'est là que ça se passe!"""
         zones, others = CollisionsZone.create(self._factory.objects(), elapsedTime)
         for zone in zones:
-            zone.resolve()
+            zone.resolve(self._onCollision)
         for other in others:
             other.updateReferences(elapsedTime)
 
     def callOutput(self) -> None:
         """Met l'affichage à jour"""
         self._output(self._factory.objects())
+
+    def loadKart(self, username: str, img: str, placeHolder: int = None) -> int:
+        """Créé un kart à l'emplacement donné par le placeHolder.
+        Si le placeHolder n'est pas donné, il est séléctionné au hasard parmis les restants"""
+        return self._factory.loadKart(username, img, placeHolder)
+
+    def unloadKart(self, placeHolder: int) -> None:
+        """Supprime le kart du jeu, peut à tout moment être recréé avec loadKart()"""
+        self._factory.unloadKart(placeHolder)

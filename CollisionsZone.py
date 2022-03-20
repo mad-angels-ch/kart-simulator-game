@@ -75,11 +75,9 @@ class CollisionsZone:
         self,
         timeInterval: float,
         *objectsInside: objects.Object,
-        onCollision: OnCollisionT
     ) -> None:
         self._timeInterval = timeInterval
         self._ignoringList = []
-        self._onCollision = onCollision
         if len(objectsInside) < 2:
             raise SyntaxError("A collision zone must contain at least 2 objects")
         elif objectsInside[0].isStatic():
@@ -195,6 +193,8 @@ class CollisionsZone:
                 )
                 other = current
 
+            self._onCollision(lastCollidedObjects, point)
+
         other = 1
         for current in range(2):
             lastCollidedObjects[current].onCollision(lastCollidedObjects[other])
@@ -202,9 +202,10 @@ class CollisionsZone:
 
         return checkedInterval
 
-    def resolve(self) -> None:
+    def resolve(self, onCollision: OnCollisionT) -> None:
         """Détecte précisément les collisions, gère celles-ci et met les objets à jours"""
         self._checkedInterval = 0
+        self._onCollision = onCollision
         while self._checkedInterval < self._timeInterval:
             self._checkedInterval += self._solveFirst(
                 self._timeInterval - self._checkedInterval

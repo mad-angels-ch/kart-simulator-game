@@ -57,14 +57,14 @@ class ObjectFactory:
         self._objects = {}
         self._destroyedObjects = {}
         self._kartPlaceHolders = {}
-        self._currentGroup = 0
-        self._currentIndex = 0
+        self._currentGroup = 1
+        self._currentIndex = 1
         self._fromFabric(fabric)
 
     def _nextGroup(self) -> None:
         """Ferme le group actuel et prépare le suivant"""
         self._currentGroup += 1
-        self._currentIndex = 0
+        self._currentIndex = 1
 
     def _create(self, objectClass, **kwds: Any) -> None:
         """Créé et enregistre l'objet selon les paramètres passés. Ne pas utiliser les contructeurs de ceux-ci."""
@@ -196,6 +196,8 @@ class ObjectFactory:
                 objectDict["lge"]["motion"]["vector"]
             )
 
+        return properties
+
     def _fromFabricFill(self, fabricFill: "dict | str") -> Fill:
         """Créé et retourne une méthode de remplissage à partir de la propriété 'fill' d'un objet exporté de la librairie http://fabricjs.com/."""
         if isinstance(fabricFill, str):
@@ -207,13 +209,13 @@ class ObjectFactory:
                 fabricFill = "#%02x%02x%02x" % (l[0], l[1], l[2])
             return Hex(fabricFill)
         elif fabricFill["type"] == "pattern":
-            return Pattern(**fabricFill)
+            return Pattern(fabricFill["repeat"], fabricFill["source"])
         else:
             raise RuntimeError("jsonObject is not in a supported format")
 
     def _fromFabricAngularMotion(self, fabricAngle: dict) -> AngularMotion:
         """Créé et retourne le mouvement de rotation à partir du format exporté par le créateur"""
-        center = lib.Point(fabricAngle["center"].values())
+        center = lib.Point(list(fabricAngle["center"].values()))
         if fabricAngle["type"] in ["uacm"]:
             return UniformlyAcceleratedCircularMotion(
                 center, fabricAngle["velocity"], fabricAngle["acceleration"]
@@ -234,19 +236,19 @@ class ObjectFactory:
         """Créé et retourne le mouvement de translation à partir du format exporté par le créateur"""
         if fabricVector["type"] in ["uam"]:
             return UniformlyAcceleratedMotion(
-                lib.Vector(fabricVector["velocity"].values()),
-                lib.Vector(fabricVector["acceleration"].values()),
+                lib.Vector(list(fabricVector["velocity"].values())),
+                lib.Vector(list(fabricVector["acceleration"].values())),
             )
 
         elif fabricVector["type"] in ["svhm"]:
             return VectorialHarmonicMotion(
                 fabricVector["period"],
-                lib.Vector(fabricVector["amplitude"].values()),
+                lib.Vector(list(fabricVector["amplitude"].values())),
                 fabricVector["phase"],
             )
 
         else:
-            return VectorialMotion(lib.Vector(fabricVector["velocity"].values()))
+            return VectorialMotion(lib.Vector(list(fabricVector["velocity"].values())))
 
     def destroyGroup(self, groupID: int) -> None:
         """Supprime tous les objets appartenant au groupe"""
@@ -266,7 +268,7 @@ class ObjectFactory:
         """Créé un kart à l'emplacement donné par le placeHolder.
         Si le placeHolder n'est pas donné, il est séléctionné au hasard parmis les restants"""
         if placeHolder == None:
-            placeHolder = self._kartPlaceHolders.keys()[0]
+            placeHolder = list(self._kartPlaceHolders.keys())[0]
 
         kart = self._kartPlaceHolders.pop(placeHolder)
         kart.set_username(username)
@@ -276,12 +278,11 @@ class ObjectFactory:
 
     def unloadKart(self, placeHolder: int) -> None:
         """Supprime le kart du jeu, peut à tout moment être recréé avec loadKart()"""
-        kart = self._objects.pop(placeHolder)
+        kart = self._objects[placeHolder]
         if not isinstance(kart, Kart):
             self._objects[placeHolder] = kart
             raise RuntimeError("Invalid placeHolder")
-
-        self._kartPlaceHolders[placeHolder] = kart
+        kart.destroy()
 
     def createFireBall(self, launcher: int) -> int:
         """Fait lancer au kart une boule de feu"""
@@ -299,7 +300,7 @@ class ObjectFactory:
         self._nextGroup()
         kart.add_fireBall()
 
-    def __getattribute__(self, formID: int) -> Object:
+    def __getitem__(self, formID: int) -> Object:
         """Retourne l'objet correspondant"""
         return self._objects[formID]
 
@@ -310,6 +311,9 @@ class ObjectFactory:
     def clean(self, elapsedTime: float) -> None:
         """A appeler à la fin de chaque frame, supprime les objets devenus inutiles ou obsolètes"""
         for obj in [o for o in self._objects.values() if o.lastFrame()]:
+            if isinstance(obj, Kart):
+                self._kartPlaceHolders[obj.formID()] = obj
+
             self._destroyedObjects[obj.formID()] = obj
             self._objects.pop(obj.formID())
 

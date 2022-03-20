@@ -1,3 +1,4 @@
+from logging import error
 from .Event import Event, ObjectFactory
 
 
@@ -13,4 +14,7 @@ class FlipperEvent(Event):
         self._name = name
 
     def apply(self, factory: ObjectFactory) -> None:
-        factory.objectsByName(self._name).addMovement(self._upward)
+        try:
+            factory.objectsByName(self._name)[0].addMovement(self._upward)
+        except IndexError:
+            error(f"Flipper {self._name} not found")
