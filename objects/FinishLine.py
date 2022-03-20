@@ -14,10 +14,10 @@ class FinishLine(Gate):
         super().__init__(**kwargs)
         self._numberOfLaps = kwargs.get("numberOfLaps", 1)
 
-    def onCollision(self, other: "Object", timeSinceLastFrame: float) -> None:
+    def onCollision(self, other: "Object") -> None:
         # Ne pas compter le premier passage du la ligne d'arrivée (qui est la ligne de départ)
         if isinstance(other, Kart) and other.lastGate():
-            super().onCollision(other, timeSinceLastFrame)
+            super().onCollision(other)
 
     def numberOfLapsRequired(self) -> int:
         """Retourne le nombre de tours de piste nécessaire pour terminer la partie"""

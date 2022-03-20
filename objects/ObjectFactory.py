@@ -32,51 +32,52 @@ class ObjectFactory:
     La création, stockage, gestion et destruction des objects doivent impérativment se faire uniquement par cette instance."""
 
     maxObjectsPerGroup: int = 1000000
+    fabricClassMapping = {
+        "circle": Circle,
+        "LGECircle": Circle,
+        "polygon": Polygon,
+        "LGEPolygon": Polygon,
+        "LGEFlipper": Flipper,
+        "LGELava": Lava,
+        "LGEKartPlaceHolder": Kart,
+        "LGEGate": Gate,
+        "LGEFinishLine": FinishLine,
+    }
 
     _currentGroup: int
     _currentIndex: int
 
-    _classes = {
-        c.__name__: c
-        for c in [Circle, Polygon, Flipper, Lava, Kart, Gate, FinishLine, FireBall]
-    }
-
     _objects: Dict[int, Object]
-    _deletedObjects: Dict[int, Object]
+    _destroyedObjects: Dict[int, Object]
     _kartPlaceHolders: Dict[int, Kart]
     _groupsCount: int
     _objectsInGroupCount: int
 
     def __init__(self, fabric: str) -> None:
         self._objects = {}
-        self._deletedObjects = {}
+        self._destroyedObjects = {}
         self._kartPlaceHolders = {}
-        self._groupsCount = 0
-        self._objectsInGroupCount = 0
+        self._currentGroup = 0
+        self._currentIndex = 0
         self._fromFabric(fabric)
 
-    def _groupCompleted(self) -> None:
+    def _nextGroup(self) -> None:
         """Ferme le group actuel et prépare le suivant"""
-        self._groupsCount += 1
-        self._objectsInGroupCount = 0
+        self._currentGroup += 1
+        self._currentIndex = 0
 
-    def _create(self, objectType, **kwds: Any) -> None:
+    def _create(self, objectClass, **kwds: Any) -> None:
         """Créé et enregistre l'objet selon les paramètres passés. Ne pas utiliser les contructeurs de ceux-ci."""
-        formID = (
-            self.maxObjectsPerGroup * self._objectGroupCount + self._objectsCreatedCount
-        )
-        if objectType == "KartPlaceHolder":
-            self._kartPlaceHolders[formID] = self._classes["Kart"](
-                formID=formID, **kwds
-            )
+        formID = self.maxObjectsPerGroup * self._currentGroup + self._currentIndex
+        obj = objectClass(formID=formID, **kwds)
+        if isinstance(obj, Kart):
+            self._kartPlaceHolders[formID] = obj
         else:
-            self._objects[formID] = self._classes[objectType](formID=formID, **kwds)
-
-        self._objectsInGroupCount += 1
+            self._objects[formID] = obj
+        self._currentIndex += 1
 
     def _fromFabric(self, fabric: str) -> None:
         """Charge un json d'un monde créé par le créateur (https://lj44.ch/creator/kart)"""
-        objectsCount = 0
         gatesCount = 0
         finishLineCount = 0
         kartPlaceHolderCount = 0
@@ -88,35 +89,20 @@ class ObjectFactory:
 
         if version == "4.4.0":
             for obj in jsonObjects:
-                objectsCount += 1
-                objectType = obj["type"]
-                if objectType in ["circle", "LGECircle"]:
-                    objectType = "Circle"
-                elif objectType in ["polygon", "LGEPolygon"]:
-                    objectType = "Polygon"
-                elif objectType in ["LGEFlipper"]:
-                    objectType = "Flipper"
-                    flippersCount += 1
-                elif objectType in ["LGELava"]:
-                    objectType = "Lava"
-                elif objectType in ["LGEKartPlaceHolder"]:
-                    objectType = "KartPlaceHolder"
-                    kartPlaceHolderCount += 1
-                elif objectType in ["LGEGate"]:
-                    objectType = "Gate"
-                    gatesCount += 1
-                elif objectType in ["LGEFinishLine"]:
-                    objectType = "FinishLine"
-                    gatesCount += 1
-                    finishLineCount += 1
-                else:
+                try:
+                    objectClass = self.fabricClassMapping[obj["type"]]
+                except KeyError:
                     # pour garde la compatibilité en cas d'ajout d'une nouvelle classe
                     continue
-                kwds = self._createObjectCharachteristics(
-                    object=obj, objectType=objectType
-                )
-                self._createObjectMotions(obj=obj, objectType=objectType, kwds=kwds)
-                self._create(objectType, **kwds)
+                if issubclass(objectClass, Flipper):
+                    flippersCount += 1
+                elif issubclass(objectClass, Kart):
+                    kartPlaceHolderCount += 1
+                elif issubclass(objectClass, Gate):
+                    gatesCount += 1
+                    if issubclass(objectClass, FinishLine):
+                        finishLineCount += 1
+                self._create(objectClass, **self._fromFabricObject(objectClass, obj))
 
         else:
             raise RuntimeError("Unsupported json version")
@@ -129,69 +115,39 @@ class ObjectFactory:
             elif kartPlaceHolderCount < 1:
                 raise ObjectCountError("Kart placeholder", 1, kartPlaceHolderCount)
 
-        self._groupCompleted()
+        self._nextGroup()
 
-    def _get_objectType(self, object: dict) -> str:
-        objectType = object["type"]
-        if objectType in ["circle", "LGECircle"]:
-            objectType = "Circle"
-        elif objectType in ["polygon", "LGEPolygon"]:
-            objectType = "Polygon"
-        elif objectType in ["LGEFlipper"]:
-            objectType = "Flipper"
-            self.flippersCount += 1
-        elif objectType in ["LGELava"]:
-            objectType = "Lava"
-        elif objectType in ["LGEKartPlaceHolder"]:
-            objectType = "Kart"
-            self.kartPlaceHolderCount += 1
-        elif objectType in ["LGEGate"]:
-            objectType = "Gate"
-            self.gatesCount += 1
-        elif objectType in ["LGEFinishLine"]:
-            objectType = "FinishLine"
-            self.gatesCount += 1
-            self.finishLineCount += 1
-        return objectType
-
-    def _createObjectCharachteristics(self, object: dict, objectType: str):
-        kwds = {
-            "name": object["lge"].get("name"),
-            "center": lib.Point((object["left"], object["top"])),
-            "angle": radians(object["angle"]),
-            "opacity": object["opacity"],
-            "friction": object["lge"]["friction"],
-            "mass": object["lge"]["mass"],
+    def _fromFabricObject(self, objectClass, objectDict: dict) -> dict:
+        """Créé un dict à partir d'un object fabric tel qu'attendu par _create"""
+        properties = {
+            "name": objectDict["lge"].get("name"),
+            "center": lib.Point((objectDict["left"], objectDict["top"])),
+            "angle": radians(objectDict["angle"]),
+            "opacity": objectDict["opacity"],
+            "friction": objectDict["lge"]["friction"],
+            "mass": objectDict["lge"]["mass"],
         }
-        if objectType == "Lava":
-            kwds["fill"] = self._fromFabricFill("#ffa500")
+
+        if issubclass(objectClass, Lava):
+            properties["fill"] = self._fromFabricFill("#ffa500")
         else:
-            kwds["fill"] = self._fromFabricFill(object["fill"])
+            properties["fill"] = self._fromFabricFill(objectDict["fill"])
 
-        scaleX, scaleY = object["scaleX"], object["scaleY"]
-
-        if object["flipX"]:
+        scaleX, scaleY = objectDict["scaleX"], objectDict["scaleY"]
+        if objectDict["flipX"]:
             scaleX *= -1
-        if object["flipY"]:
+        if objectDict["flipY"]:
             scaleY *= -1
 
-        if objectType in ["Circle"]:
-            kwds["radius"] = object["radius"] * min(scaleX, scaleY)
+        if issubclass(objectClass, Circle):
+            properties["radius"] = objectDict["radius"] * min(scaleX, scaleY)
 
-        if objectType in [
-            "Polygon",
-            "Flipper",
-            "Kart",
-            "Gate",
-            "FinishLine",
-            "Lava",
-            "FireBall",
-        ]:
-            kwds["vertices"] = [
-                lib.Point((point["x"], point["y"])) for point in object["points"]
+        elif issubclass(objectClass, Polygon):
+            properties["vertices"] = [
+                lib.Point((point["x"], point["y"])) for point in objectDict["points"]
             ]
-            abscissas = [point[0] for point in kwds["vertices"]]
-            ordinates = [point[1] for point in kwds["vertices"]]
+            abscissas = [point[0] for point in properties["vertices"]]
+            ordinates = [point[1] for point in properties["vertices"]]
 
             toOrigin = -lib.Vector(
                 (
@@ -200,26 +156,45 @@ class ObjectFactory:
                 )
             )
 
-            for i in range(len(kwds["vertices"])):
-                kwds["vertices"][i].translate(toOrigin)
-                pointV = lib.Vector(kwds["vertices"][i])
+            for i in range(len(properties["vertices"])):
+                properties["vertices"][i].translate(toOrigin)
+                pointV = lib.Vector(properties["vertices"][i])
 
                 pointV.scaleX(scaleX)
                 pointV.scaleY(scaleY)
 
-                kwds["vertices"][i] = pointV
+                properties["vertices"][i] = pointV
 
-            if objectType in ["FinishLine"]:
-                kwds["numberOfLaps"] = object["lge"]["numberOfLaps"]
+            if issubclass(objectClass, FinishLine):
+                properties["numberOfLaps"] = objectDict["lge"]["numberOfLaps"]
 
-            elif objectType in ["Kart"]:
-                kwds["vertices"] = [
+            elif issubclass(objectClass, Kart):
+                properties["vertices"] = [
                     lib.Vector((-25, -8)),
                     lib.Vector((-25, 8)),
                     lib.Vector((25, 8)),
                     lib.Vector((25, -8)),
                 ]
-        return kwds
+
+            elif issubclass(objectClass, Flipper):
+                properties["flipperMaxAngle"] = objectDict["lge"]["flipperMaxAngle"]
+                properties["flipperUpwardSpeed"] = objectDict["lge"][
+                    "flipperUpwardSpeed"
+                ]
+
+        if issubclass(objectClass, Kart):
+            properties["angularMotion"] = UniformlyAcceleratedCircularMotion(
+                rotationCenter=lib.Vector((-25, 0))
+            )
+            properties["vectorialMotion"] = UniformlyAcceleratedMotion()
+
+        else:
+            properties["angularMotion"] = self._fromFabricAngularMotion(
+                objectDict["lge"]["motion"]["angle"]
+            )
+            properties["vectorialMotion"] = self._fromFabricVectorialMotion(
+                objectDict["lge"]["motion"]["vector"]
+            )
 
     def _fromFabricFill(self, fabricFill: "dict | str") -> Fill:
         """Créé et retourne une méthode de remplissage à partir de la propriété 'fill' d'un objet exporté de la librairie http://fabricjs.com/."""
@@ -273,83 +248,19 @@ class ObjectFactory:
         else:
             return VectorialMotion(lib.Vector(fabricVector["velocity"].values()))
 
-    def _createObjectMotions(self, obj, objectType, kwds):
-        if objectType in ["Kart"]:
-            kwds["angularMotion"] = UniformlyAcceleratedCircularMotion(
-                rotationCenter=lib.Vector((-25, 0))
-            )
-            kwds["vectorialMotion"] = UniformlyAcceleratedMotion()
-        else:
-            kwds["angularMotion"] = self._fromFabricAngularMotion(
-                obj["lge"]["motion"]["angle"]
-            )
-            kwds["vectorialMotion"] = self._fromFabricVectorialMotion(
-                obj["lge"]["motion"]["vector"]
-            )
-        if objectType in ["Flipper"]:
-            kwds["flipperMaxAngle"] = obj["lge"]["flipperMaxAngle"]
-            kwds["flipperUpwardSpeed"] = obj["lge"]["flipperUpwardSpeed"]
+    def destroyGroup(self, groupID: int) -> None:
+        """Supprime tous les objets appartenant au groupe"""
+        for obj in [o for o in self._objects.values() if o.groupID() == groupID]:
+            obj.destroy()
 
-    def _createFromPattern(
-        self,
-        jsonObjects: List[dict],
-        position: lib.Point = lib.Point(),
-        angle: float = 0,
-        version: str = "4.4.0",
-    ):
-        """Ajoute des objets à partir d'un nouveau json à la position 'position'."""
-        self._jsonLoadedCount += 1
-        if version == "4.4.0":
-            for obj in jsonObjects:
-                objectType = self._get_objectType(obj)
-                kwds = self._createObjectCharachteristics(
-                    object=obj, objectType=objectType
-                )
-                kwds["center"].translate(lib.Vector.fromPoints(lib.Vector(), position))
-                kwds["angle"] += angle
-                self._createObjectMotions(obj=obj, objectType=objectType, kwds=kwds)
-                self.create(objectType, **kwds)
+    def get(self, formID: int, default: Any) -> "Object | Any":
+        return self._objects.get(formID, default)
 
-    def removeObjectsFromJson(self, jsonID: int):
-        """Supprime tous les objets crées à partir du json dont l'id est 'jsonID'"""
-        objsToDel = []
-        for obj in self.objects():
-            if obj.get_parentJsonID() == jsonID:
-                objsToDel.append(
-                    obj.formID()
-                )  # Pour ne pas changer le dictionnaire lors de l'itérations sur ses éléments
-        for id in objsToDel:
-            self.removeObject(id)
-
-    def removeObject(self, objectID: int):
-        """Retire l'objet dont l'ID est 'ObjectID' de la liste des objets."""
-        try:
-            self._deletedObjectsDict[objectID] = self._objectsDict
-            del self._objectsDict[objectID]
-        except:
-            raise ValueError("There is no object with such an ID.")
-
-    def object(self, objectID: int) -> Object:
-        try:
-            return self._objectsDict[objectID]
-        except:
-            raise ValueError("There is no object with such an ID.")
-
-    def objectsDict(self):
-        return self._objectsDict
-
-    def objects(self):
-        return self._objectsDict.values()
-
-    def objectsByType(self, type):
-        listobj = []
-        for obj in self.objects():
-            if isinstance(obj, type):
-                listobj.append(obj)
-        return listobj
+    def objects(self) -> List[Object]:
+        return self._objects.values()
 
     def deletedObjects(self):
-        return self._deletedObjectsDict
+        return self._destroyedObjects.values()
 
     def loadKart(self, username: str, img: str, placeHolder: int = None) -> int:
         """Créé un kart à l'emplacement donné par le placeHolder.
@@ -372,11 +283,35 @@ class ObjectFactory:
 
         self._kartPlaceHolders[placeHolder] = kart
 
-    def createFireBall(self, launcher: Kart) -> int:
-        pass
+    def createFireBall(self, launcher: int) -> int:
+        """Fait lancer au kart une boule de feu"""
+        kart = self._objects[launcher]
+        kartSpeed = kart.speed()
+        baseVSpeed = lib.Vector((FireBall.baseSpeed, 0))
+        baseVSpeed.rotate(kartSpeed.direction())
 
-    def destroyFireBall(self, id: int) -> None:
-        pass
+        ballSpeed = kartSpeed + baseVSpeed
+        ballCenter = lib.Point(kartSpeed.unitVector() * FireBall.spawnDistance)
+
+        self._create(
+            "FireBall", center=ballCenter, vectorialMotion=VectorialMotion(ballSpeed)
+        )
+        self._nextGroup()
+        kart.add_fireBall()
+
+    def __getattribute__(self, formID: int) -> Object:
+        """Retourne l'objet correspondant"""
+        return self._objects[formID]
+
+    def objectsByName(self, name: str) -> List[Object]:
+        """Retourne la liste des objects ayant le nom donné"""
+        return [obj for obj in self._objects.values() if obj.name() == name]
+
+    def clean(self, elapsedTime: float) -> None:
+        """A appeler à la fin de chaque frame, supprime les objets devenus inutiles ou obsolètes"""
+        for obj in [o for o in self._objects.values() if o.lastFrame()]:
+            self._destroyedObjects[obj.formID()] = obj
+            self._objects.pop(obj.formID())
 
 
 class ObjectCountError(RuntimeError):

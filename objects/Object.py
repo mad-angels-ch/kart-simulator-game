@@ -4,7 +4,7 @@ import math
 import lib
 
 from . import motions
-from .fill import Fill, createFill
+from .fill import Fill, Hex
 
 
 class Object:
@@ -14,6 +14,7 @@ class Object:
     precision = 1e-6
 
     _formID: int
+    _name: str
 
     _angle: float
     _center: lib.Point
@@ -26,14 +27,17 @@ class Object:
     _friction: float
 
     _potentialCollisionZone: lib.AlignedRectangle
-    _potentialCollisionZoneUpToDate: bool
+    _potentialCollisionZoneUpToDate: bool = False
     _potentialCollisionZoneTimeInterval: float
 
     _solid: bool
+    _destroy: bool = False
 
     def __init__(self, **kwargs) -> None:
         self._formID = kwargs["formID"]
         self._angle = kwargs.get("angle", 0)
+        self._name = kwargs.get("name", "")
+
         self._center = kwargs.get("center", lib.Point())
         self._angularMotion = kwargs.get(
             "angularMotion", motions.angulars.AngularMotion()
@@ -41,12 +45,10 @@ class Object:
         self._vectorialMotion = kwargs.get(
             "vectorialMotion", motions.vectorials.VectorialMotion()
         )
-        self._fill = kwargs.get("fill", createFill(type="Hex", hexColor="#000000"))
+        self._fill = kwargs.get("fill", Hex("#000000"))
         self._opacity = kwargs.get("opacity", 1)
         self._mass = kwargs.get("mass", 0)
         self._friction = kwargs.get("friction", 0)
-        self._potentialCollisionZoneUpToDate = False
-        self._solid = kwargs.get("isSolid", True)
         self._solid = kwargs.get("isSolid", True)
 
     def __eq__(self, other: "Object") -> bool:
@@ -56,12 +58,17 @@ class Object:
     def onEventsRegistered(self, deltaTime: float) -> None:
         """Méthode à surcharger, lancée une fois les évènements traités"""
 
-    def onCollision(self, other: "Object", timeSinceLastFrame: float) -> None:
+    def onCollision(self, other: "Object") -> None:
         """Méthode à surcharger, lancée lors des collisions"""
 
     def isSolid(self) -> bool:
         """Si vrai, l'objet rebondit sur les autres objets sinon il les traverse"""
         return self._solid
+
+    def name(self) -> str:
+        """Retourne le nom de l'objet.
+        Plusieurs objets peuvent avoir le même nom"""
+        return self._name
 
     def formID(self) -> int:
         """Retourne un identifiant unique pour l'objet. Ne changera jamais."""
@@ -77,7 +84,7 @@ class Object:
         """NE PAS MODIFIER\n
         Retourne le centre de l'objet à l'instant donné."""
         if not deltaTime:
-            return self._center     
+            return self._center
 
         newCenter = lib.Point(self.center())
         newCenter.translate(self.relativePosition(deltaTime))
@@ -125,6 +132,10 @@ class Object:
             - fromRotationCenterBefore
             + fromRotationCenterAfter
         )
+
+    def speed(self, deltaTime: float = 0) -> lib.Vector:
+        """Retourne la vitesse de translation du centre de l'objet"""
+        return self.speedAtPoint(self.center(deltaTime), deltaTime)
 
     def speedAtPoint(self, point: lib.Point, deltaTime: float = 0) -> lib.Vector:
         """Retourne la vitesse linéaire d'un point donné (tient compte de sa vitesse angulaire)"""
@@ -267,4 +278,13 @@ class Object:
     def groupID(self) -> int:
         """Return the id of this object's group"""
         from .ObjectFactory import ObjectFactory
+
         return self.formID() // ObjectFactory.maxObjectsPerGroup
+
+    def destroy(self) -> None:
+        """Demande à être supprimé à la fin de la frame"""
+        self._destroy = True
+
+    def lastFrame(self) -> bool:
+        """Retourne vrai si l'objet n'existera plus à la prochaine frame"""
+        return self._destroy

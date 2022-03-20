@@ -1,9 +1,5 @@
 from logging import error, warning
-from typing import Callable, List, Tuple
-import json
-import time
-
-import lib
+from typing import Callable, List
 
 from . import events
 from .objects import Object, ObjectFactory
@@ -40,6 +36,8 @@ class Game:
 
         # 3: appeler output
         self.callOutput()
+
+        self._factory.clean(elapsedTime)
 
     def handleEvents(self, elapsedTime: float, newEvents: List[events.Event]) -> None:
         """Récupère et gère les évènements"""
