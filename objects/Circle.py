@@ -99,3 +99,6 @@ class Circle(Object):
 
         else:
             return other.collisionPointAndTangent(self)
+
+    def _minimalAttributes(self) -> list:
+        return super()._minimalAttributes() + ["_radius"]

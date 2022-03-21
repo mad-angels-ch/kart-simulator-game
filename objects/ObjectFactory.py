@@ -308,6 +308,14 @@ class ObjectFactory:
         """Retourne la liste des objects ayant le nom donné"""
         return [obj for obj in self._objects.values() if obj.name() == name]
 
+    def minimalExport(self) -> dict:
+        """Exporte uniquement les données nécessaires à l'affichage du monde"""
+
+
+    def minimalImport(self, minamalExport: dict) -> None:
+        """Charge le minimum de données nécessaires à l'affichage du monde.
+        Attent un objet du même format qu'exporté par minimalExport()"""
+
     def clean(self, elapsedTime: float) -> None:
         """A appeler à la fin de chaque frame, supprime les objets devenus inutiles ou obsolètes"""
         for obj in [o for o in self._objects.values() if o.lastFrame()]:

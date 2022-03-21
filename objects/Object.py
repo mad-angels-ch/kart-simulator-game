@@ -288,3 +288,13 @@ class Object:
     def lastFrame(self) -> bool:
         """Retourne vrai si l'objet n'existera plus à la prochaine frame"""
         return self._destroy
+
+    def _minimalAttributes(self) -> list:
+        """Retourne la liste des attibuts nécessaires à l'affichage de l'objet"""
+        return ["_formID", "_angle", "_center", "_fill", "_opacity"]
+
+    def minimalExport(self) -> dict:
+        """Exporte uniquement les données nécessaires à l'affichage de l'objet"""
+        return {att: self[att] for att in self._minimalAttributes}
+
+    

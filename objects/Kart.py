@@ -114,3 +114,6 @@ class Kart(Polygon):
                 targetVectorialSpeed[i] - currentVectorialSpeed[i]
             ) / self.movingCorrectionTime
         self.set_vectorialMotionAcceleration(acceleration)
+
+    def _minimalAttributes(self) -> list:
+        return super()._minimalAttributes() + ["_username", "_image"]

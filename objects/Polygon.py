@@ -229,3 +229,6 @@ class Polygon(Object):
             listOfVerticesBeforeRotation.append((vertexPoint[0], vertexPoint[1]))
 
         return listOfVerticesBeforeRotation
+
+    def _minimalAttributes(self) -> list:
+        return super()._minimalAttributes() + ["_vertices"]

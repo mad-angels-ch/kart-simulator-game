@@ -26,3 +26,6 @@ class FinishLine(Gate):
     def completedAllLaps(self, kartFormID: int) -> bool:
         """Retourne vrai si le kart à terminé ses tours de pistes"""
         return self.passagesCount(kartFormID) >= self._numberOfLaps
+
+    def _minimalAttributes(self) -> list:
+        return super()._minimalAttributes() + ["_numberOfLaps"]
