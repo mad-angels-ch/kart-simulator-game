@@ -32,6 +32,10 @@ class ObjectFactory:
     La création, stockage, gestion et destruction des objects doivent impérativment se faire uniquement par cette instance."""
 
     maxObjectsPerGroup: int = 1000000
+    objectsClasses = {
+        c.__name__: c
+        for c in [Circle, Polygon, Flipper, Kart, FinishLine, Lava, Gate, FireBall]
+    }
     fabricClassMapping = {
         "circle": Circle,
         "LGECircle": Circle,
@@ -50,8 +54,6 @@ class ObjectFactory:
     _objects: Dict[int, Object]
     _destroyedObjects: Dict[int, Object]
     _kartPlaceHolders: Dict[int, Kart]
-    _groupsCount: int
-    _objectsInGroupCount: int
 
     def __init__(self, fabric: str) -> None:
         self._objects = {}
@@ -310,11 +312,22 @@ class ObjectFactory:
 
     def minimalExport(self) -> dict:
         """Exporte uniquement les données nécessaires à l'affichage du monde"""
+        return {
+            "currentGroup": self._currentGroup,
+            "currentIndex": self._currentIndex,
+            "objects": [obj.toMinimalDict() for obj in self._objects.values()],
+        }
 
-
-    def minimalImport(self, minamalExport: dict) -> None:
+    def minimalImport(self, minimalExport: dict) -> None:
         """Charge le minimum de données nécessaires à l'affichage du monde.
         Attent un objet du même format qu'exporté par minimalExport()"""
+        self._currentGroup = minimalExport["currentGroup"]
+        self._currentIndex = minimalExport["currentIndex"]
+        objs = [
+            self.objectsClasses[obj](**self.objectsClasses[obj].fromMinimalDict(obj))
+            for obj in minimalExport["objects"]
+        ]
+        self._objects = {obj.formID(): obj for obj in objs}
 
     def clean(self, elapsedTime: float) -> None:
         """A appeler à la fin de chaque frame, supprime les objets devenus inutiles ou obsolètes"""

@@ -13,7 +13,7 @@ class Gate(Polygon):
     def __init__(self, **kwargs) -> None:
         kwargs["isSolid"] = False
         super().__init__(**kwargs)
-        self._passagesCount = {}
+        self._passagesCount = kwargs.get("passagesCount", {})
 
     def onCollision(self, other: "Object") -> None:
         if isinstance(other, Kart) and other.lastGate() != self.formID():
@@ -26,5 +26,7 @@ class Gate(Polygon):
         """Indique le nombre de fois que le kart a franchi le portillon"""
         return self._passagesCount.get(kartFormID, 0)
 
-    def _minimalAttributes(self) -> list:
-        return super()._minimalAttributes() + ["_passagesCount"]
+    def toMinimalDict(self) -> dict:
+        dic = super().toMinimalDict()
+        dic.update({"passagesCount", self._passagesCount})
+        return dic

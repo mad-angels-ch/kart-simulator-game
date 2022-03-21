@@ -1,10 +1,9 @@
 from typing import Tuple
-import math
 
 import lib
 
 from . import motions
-from .fill import Fill, Hex
+from .fill import Fill, Hex, Pattern
 
 
 class Object:
@@ -12,6 +11,7 @@ class Object:
     Ne pas utiliser directement, utiliser les classes filles."""
 
     precision = 1e-6
+    fillClasses = {fill.__name__: fill for fill in [Hex, Pattern]}
 
     _formID: int
     _name: str
@@ -32,6 +32,12 @@ class Object:
 
     _solid: bool
     _destroy: bool = False
+
+    def fromMinimalDict(obj: dict) -> dict:
+        """Retourne les argument pour reproduire l'objet représenté par le dict python du même format qu'exporté par toMinimalDict()"""
+        obj["fill"] = Object.fillClasses[obj["__class__"]].fromDict(obj["fill"])
+        obj["center"] = lib.Point(obj["center"])
+        return obj
 
     def __init__(self, **kwargs) -> None:
         self._formID = kwargs["formID"]
@@ -289,12 +295,13 @@ class Object:
         """Retourne vrai si l'objet n'existera plus à la prochaine frame"""
         return self._destroy
 
-    def _minimalAttributes(self) -> list:
-        """Retourne la liste des attibuts nécessaires à l'affichage de l'objet"""
-        return ["_formID", "_angle", "_center", "_fill", "_opacity"]
-
-    def minimalExport(self) -> dict:
-        """Exporte uniquement les données nécessaires à l'affichage de l'objet"""
-        return {att: self[att] for att in self._minimalAttributes}
-
-    
+    def toMinimalDict(self) -> dict:
+        """Exporte cet objet dans un dict python contant toutes les informations pour reproduire visuellement l'objet"""
+        return {
+            "__class__": self.__class__.__name__,
+            "formID": self._formID,
+            "angle": self._angle,
+            "center": tuple(self._center),
+            "fill": self._fill.toDict(),
+            "opacity": self._opacity,
+        }

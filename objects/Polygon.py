@@ -25,6 +25,11 @@ class Polygon(Object):
     _angleCosSin2Angle: float
     _convex: bool
 
+    def fromMinimalDict(obj: dict) -> dict:
+        dic = super().fromMinimalDict()
+        dic.update({"vertices": [lib.Vector(v) for v in obj["vertices"]]})
+        return dic
+
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
         self._vertices = kwargs.get(
@@ -230,5 +235,7 @@ class Polygon(Object):
 
         return listOfVerticesBeforeRotation
 
-    def _minimalAttributes(self) -> list:
-        return super()._minimalAttributes() + ["_vertices"]
+    def toMinimalDict(self) -> dict:
+        dic = super().toMinimalDict()
+        dic.update({"vertices": [tuple(v) for v in self._vertices]})
+        return dic

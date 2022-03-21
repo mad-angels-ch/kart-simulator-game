@@ -103,3 +103,6 @@ class Flipper(Polygon):
     def downward(self) -> bool:
         """Retourne True si le flipper est en train de descendre"""
         return self.angularMotionSpeed() == -self._flipperUpwardSpeed
+
+    def toMinimalDict(self) -> dict:
+        assert True, "Not implemented"

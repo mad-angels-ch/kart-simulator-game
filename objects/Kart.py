@@ -28,8 +28,8 @@ class Kart(Polygon):
 
     _burned: bool
 
-    _username: "str | None"
-    _image: "str | None"
+    _username: str
+    _image: str
 
     def __init__(self, **kwargs) -> None:
         kwargs["mass"] = 1
@@ -41,8 +41,8 @@ class Kart(Polygon):
         self._burned = False
         self._fireBallsLaunched = 0
         self._maxFireBalls = kwargs.get("munitions", 5)
-        self._username = kwargs.get("username")
-        self._image = kwargs.get("image")
+        self._username = kwargs.get("username", "")
+        self._image = kwargs.get("image", "")
 
     def username(self) -> str:
         """Retourne le nom d'utilisateur du joueur du kart"""
@@ -115,5 +115,7 @@ class Kart(Polygon):
             ) / self.movingCorrectionTime
         self.set_vectorialMotionAcceleration(acceleration)
 
-    def _minimalAttributes(self) -> list:
-        return super()._minimalAttributes() + ["_username", "_image"]
+    def toMinimalDict(self) -> dict:
+        dic = super().toMinimalDict()
+        dic.update({"username": self._username, "image": self._image})
+        return dic

@@ -27,5 +27,9 @@ class FinishLine(Gate):
         """Retourne vrai si le kart à terminé ses tours de pistes"""
         return self.passagesCount(kartFormID) >= self._numberOfLaps
 
-    def _minimalAttributes(self) -> list:
-        return super()._minimalAttributes() + ["_numberOfLaps"]
+    def toMinimalDict(self) -> dict:
+        dic = super().toMinimalDict()
+        dic.update({
+            "numberOfLaps": self._numberOfLaps
+        })
+        return dic

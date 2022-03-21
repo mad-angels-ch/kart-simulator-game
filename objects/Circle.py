@@ -100,5 +100,7 @@ class Circle(Object):
         else:
             return other.collisionPointAndTangent(self)
 
-    def _minimalAttributes(self) -> list:
-        return super()._minimalAttributes() + ["_radius"]
+    def toMinimalDict(self) -> dict:
+        dic = super().toMinimalDict()
+        dic.update({"radius": self._radius})
+        return dic
