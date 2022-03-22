@@ -294,10 +294,11 @@ class ObjectFactory:
         baseVSpeed.rotate(kartSpeed.direction())
 
         ballSpeed = kartSpeed + baseVSpeed
-        ballCenter = lib.Point(kartSpeed.unitVector() * FireBall.spawnDistance)
+        ballCenter = lib.Point(kart.center())
+        ballCenter.translate(kartSpeed.unitVector() * FireBall.spawnDistance)
 
         self._create(
-            "FireBall", center=ballCenter, vectorialMotion=VectorialMotion(ballSpeed)
+            FireBall, center=ballCenter, vectorialMotion=VectorialMotion(ballSpeed)
         )
         self._nextGroup()
         kart.add_fireBall()
