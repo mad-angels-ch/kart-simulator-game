@@ -11,7 +11,9 @@ class FireBall(Circle):
 
     def __init__(self, **kwargs) -> None:
         kwargs["radius"] = kwargs.get("radius", FireBall.defaultRadius)
+        kwargs["mass"] = kwargs.get("mass", 1)
         super().__init__(**kwargs)
 
     def onCollision(self, other: "Object") -> None:
+        super().onCollision(other)
         self.destroy()

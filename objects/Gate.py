@@ -16,6 +16,7 @@ class Gate(Polygon):
         self._passagesCount = kwargs.get("passagesCount", {})
 
     def onCollision(self, other: "Object") -> None:
+        super().onCollision(other)
         if isinstance(other, Kart) and other.lastGate() != self.formID():
             other.set_lastGate(self.formID())
             self._passagesCount[other.formID()] = (

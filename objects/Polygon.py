@@ -133,7 +133,7 @@ class Polygon(Object):
         return super().updatePotentialCollisionZone(timeInterval)
 
     def collides(self, other: "Object", timeInterval: float) -> bool:
-        if not (self.mass() or other.mass()):
+        if not super().collides(other, timeInterval):
             return False
 
         elif isinstance(other, Circle):

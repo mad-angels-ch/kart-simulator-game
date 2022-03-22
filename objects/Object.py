@@ -12,6 +12,7 @@ class Object:
 
     precision = 1e-6
     fillClasses = {fill.__name__: fill for fill in [Hex, Pattern]}
+    timeToKeepLastCollided = 1 / 60
 
     _formID: int
     _name: str
@@ -32,6 +33,9 @@ class Object:
 
     _solid: bool
     _destroy: bool = False
+
+    _lastCollided: "Object" = None
+    _elapsedTimeLastCollision: float = 0
 
     def fromMinimalDict(obj: dict) -> dict:
         """Retourne les argument pour reproduire l'objet représenté par le dict python du même format qu'exporté par toMinimalDict()"""
@@ -59,13 +63,15 @@ class Object:
 
     def __eq__(self, other: "Object") -> bool:
         """Retourne vrai s'il s'agit du même objet"""
-        return self.formID() == other.formID()
+        return other != None and self.formID() == other.formID()
 
     def onEventsRegistered(self, deltaTime: float) -> None:
         """Méthode à surcharger, lancée une fois les évènements traités"""
 
     def onCollision(self, other: "Object") -> None:
-        """Méthode à surcharger, lancée lors des collisions"""
+        """Méthode lancé lors des collisions"""
+        self._lastCollided = other
+        self._elapsedTimeLastCollision = 0
 
     def isSolid(self) -> bool:
         """Si vrai, l'objet rebondit sur les autres objets sinon il les traverse"""
@@ -187,6 +193,11 @@ class Object:
         self._angularMotion.updateReferences(deltaTime)
         self._vectorialMotion.updateReferences(deltaTime)
 
+        if self._lastCollided:
+            self._elapsedTimeLastCollision -= deltaTime
+            if self._elapsedTimeLastCollision > self.timeToKeepLastCollided:
+                self._lastCollided = None
+
     def angularMotionSpeed(self, deltaTime: float = 0) -> float:
         """Attention, utilisation avancée uniquement
         Retourne la vitesse angulaire de l'objet."""
@@ -271,15 +282,22 @@ class Object:
         Un coefficient négatif signifie que l'objet prend de la vitesse lors des collisions."""
         self._friction = newFriction
 
+    def lastCollided(self, deltaTime: float = 0) -> "Object | None":
+        """Retourne le dernier objet avec lequel celui-ci est entré en collision, s'il existe."""
+        if self._elapsedTimeLastCollision + deltaTime > self.timeToKeepLastCollided:
+            return self._lastCollided
+
     def collides(self, other: "Object", timeInterval: float) -> bool:
         """Retourne vrai si les deux objets se collisionnent dans l'intervalle de temps donné
         Les collisions entres deux objets fixés sont ignorés (ceux qui ont une masse nulle)"""
-        raise RuntimeError("This method should be overwritten")
+        return (self.mass() > 0 or other.mass() > 0) and other != self.lastCollided(
+            timeInterval
+        )
 
     def collisionPointAndTangent(self, other: "Object") -> Tuple[lib.Point, lib.Vector]:
         """Retourne une approximation du point par lequel les deux objets se touchent
         ainsi qu'une approximation d'un vecteur directeur de la tangente passant par ce point"""
-        raise RuntimeError("This method should be overwritten")
+        assert True, "This method should be overwritten"
 
     def groupID(self) -> int:
         """Return the id of this object's group"""

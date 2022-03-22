@@ -1,8 +1,4 @@
-from typing import List
-
-import lib
-
-from .Gate import Object, Gate, Kart
+from .Gate import Object, Gate, Kart, Polygon
 
 
 class FinishLine(Gate):
@@ -16,6 +12,7 @@ class FinishLine(Gate):
 
     def onCollision(self, other: "Object") -> None:
         # Ne pas compter le premier passage du la ligne d'arrivée (qui est la ligne de départ)
+        Polygon.onCollision(self, other)
         if isinstance(other, Kart) and other.lastGate():
             super().onCollision(other)
 

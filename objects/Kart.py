@@ -92,6 +92,7 @@ class Kart(Polygon):
         self._turning = direction
 
     def onCollision(self, other: "Object") -> None:
+        super().onCollision(other)
         if other.isSolid():
             if isinstance(other, Lava) or isinstance(other, FireBall):
                 self._burned = True
