@@ -61,7 +61,8 @@ class ObjectFactory:
         self._kartPlaceHolders = {}
         self._currentGroup = 1
         self._currentIndex = 1
-        self._fromFabric(fabric)
+        if len(fabric) > 0:
+            self._fromFabric(fabric)
 
     def _nextGroup(self) -> None:
         """Ferme le group actuel et prépare le suivant"""

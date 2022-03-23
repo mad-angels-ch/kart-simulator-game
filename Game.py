@@ -58,6 +58,18 @@ class Game:
         """Met l'affichage à jour"""
         self._output(self._factory.objects())
 
+    def minimalExport(self) -> dict:
+        """Exporte uniquement les données nécessaires à l'affichage du monde"""
+        return self._factory.minimalExport()
+
+    def minimalImport(self, minimalExport: dict) -> None:
+        """Charge le minimum de données nécessaires à l'affichage du monde.
+        Attent un objet du même format qu'exporté par minimalExport()"""
+        self._factory.minimalImport(minimalExport)
+        
+    def objectByFormID(self, formID: int) -> Object:
+        return self._factory[formID]
+
     def loadKart(self, username: str, img: str, placeHolder: int = None) -> int:
         """Créé un kart à l'emplacement donné par le placeHolder.
         Si le placeHolder n'est pas donné, il est séléctionné au hasard parmis les restants"""

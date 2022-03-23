@@ -1,3 +1,3 @@
-from .Game import Game
+from .Game import Game, OnCollisionT
 from . import events
 from . import objects
