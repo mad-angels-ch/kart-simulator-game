@@ -9,6 +9,9 @@ class KartTurnEvent(Event):
     _direction: int
     _kart: int
 
+    def fromTuple(eventTuple: tuple) -> "Event":
+        return KartTurnEvent(*tuple)
+
     def __init__(self, direction: int, kart: int) -> None:
         super().__init__()
         self._direction = direction
@@ -16,3 +19,6 @@ class KartTurnEvent(Event):
 
     def apply(self, factory: ObjectFactory) -> None:
         factory[self._kart].request_turn(self._direction)
+
+    def toTuple(self) -> tuple:
+        return (self._direction, self._kart)

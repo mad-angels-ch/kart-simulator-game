@@ -6,6 +6,9 @@ class FireBallEvent(Event):
 
     _launcher: int
 
+    def fromTuple(eventTuple: tuple) -> "Event":
+        return FireBallEvent(*eventTuple)
+
     def __init__(
         self,
         launcher: int,
@@ -15,3 +18,6 @@ class FireBallEvent(Event):
 
     def apply(self, factory: ObjectFactory) -> None:
         factory.createFireBall(self._launcher)
+
+    def toTuple(self) -> tuple:
+        return (self._launcher,)
