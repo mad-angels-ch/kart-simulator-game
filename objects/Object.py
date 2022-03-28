@@ -39,7 +39,7 @@ class Object:
 
     def fromMinimalDict(obj: dict) -> dict:
         """Retourne les argument pour reproduire l'objet représenté par le dict python du même format qu'exporté par toMinimalDict()"""
-        obj["fill"] = Object.fillClasses[obj["__class__"]].fromDict(obj["fill"])
+        obj["fill"] = Object.fillClasses[obj["class"]].fromDict(obj["fill"])
         obj["center"] = lib.Point(obj["center"])
         return obj
 
@@ -316,7 +316,7 @@ class Object:
     def toMinimalDict(self) -> dict:
         """Exporte cet objet dans un dict python contant toutes les informations pour reproduire visuellement l'objet"""
         return {
-            "__class__": self.__class__.__name__,
+            "class": self.__class__.__name__,
             "formID": self._formID,
             "angle": self._angle,
             "center": tuple(self._center),

@@ -29,5 +29,5 @@ class Gate(Polygon):
 
     def toMinimalDict(self) -> dict:
         dic = super().toMinimalDict()
-        dic.update({"passagesCount", self._passagesCount})
+        dic.update({"passagesCount": self._passagesCount})
         return dic

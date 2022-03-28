@@ -15,4 +15,4 @@ class Fill:
 
     def toDict(self) -> dict:
         """Transforme cette objet en un json et retourne"""
-        return {"__class__": self.__class__.__name__}
+        return {"class": self.__class__.__name__}
