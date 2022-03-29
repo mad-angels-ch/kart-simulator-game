@@ -326,7 +326,7 @@ class ObjectFactory:
         self._currentGroup = minimalExport["currentGroup"]
         self._currentIndex = minimalExport["currentIndex"]
         objs = [
-            self.objectsClasses[obj](**self.objectsClasses[obj].fromMinimalDict(obj))
+            self.objectsClasses[obj["class"]](**self.objectsClasses[obj["class"]].fromMinimalDict(obj))
             for obj in minimalExport["objects"]
         ]
         self._objects = {obj.formID(): obj for obj in objs}
