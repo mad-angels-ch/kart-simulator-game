@@ -308,6 +308,10 @@ class Object:
     def destroy(self) -> None:
         """Demande à être supprimé à la fin de la frame"""
         self._destroy = True
+        
+    def restore(self) -> None:
+        """Demande à ne pas être supprimé à la fin de la frame"""
+        self._destroy = False
 
     def lastFrame(self) -> bool:
         """Retourne vrai si l'objet n'existera plus à la prochaine frame"""

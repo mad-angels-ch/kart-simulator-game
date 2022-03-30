@@ -168,7 +168,7 @@ class ObjectFactory:
 
                 properties["vertices"][i] = pointV
 
-            if issubclass(objectClass, FinishLine):
+            if issubclass(objectClass, FinishLine): 
                 properties["numberOfLaps"] = objectDict["lge"]["numberOfLaps"]
 
             elif issubclass(objectClass, Kart):
@@ -283,7 +283,6 @@ class ObjectFactory:
         """Supprime le kart du jeu, peut à tout moment être recréé avec loadKart()"""
         kart = self._objects[placeHolder]
         if not isinstance(kart, Kart):
-            self._objects[placeHolder] = kart
             raise RuntimeError("Invalid placeHolder")
         kart.destroy()
 
@@ -336,6 +335,7 @@ class ObjectFactory:
         for obj in [o for o in self._objects.values() if o.lastFrame()]:
             if isinstance(obj, Kart):
                 self._kartPlaceHolders[obj.formID()] = obj
+                obj.restore()
 
             self._destroyedObjects[obj.formID()] = obj
             self._objects.pop(obj.formID())
