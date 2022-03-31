@@ -10,7 +10,7 @@ class KartTurnEvent(Event):
     _kart: int
 
     def fromTuple(eventTuple: tuple) -> "Event":
-        return KartTurnEvent(*tuple)
+        return KartTurnEvent(*eventTuple)
 
     def __init__(self, direction: int, kart: int) -> None:
         super().__init__()
