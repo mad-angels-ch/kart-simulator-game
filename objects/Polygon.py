@@ -26,7 +26,7 @@ class Polygon(Object):
     _convex: bool
 
     def fromMinimalDict(obj: dict) -> dict:
-        dic = super().fromMinimalDict()
+        dic = Object.fromMinimalDict(obj)
         dic.update({"vertices": [lib.Vector(v) for v in obj["vertices"]]})
         return dic
 
