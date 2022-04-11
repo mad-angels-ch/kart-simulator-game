@@ -10,4 +10,5 @@ from .ObjectFactory import (
     Lava,
     Object,
     Polygon,
+    ObjectFactory,
 )

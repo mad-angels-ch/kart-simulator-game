@@ -168,7 +168,7 @@ class ObjectFactory:
 
                 properties["vertices"][i] = pointV
 
-            if issubclass(objectClass, FinishLine): 
+            if issubclass(objectClass, FinishLine):
                 properties["numberOfLaps"] = objectDict["lge"]["numberOfLaps"]
 
             elif issubclass(objectClass, Kart):
@@ -267,6 +267,10 @@ class ObjectFactory:
     def deletedObjects(self):
         return self._destroyedObjects.values()
 
+    def kartPlaceholders(self) -> List[Kart]:
+        """Retourne la liste des karts placeholder"""
+        return self._kartPlaceHolders.values()
+
     def loadKart(self, username: str, img: str, placeHolder: int = None) -> int:
         """Créé un kart à l'emplacement donné par le placeHolder.
         Si le placeHolder n'est pas donné, il est séléctionné au hasard parmis les restants"""
@@ -325,7 +329,9 @@ class ObjectFactory:
         self._currentGroup = minimalExport["currentGroup"]
         self._currentIndex = minimalExport["currentIndex"]
         objs = [
-            self.objectsClasses[obj["class"]](**self.objectsClasses[obj["class"]].fromMinimalDict(obj))
+            self.objectsClasses[obj["class"]](
+                **self.objectsClasses[obj["class"]].fromMinimalDict(obj)
+            )
             for obj in minimalExport["objects"]
         ]
         self._objects = {obj.formID(): obj for obj in objs}

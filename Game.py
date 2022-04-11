@@ -2,8 +2,7 @@ from logging import error, warning
 from typing import Callable, List
 
 from . import events
-from .objects import Object, ObjectFactory
-from .objects.ObjectFactory import ObjectFactory
+from .objects import Object, ObjectFactory, Kart
 from .CollisionsZone import CollisionsZone, OnCollisionT
 
 
@@ -68,7 +67,11 @@ class Game:
         self._factory.minimalImport(minimalExport)
         
     def objectByFormID(self, formID: int) -> Object:
-        return self._factory[formID]
+        return self._factory[formID]        
+
+    def kartPlaceholders(self) -> List[Kart]:
+        """Retourne la liste des karts placeholder"""
+        return self._factory.kartPlaceholders()
 
     def loadKart(self, username: str, img: str, placeHolder: int = None) -> int:
         """Créé un kart à l'emplacement donné par le placeHolder.
