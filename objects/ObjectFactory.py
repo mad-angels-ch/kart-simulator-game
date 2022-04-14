@@ -335,6 +335,7 @@ class ObjectFactory:
             for obj in minimalExport["objects"]
         ]
         self._objects = {obj.formID(): obj for obj in objs}
+        self._kartPlaceHolders = {obj.formID(): obj for obj in objs if isinstance(obj, Kart)}
 
     def clean(self, elapsedTime: float) -> None:
         """A appeler à la fin de chaque frame, supprime les objets devenus inutiles ou obsolètes"""
