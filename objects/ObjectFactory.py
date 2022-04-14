@@ -48,8 +48,8 @@ class ObjectFactory:
         "LGEFinishLine": FinishLine,
     }
 
-    _currentGroup: int
-    _currentIndex: int
+    _currentGroup: int = 1
+    _currentIndex: int = 1
 
     _objects: Dict[int, Object]
     _destroyedObjects: Dict[int, Object]
@@ -59,8 +59,6 @@ class ObjectFactory:
         self._objects = {}
         self._destroyedObjects = {}
         self._kartPlaceHolders = {}
-        self._currentGroup = 1
-        self._currentIndex = 1
         if len(fabric) > 0:
             self._fromFabric(fabric)
 
