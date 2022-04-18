@@ -7,6 +7,7 @@ from .ObjectFactory import (
     Flipper,
     Gate,
     Kart,
+    KartBurned,
     Lava,
     Object,
     Polygon,

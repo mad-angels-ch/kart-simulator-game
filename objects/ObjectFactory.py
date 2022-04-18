@@ -54,6 +54,7 @@ class ObjectFactory:
     _objects: Dict[int, Object]
     _destroyedObjects: Dict[int, Object]
     _kartPlaceHolders: Dict[int, Kart]
+    _finishLine: FinishLine
 
     def __init__(self, fabric: str) -> None:
         self._objects = {}
@@ -75,6 +76,8 @@ class ObjectFactory:
             self._kartPlaceHolders[formID] = obj
         else:
             self._objects[formID] = obj
+        if isinstance(obj, FinishLine):
+            self._finishLine = obj
         self._currentIndex += 1
 
     def _fromFabric(self, fabric: str) -> None:
@@ -288,6 +291,10 @@ class ObjectFactory:
             raise RuntimeError("Invalid placeHolder")
         kart.destroy()
 
+    def burnedKarts(self) -> List[Kart]:
+        """Retourne tous les karts brûlés"""
+        return [kart for kart in self._kartPlaceHolders.values() if kart.hasBurned()]
+
     def createFireBall(self, launcher: int) -> int:
         """Fait lancer au kart une boule de feu"""
         kart = self._objects[launcher]
@@ -333,7 +340,13 @@ class ObjectFactory:
             for obj in minimalExport["objects"]
         ]
         self._objects = {obj.formID(): obj for obj in objs}
-        self._kartPlaceHolders = {obj.formID(): obj for obj in objs if isinstance(obj, Kart)}
+        self._kartPlaceHolders = {
+            obj.formID(): obj for obj in objs if isinstance(obj, Kart)
+        }
+
+    def finishLine(self) -> FinishLine:
+        """Nom explicit"""
+        return self._finishLine
 
     def clean(self, elapsedTime: float) -> None:
         """A appeler à la fin de chaque frame, supprime les objets devenus inutiles ou obsolètes"""

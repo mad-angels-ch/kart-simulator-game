@@ -2,7 +2,7 @@ from logging import error, warning
 from typing import Callable, List
 
 from . import events
-from .objects import Object, ObjectFactory, Kart
+from .objects import Object, ObjectFactory, Kart, FinishLine
 from .CollisionsZone import CollisionsZone, OnCollisionT
 
 
@@ -65,9 +65,9 @@ class Game:
         """Charge le minimum de données nécessaires à l'affichage du monde.
         Attent un objet du même format qu'exporté par minimalExport()"""
         self._factory.minimalImport(minimalExport)
-        
+
     def objectByFormID(self, formID: int) -> Object:
-        return self._factory[formID]        
+        return self._factory[formID]
 
     def kartPlaceholders(self) -> List[Kart]:
         """Retourne la liste des karts placeholder"""
@@ -77,6 +77,14 @@ class Game:
         """Créé un kart à l'emplacement donné par le placeHolder.
         Si le placeHolder n'est pas donné, il est séléctionné au hasard parmis les restants"""
         return self._factory.loadKart(username, img, placeHolder)
+
+    def burnedKarts(self) -> List[Kart]:
+        """Retourne tous les karts brûlés"""
+        return self._factory.burnedKarts()
+
+    def finishLine(self) -> FinishLine:
+        """Nom explicit"""
+        return self._factory.finishLine()
 
     def unloadKart(self, placeHolder: int) -> None:
         """Supprime le kart du jeu, peut à tout moment être recréé avec loadKart()"""
