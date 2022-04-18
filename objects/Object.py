@@ -308,7 +308,7 @@ class Object:
     def destroy(self) -> None:
         """Demande à être supprimé à la fin de la frame"""
         self._destroy = True
-        
+
     def restore(self) -> None:
         """Demande à ne pas être supprimé à la fin de la frame"""
         self._destroy = False

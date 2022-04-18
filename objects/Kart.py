@@ -1,8 +1,15 @@
-import lib
+from typing import TYPE_CHECKING, Callable
 
+import lib
 from .Polygon import Polygon, Object
 from .Lava import Lava
 from .FireBall import FireBall
+
+if TYPE_CHECKING:
+    from .Gate import Gate
+
+onCompletedAllLapsT = Callable[["Kart"], None]
+onBurnedT = Callable[["Kart"], None]
 
 
 class Kart(Polygon):
@@ -26,19 +33,24 @@ class Kart(Polygon):
 
     _lastGate: int
 
-    _burned: bool
+    _burned: bool = False
+    _completed: bool = False
 
     _username: str
     _image: str
+
+    _onBurned: onBurnedT
+    _onCompletedAllLaps: onCompletedAllLapsT
 
     def __init__(self, **kwargs) -> None:
         kwargs["mass"] = 1
         kwargs["friction"] = 0.6
         super().__init__(**kwargs)
+        self._onBurned = kwargs["onBurned"]
+        self._onCompletedAllLaps = kwargs["onCompletedAllLaps"]
         self._lastGate = 0
         self._moving = 0
         self._turning = 0
-        self._burned = False
         self._fireBallsLaunched = 0
         self._maxFireBalls = kwargs.get("munitions", 5)
         self._username = kwargs.get("username", "")
@@ -73,13 +85,24 @@ class Kart(Polygon):
         """Retourne le formID du dernier portillon que le kart a traversé"""
         return self._lastGate
 
-    def set_lastGate(self, newLastGameFormID: int) -> None:
+    def set_lastGate(self, newLastGame: "Gate") -> None:
         """Modifie le dernier portillon que le kart a traversé"""
-        self._lastGate = newLastGameFormID
+        self._lastGate = newLastGame.formID()
+        from .FinishLine import FinishLine
+
+        if isinstance(newLastGame, FinishLine) and newLastGame.completedAllLaps(
+            self.formID()
+        ):
+            self._completed = True
+            self._onCompletedAllLaps(self)
 
     def hasBurned(self) -> bool:
         """Retourne vrai si le kart s'est fait brûlé par la lave"""
         return self._burned
+
+    def hasCompleted(self) -> bool:
+        """Retourne True si le kart a terminé tous ses tours"""
+        return self._completed
 
     def request_move(self, direction: int) -> None:
         """Met le kart en mouvement
@@ -96,6 +119,8 @@ class Kart(Polygon):
         if other.isSolid():
             if isinstance(other, Lava) or isinstance(other, FireBall):
                 self._burned = True
+                print("burned")
+                self._onBurned(self)
             self.set_angularMotionSpeed(0)
             self.set_angularMotionAcceleration(0)
 

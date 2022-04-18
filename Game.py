@@ -2,7 +2,14 @@ from logging import error, warning
 from typing import Callable, List
 
 from . import events
-from .objects import Object, ObjectFactory, Kart, FinishLine
+from .objects import (
+    Object,
+    ObjectFactory,
+    Kart,
+    FinishLine,
+    onBurnedT,
+    onCompletedAllLapsT,
+)
 from .CollisionsZone import CollisionsZone, OnCollisionT
 
 
@@ -16,10 +23,12 @@ class Game:
         fabric: str,
         output: Callable[[List[Object]], None],
         onCollision: OnCollisionT = lambda o, p: None,
+        kart_onBurned: onBurnedT = lambda k: None,
+        kart_onCompletedAllLaps: onCompletedAllLapsT = lambda k: None,
     ) -> None:
         self._output = output
         self._onCollision = onCollision
-        self._factory = ObjectFactory(fabric)
+        self._factory = ObjectFactory(fabric, kart_onBurned, kart_onCompletedAllLaps)
 
     def nextFrame(self, elapsedTime: float, newEvents: List[events.Event] = []) -> None:
         """Avance le temps d'<elapsedTime> miliseconde et affiche le jeu à cet instant."""

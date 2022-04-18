@@ -18,10 +18,10 @@ class Gate(Polygon):
     def onCollision(self, other: "Object") -> None:
         super().onCollision(other)
         if isinstance(other, Kart) and other.lastGate() != self.formID():
-            other.set_lastGate(self.formID())
             self._passagesCount[other.formID()] = (
                 self._passagesCount.get(other.formID(), 0) + 1
             )
+            other.set_lastGate(self)
 
     def passagesCount(self, kartFormID: int) -> int:
         """Indique le nombre de fois que le kart a franchi le portillon"""

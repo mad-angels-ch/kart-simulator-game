@@ -26,7 +26,5 @@ class FinishLine(Gate):
 
     def toMinimalDict(self) -> dict:
         dic = super().toMinimalDict()
-        dic.update({
-            "numberOfLaps": self._numberOfLaps
-        })
+        dic.update({"numberOfLaps": self._numberOfLaps})
         return dic

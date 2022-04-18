@@ -7,7 +7,7 @@ from .Object import Object
 from .Circle import Circle
 from .Polygon import Polygon
 from .Flipper import Flipper
-from .Kart import Kart
+from .Kart import Kart, onBurnedT, onCompletedAllLapsT
 from .FinishLine import FinishLine
 from .Lava import Lava
 from .Gate import Gate
@@ -56,7 +56,17 @@ class ObjectFactory:
     _kartPlaceHolders: Dict[int, Kart]
     _finishLine: FinishLine
 
-    def __init__(self, fabric: str) -> None:
+    _kart_onBurned: onBurnedT
+    _kart_onCompletedAllLaps: onCompletedAllLapsT
+
+    def __init__(
+        self,
+        fabric: str,
+        kart_onBurned: onBurnedT,
+        kart_onCompletedAllLaps: onCompletedAllLapsT,
+    ) -> None:
+        self._kart_onBurned = kart_onBurned
+        self._kart_onCompletedAllLaps = kart_onCompletedAllLaps
         self._objects = {}
         self._destroyedObjects = {}
         self._kartPlaceHolders = {}
@@ -179,6 +189,8 @@ class ObjectFactory:
                     lib.Vector((25, 8)),
                     lib.Vector((25, -8)),
                 ]
+                properties["onBurned"] = self._kart_onBurned
+                properties["onCompletedAllLaps"] = self._kart_onCompletedAllLaps
 
             elif issubclass(objectClass, Flipper):
                 properties["flipperMaxAngle"] = objectDict["lge"]["flipperMaxAngle"]
