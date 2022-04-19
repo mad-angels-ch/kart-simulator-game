@@ -125,6 +125,9 @@ class Kart(Polygon):
             self.set_angularMotionAcceleration(0)
 
     def onEventsRegistered(self, deltaTime: float) -> None:
+        if self.hasBurned():
+            self._turning = 0
+            self._moving = 0
         targetASpeed = self._turning * self.turningSpeed
         currentASpeed = self.angularMotionSpeed()
         self.set_angularMotionAcceleration(
