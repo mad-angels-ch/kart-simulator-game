@@ -42,6 +42,11 @@ class Kart(Polygon):
     _onBurned: onBurnedT
     _onCompletedAllLaps: onCompletedAllLapsT
 
+    def fromMinimalDict(obj: dict) -> dict:
+        dic = Polygon.fromMinimalDict(obj)
+        dic.update({"onBurned": lambda k: None, "onCompletedAllLaps": lambda k: None})
+        return dic
+
     def __init__(self, **kwargs) -> None:
         kwargs["mass"] = 1
         kwargs["friction"] = 0.6
