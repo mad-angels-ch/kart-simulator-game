@@ -64,7 +64,9 @@ class Game:
 
     def callOutput(self) -> None:
         """Met l'affichage à jour"""
-        self._output(self._factory.objects())
+        objects = self._factory.objects()
+        if len(objects):
+            self._output(objects)
 
     def minimalExport(self) -> dict:
         """Exporte uniquement les données nécessaires à l'affichage du monde"""
@@ -73,7 +75,11 @@ class Game:
     def minimalImport(self, minimalExport: dict) -> None:
         """Charge le minimum de données nécessaires à l'affichage du monde.
         Attent un objet du même format qu'exporté par minimalExport()"""
+        self._factory.destroyAll()
+        self.callOutput()
+        self._factory.clean(0)
         self._factory.minimalImport(minimalExport)
+        self.callOutput()
 
     def objectByFormID(self, formID: int) -> Object:
         return self._factory[formID]
