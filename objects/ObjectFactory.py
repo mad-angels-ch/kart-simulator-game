@@ -337,7 +337,7 @@ class ObjectFactory:
         return {
             "currentGroup": self._currentGroup,
             "currentIndex": self._currentIndex,
-            "objects": [obj.toMinimalDict() for obj in self._objects.values()],
+            "objects": [obj.toMinimalDict() for obj in self._objects.values() if not obj.lastFrame()],
         }
 
     def minimalImport(self, minimalExport: dict) -> None:
