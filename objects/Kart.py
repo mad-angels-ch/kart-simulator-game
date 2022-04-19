@@ -124,7 +124,6 @@ class Kart(Polygon):
         if other.isSolid():
             if isinstance(other, Lava) or isinstance(other, FireBall):
                 self._burned = True
-                print("burned")
                 self._onBurned(self)
             self.set_angularMotionSpeed(0)
             self.set_angularMotionAcceleration(0)
