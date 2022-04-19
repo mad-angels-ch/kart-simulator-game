@@ -340,6 +340,11 @@ class ObjectFactory:
             "objects": [obj.toMinimalDict() for obj in self._objects.values()],
         }
 
+    def destroyAll(self) -> None:
+        """Détruit tous les objects"""
+        for obj in self._objects.values():
+            obj.destroy()
+
     def minimalImport(self, minimalExport: dict) -> None:
         """Charge le minimum de données nécessaires à l'affichage du monde.
         Attent un objet du même format qu'exporté par minimalExport()"""
