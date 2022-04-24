@@ -11,6 +11,7 @@ from .objects import (
     FinishLine,
     onBurnedT,
     onCompletedAllLapsT,
+    onPassageT,
 )
 from .CollisionsZone import CollisionsZone, OnCollisionT
 
@@ -27,10 +28,13 @@ class Game:
         onCollision: OnCollisionT = lambda o, p: None,
         kart_onBurned: onBurnedT = lambda k: None,
         kart_onCompletedAllLaps: onCompletedAllLapsT = lambda k: None,
+        gate_onPassage: onPassageT = lambda g, k: None,
     ) -> None:
         self._output = output
         self._onCollision = onCollision
-        self._factory = ObjectFactory(fabric, kart_onBurned, kart_onCompletedAllLaps)
+        self._factory = ObjectFactory(
+            fabric, kart_onBurned, kart_onCompletedAllLaps, gate_onPassage
+        )
 
     def nextFrame(self, elapsedTime: float, newEvents: List[events.Event] = []) -> None:
         """Avance le temps d'<elapsedTime> miliseconde et affiche le jeu à cet instant."""
