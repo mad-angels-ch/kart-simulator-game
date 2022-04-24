@@ -10,7 +10,7 @@ from .Flipper import Flipper
 from .Kart import Kart, onBurnedT, onCompletedAllLapsT
 from .FinishLine import FinishLine
 from .Lava import Lava
-from .Gate import Gate
+from .Gate import Gate, onPassageT
 from .FireBall import FireBall
 
 from .fill import Fill, Hex, Pattern
@@ -59,15 +59,18 @@ class ObjectFactory:
 
     _kart_onBurned: onBurnedT
     _kart_onCompletedAllLaps: onCompletedAllLapsT
+    _gate_onPassage: onPassageT
 
     def __init__(
         self,
         fabric: str,
         kart_onBurned: onBurnedT,
         kart_onCompletedAllLaps: onCompletedAllLapsT,
+        gate_onPassage: onPassageT,
     ) -> None:
         self._kart_onBurned = kart_onBurned
         self._kart_onCompletedAllLaps = kart_onCompletedAllLaps
+        self._gate_onPassage = gate_onPassage
         self._objects = {}
         self._destroyedObjects = {}
         self._kartPlaceHolders = {}
@@ -182,8 +185,10 @@ class ObjectFactory:
 
                 properties["vertices"][i] = pointV
 
-            if issubclass(objectClass, FinishLine):
-                properties["numberOfLaps"] = objectDict["lge"]["numberOfLaps"]
+            if issubclass(objectClass, Gate):
+                properties["onPassage"] = self._gate_onPassage
+                if issubclass(objectClass, FinishLine):
+                    properties["numberOfLaps"] = objectDict["lge"]["numberOfLaps"]
 
             elif issubclass(objectClass, Kart):
                 properties["vertices"] = [

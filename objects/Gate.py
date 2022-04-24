@@ -14,8 +14,14 @@ class Gate(Polygon):
     _passagesCount: Dict[int, int]
     _onPassage: onPassageT
 
+    def fromMinimalDict(obj: dict) -> dict:
+        dic = super().fromMinimalDict()
+        dic.update({"onPassage": lambda g, k: None})
+        return dic
+
     def __init__(self, **kwargs) -> None:
         kwargs["isSolid"] = False
+        self._onPassage = kwargs["onPassage"]
         super().__init__(**kwargs)
         self._passagesCount = kwargs.get("passagesCount", {})
 
@@ -30,6 +36,10 @@ class Gate(Polygon):
     def passagesCount(self, kartFormID: int) -> int:
         """Indique le nombre de fois que le kart a franchi le portillon"""
         return self._passagesCount.get(kartFormID, 0)
+
+    def set_passagesCount(self, kartFormID: int, passagesCount: int) -> None:
+        """Permet de modifier le nombre de fois que le kart donné a franchi le portillon"""
+        self._passagesCount[kartFormID] = passagesCount
 
     def toMinimalDict(self) -> dict:
         dic = super().toMinimalDict()

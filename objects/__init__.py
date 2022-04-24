@@ -6,6 +6,7 @@ from .ObjectFactory import (
     FireBall,
     Flipper,
     Gate,
+    onPassageT,
     Kart,
     onCompletedAllLapsT,
     onBurnedT,
