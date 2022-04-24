@@ -381,8 +381,13 @@ class ObjectFactory:
         }
 
     def finishLine(self) -> FinishLine:
-        """Nom explicit"""
+        """Nom explicite"""
         return self._finishLine
+    
+    def gates(self) -> List[Gate]:
+        """Nom explicite"""
+        return list(gate for gate in self.objects() if isinstance(gate, Gate))
+    
 
     def clean(self, elapsedTime: float) -> None:
         """A appeler à la fin de chaque frame, supprime les objets devenus inutiles ou obsolètes"""
