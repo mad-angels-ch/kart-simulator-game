@@ -383,6 +383,7 @@ class ObjectFactory:
         self._objects = {obj.formID(): obj for obj in objs}
         self._karts = {obj.formID(): obj for obj in objs if isinstance(obj, Kart)}
         self._kartPlaceHolders = {}
+        self._finishLine = [obj for obj in objs if isinstance(obj, FinishLine)][0]
 
     def finishLine(self) -> FinishLine:
         """Nom explicite"""
