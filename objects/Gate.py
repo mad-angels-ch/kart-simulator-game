@@ -1,7 +1,10 @@
-from typing import Dict
+from typing import Callable, Dict
 
 from .Polygon import Object, Polygon
 from .Kart import Kart
+
+
+onPassageT = Callable[["Gate", Kart], None]
 
 
 class Gate(Polygon):
@@ -9,6 +12,7 @@ class Gate(Polygon):
     Un minimum de deux portillons (ou de classes dérivées) sont nécessaire pour un fonctionnement correct."""
 
     _passagesCount: Dict[int, int]
+    _onPassage: onPassageT
 
     def __init__(self, **kwargs) -> None:
         kwargs["isSolid"] = False
