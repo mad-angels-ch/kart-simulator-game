@@ -15,7 +15,7 @@ class Gate(Polygon):
     _onPassage: onPassageT
 
     def fromMinimalDict(obj: dict) -> dict:
-        dic = super().fromMinimalDict()
+        dic = Polygon.fromMinimalDict()
         dic.update({"onPassage": lambda g, k: None})
         return dic
 
