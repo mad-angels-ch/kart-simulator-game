@@ -1,6 +1,8 @@
 from logging import error, warning
 from typing import Callable, List
 
+from game.objects import Gate
+
 from . import events
 from .objects import (
     Object,
@@ -108,6 +110,10 @@ class Game:
     def finishLine(self) -> FinishLine:
         """Nom explicit"""
         return self._factory.finishLine()
+    
+    def gates(self) -> List[Gate]:
+        """Nom explicite"""
+        return self._factory.gates()
 
     def unloadKart(self, placeHolder: int) -> None:
         """Supprime le kart du jeu, peut à tout moment être recréé avec loadKart()"""
