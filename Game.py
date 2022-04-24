@@ -84,9 +84,17 @@ class Game:
     def objectByFormID(self, formID: int) -> Object:
         return self._factory[formID]
 
+    def karts(self) -> List[Kart]:
+        """Retourne la liste des karts (placeholders et instanciés)"""
+        return self._factory.karts()
+
     def kartPlaceholders(self) -> List[Kart]:
         """Retourne la liste des karts placeholder"""
         return self._factory.kartPlaceholders()
+
+    def kartsInGame(self) -> List[Kart]:
+        """Retourne la liste des karts actuellement en jeu"""
+        return self._factory.kartsInGame()
 
     def loadKart(self, username: str, img: str, placeHolder: int = None) -> int:
         """Créé un kart à l'emplacement donné par le placeHolder.

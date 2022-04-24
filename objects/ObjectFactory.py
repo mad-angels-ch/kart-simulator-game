@@ -55,6 +55,7 @@ class ObjectFactory:
     _destroyedObjects: Dict[int, Object]
     _kartPlaceHolders: Dict[int, Kart]
     _finishLine: FinishLine
+    _karts: Dict[int, Kart]
 
     _kart_onBurned: onBurnedT
     _kart_onCompletedAllLaps: onCompletedAllLapsT
@@ -70,6 +71,7 @@ class ObjectFactory:
         self._objects = {}
         self._destroyedObjects = {}
         self._kartPlaceHolders = {}
+        self._karts = {}
         if len(fabric) > 0:
             self._fromFabric(fabric)
 
@@ -83,6 +85,7 @@ class ObjectFactory:
         formID = self.maxObjectsPerGroup * self._currentGroup + self._currentIndex
         obj = objectClass(formID=formID, **kwds)
         if isinstance(obj, Kart):
+            self._karts[formID] = obj
             self._kartPlaceHolders[formID] = obj
         else:
             self._objects[formID] = obj
@@ -280,9 +283,21 @@ class ObjectFactory:
     def deletedObjects(self):
         return self._destroyedObjects.values()
 
+    def karts(self) -> List[Kart]:
+        """Retourne la liste des karts (placeholders et instanciés)"""
+        return self._karts.values()
+
     def kartPlaceholders(self) -> List[Kart]:
-        """Retourne la liste des karts placeholder"""
+        """Retourne la liste des karts placeholders"""
         return self._kartPlaceHolders.values()
+
+    def kartsInGame(self) -> List[Kart]:
+        """Retourne la liste des karts actuellement en jeu"""
+        return [
+            self[formID]
+            for formID in self._karts
+            if formID not in self._kartPlaceHolders
+        ]
 
     def loadKart(self, username: str, img: str, placeHolder: int = None) -> int:
         """Créé un kart à l'emplacement donné par le placeHolder.
@@ -337,7 +352,11 @@ class ObjectFactory:
         return {
             "currentGroup": self._currentGroup,
             "currentIndex": self._currentIndex,
-            "objects": [obj.toMinimalDict() for obj in self._objects.values() if not obj.lastFrame()],
+            "objects": [
+                obj.toMinimalDict()
+                for obj in self._objects.values()
+                if not obj.lastFrame()
+            ],
         }
 
     def destroyAll(self) -> None:
