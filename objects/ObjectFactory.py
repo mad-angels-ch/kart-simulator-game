@@ -411,7 +411,12 @@ class ObjectFactory:
         self._objects = {obj.formID(): obj for obj in objs}
         self._karts = {obj.formID(): obj for obj in objs if isinstance(obj, Kart)}
         self._kartPlaceHolders = {}
-        self._finishLine = [obj for obj in objs if isinstance(obj, FinishLine)][0]
+        self._gatesByPosition = {}
+        for obj in objs:
+            if isinstance(obj, Gate):
+                gates = self._gatesByPosition.get(obj.position(), [])
+                gates.append(obj)
+                self._gatesByPosition[obj.position()] = gates
 
     def finishLine(self) -> FinishLine:
         """Nom explicite"""
