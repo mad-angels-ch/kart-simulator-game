@@ -74,6 +74,10 @@ class Game:
         if len(objects):
             self._output(objects)
 
+    def objectsFactory(self) -> ObjectFactory:
+        """Retourne la factory"""
+        return self._factory
+
     def minimalExport(self) -> dict:
         """Exporte uniquement les données nécessaires à l'affichage du monde"""
         return self._factory.minimalExport()
@@ -114,7 +118,7 @@ class Game:
     def finishLine(self) -> FinishLine:
         """Nom explicit"""
         return self._factory.finishLine()
-    
+
     def gates(self) -> List[Gate]:
         """Nom explicite"""
         return self._factory.gates()

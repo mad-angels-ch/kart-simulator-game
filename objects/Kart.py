@@ -31,7 +31,7 @@ class Kart(Polygon):
     # -1 = à droite, 0 = tout droit, 1 = à gauche
     _turning: int
 
-    _lastGate: int
+    _lastGatePosition: int
 
     _burned: bool = False
     _completed: bool = False
@@ -53,7 +53,7 @@ class Kart(Polygon):
         super().__init__(**kwargs)
         self._onBurned = kwargs["onBurned"]
         self._onCompletedAllLaps = kwargs["onCompletedAllLaps"]
-        self._lastGate = 0
+        self._lastGatePosition = 0
         self._moving = 0
         self._turning = 0
         self._fireBallsLaunched = 0
@@ -86,13 +86,15 @@ class Kart(Polygon):
     def add_fireBall(self):
         self._fireBallsLaunched += 1
 
-    def lastGate(self) -> int:
-        """Retourne le formID du dernier portillon que le kart a traversé"""
-        return self._lastGate
+    def lastGatePosition(self) -> int:
+        """Retourne la position du dernier portillon franchis par ce kart"""
+        return self._lastGatePosition
 
     def set_lastGate(self, newLastGame: "Gate") -> None:
         """Modifie le dernier portillon que le kart a traversé"""
-        self._lastGate = newLastGame.formID()
+        self._lastGatePosition = newLastGame.position()
+
+        # import ici pour éviter des imports circulaires
         from .FinishLine import FinishLine
 
         if isinstance(newLastGame, FinishLine) and newLastGame.completedAllLaps(

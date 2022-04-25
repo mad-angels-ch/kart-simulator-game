@@ -1,6 +1,8 @@
+import itertools
 import json
+from logging import error
 from math import radians
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Tuple
 import lib
 
 from .Object import Object
@@ -54,8 +56,8 @@ class ObjectFactory:
     _objects: Dict[int, Object]
     _destroyedObjects: Dict[int, Object]
     _kartPlaceHolders: Dict[int, Kart]
-    _finishLine: FinishLine
     _karts: Dict[int, Kart]
+    _gatesByPosition: Dict[int, List[Gate]]
 
     _kart_onBurned: onBurnedT
     _kart_onCompletedAllLaps: onCompletedAllLapsT
@@ -75,8 +77,15 @@ class ObjectFactory:
         self._destroyedObjects = {}
         self._kartPlaceHolders = {}
         self._karts = {}
+        self._gatesByPosition = {}
         if len(fabric) > 0:
-            self._fromFabric(fabric)
+            try:
+                self._fromFabric(fabric)
+            except InvalidWorld as e:
+                raise e
+            except BaseException as e:
+                error(e)
+                # raise InvalidWorld()
 
     def _nextGroup(self) -> None:
         """Ferme le group actuel et prépare le suivant"""
@@ -92,16 +101,18 @@ class ObjectFactory:
             self._kartPlaceHolders[formID] = obj
         else:
             self._objects[formID] = obj
-        if isinstance(obj, FinishLine):
-            self._finishLine = obj
+        if isinstance(obj, Gate):
+            gates = self._gatesByPosition.get(obj.position(), [])
+            gates.append(obj)
+            self._gatesByPosition[obj.position()] = gates
+            if isinstance(obj, FinishLine):
+                self._finishLine = obj
+
         self._currentIndex += 1
 
     def _fromFabric(self, fabric: str) -> None:
         """Charge un json d'un monde créé par le créateur (https://lj44.ch/creator/kart)"""
-        gatesCount = 0
-        finishLineCount = 0
-        kartPlaceHolderCount = 0
-        flippersCount = 0
+        flipper = False
 
         loaded = json.loads(fabric)
         jsonObjects = loaded["objects"]
@@ -115,112 +126,129 @@ class ObjectFactory:
                     # pour garde la compatibilité en cas d'ajout d'une nouvelle classe
                     continue
                 if issubclass(objectClass, Flipper):
-                    flippersCount += 1
-                elif issubclass(objectClass, Kart):
-                    kartPlaceHolderCount += 1
-                elif issubclass(objectClass, Gate):
-                    gatesCount += 1
-                    if issubclass(objectClass, FinishLine):
-                        finishLineCount += 1
+                    flipper = True
                 self._create(objectClass, **self._fromFabricObject(objectClass, obj))
 
         else:
             raise RuntimeError("Unsupported json version")
 
-        if flippersCount == 0:
-            if gatesCount < 2:
-                raise ObjectCountError("Gate", 2, gatesCount)
-            elif finishLineCount != 1:
-                raise ObjectCountError("Finish line", 1, finishLineCount)
-            elif kartPlaceHolderCount < 1:
-                raise ObjectCountError("Kart placeholder", 1, kartPlaceHolderCount)
+        if not flipper:
+            try:
+                finishLines = self._gatesByPosition[0]
+            except KeyError:
+                raise ObjectCountError("This world has no finish line!")
+            for finishLine in finishLines:
+                if not isinstance(finishLine, FinishLine):
+                    raise PositionError(0)
+            if len(finishLines) > 1:
+                raise ObjectCountError("This world has more than one finish line!")
+
+            highestPosition = max(self._gatesByPosition.keys())
+            if highestPosition == 0:
+                raise ObjectCountError("This world has no gates!")
+
+            for position in range(1, highestPosition + 1):
+                if position not in self._gatesByPosition:
+                    raise PositionError(position)
+
+            self.finishLine().set_highestPosition(highestPosition)
+
+            if len(self._kartPlaceHolders) < 1:
+                raise ObjectCountError("This world has no kart placeholders!")
 
         self._nextGroup()
 
     def _fromFabricObject(self, objectClass, objectDict: dict) -> dict:
         """Créé un dict à partir d'un object fabric tel qu'attendu par _create"""
-        properties = {
-            "name": objectDict["lge"].get("name"),
-            "center": lib.Point((objectDict["left"], objectDict["top"])),
-            "angle": radians(objectDict["angle"]),
-            "opacity": objectDict["opacity"],
-            "friction": objectDict["lge"]["friction"],
-            "mass": objectDict["lge"]["mass"],
-        }
+        major, minor, patch = map(int, objectDict["lge"]["version"].split("."))
+        if major == 1 and minor >= 1:
+            properties = {
+                "name": objectDict["lge"].get("name"),
+                "center": lib.Point((objectDict["left"], objectDict["top"])),
+                "angle": radians(objectDict["angle"]),
+                "opacity": objectDict["opacity"],
+                "friction": objectDict["lge"]["friction"],
+                "mass": objectDict["lge"]["mass"],
+            }
 
-        if issubclass(objectClass, Lava):
-            properties["fill"] = self._fromFabricFill("#ffa500")
-        else:
-            properties["fill"] = self._fromFabricFill(objectDict["fill"])
+            if issubclass(objectClass, Lava):
+                properties["fill"] = self._fromFabricFill("#ffa500")
+            else:
+                properties["fill"] = self._fromFabricFill(objectDict["fill"])
 
-        scaleX, scaleY = objectDict["scaleX"], objectDict["scaleY"]
-        if objectDict["flipX"]:
-            scaleX *= -1
-        if objectDict["flipY"]:
-            scaleY *= -1
+            scaleX, scaleY = objectDict["scaleX"], objectDict["scaleY"]
+            if objectDict["flipX"]:
+                scaleX *= -1
+            if objectDict["flipY"]:
+                scaleY *= -1
 
-        if issubclass(objectClass, Circle):
-            properties["radius"] = objectDict["radius"] * min(scaleX, scaleY)
+            if issubclass(objectClass, Circle):
+                properties["radius"] = objectDict["radius"] * min(scaleX, scaleY)
 
-        elif issubclass(objectClass, Polygon):
-            properties["vertices"] = [
-                lib.Point((point["x"], point["y"])) for point in objectDict["points"]
-            ]
-            abscissas = [point[0] for point in properties["vertices"]]
-            ordinates = [point[1] for point in properties["vertices"]]
-
-            toOrigin = -lib.Vector(
-                (
-                    (min(abscissas) + max(abscissas)) / 2,
-                    (min(ordinates) + max(ordinates)) / 2,
-                )
-            )
-
-            for i in range(len(properties["vertices"])):
-                properties["vertices"][i].translate(toOrigin)
-                pointV = lib.Vector(properties["vertices"][i])
-
-                pointV.scaleX(scaleX)
-                pointV.scaleY(scaleY)
-
-                properties["vertices"][i] = pointV
-
-            if issubclass(objectClass, Gate):
-                properties["onPassage"] = self._gate_onPassage
-                if issubclass(objectClass, FinishLine):
-                    properties["numberOfLaps"] = objectDict["lge"]["numberOfLaps"]
-
-            elif issubclass(objectClass, Kart):
+            elif issubclass(objectClass, Polygon):
                 properties["vertices"] = [
-                    lib.Vector((-25, -8)),
-                    lib.Vector((-25, 8)),
-                    lib.Vector((25, 8)),
-                    lib.Vector((25, -8)),
+                    lib.Point((point["x"], point["y"]))
+                    for point in objectDict["points"]
                 ]
-                properties["onBurned"] = self._kart_onBurned
-                properties["onCompletedAllLaps"] = self._kart_onCompletedAllLaps
+                abscissas = [point[0] for point in properties["vertices"]]
+                ordinates = [point[1] for point in properties["vertices"]]
 
-            elif issubclass(objectClass, Flipper):
-                properties["flipperMaxAngle"] = objectDict["lge"]["flipperMaxAngle"]
-                properties["flipperUpwardSpeed"] = objectDict["lge"][
-                    "flipperUpwardSpeed"
-                ]
+                toOrigin = -lib.Vector(
+                    (
+                        (min(abscissas) + max(abscissas)) / 2,
+                        (min(ordinates) + max(ordinates)) / 2,
+                    )
+                )
 
-        if issubclass(objectClass, Kart):
-            properties["angularMotion"] = UniformlyAcceleratedCircularMotion(
-                rotationCenter=lib.Vector((-25, 0))
-            )
-            properties["vectorialMotion"] = UniformlyAcceleratedMotion()
+                for i in range(len(properties["vertices"])):
+                    properties["vertices"][i].translate(toOrigin)
+                    pointV = lib.Vector(properties["vertices"][i])
+
+                    pointV.scaleX(scaleX)
+                    pointV.scaleY(scaleY)
+
+                    properties["vertices"][i] = pointV
+
+                if issubclass(objectClass, Gate):
+                    properties["onPassage"] = self._gate_onPassage
+                    properties["position"] = objectDict["lge"]["gatePosition"]
+                    if issubclass(objectClass, FinishLine):
+                        properties["numberOfLaps"] = objectDict["lge"]["numberOfLaps"]
+
+                elif issubclass(objectClass, Kart):
+                    properties["vertices"] = [
+                        lib.Vector((-25, -8)),
+                        lib.Vector((-25, 8)),
+                        lib.Vector((25, 8)),
+                        lib.Vector((25, -8)),
+                    ]
+                    properties["onBurned"] = self._kart_onBurned
+                    properties["onCompletedAllLaps"] = self._kart_onCompletedAllLaps
+
+                elif issubclass(objectClass, Flipper):
+                    properties["flipperMaxAngle"] = objectDict["lge"]["flipperMaxAngle"]
+                    properties["flipperUpwardSpeed"] = objectDict["lge"][
+                        "flipperUpwardSpeed"
+                    ]
+
+            if issubclass(objectClass, Kart):
+                properties["angularMotion"] = UniformlyAcceleratedCircularMotion(
+                    rotationCenter=lib.Vector((-25, 0))
+                )
+                properties["vectorialMotion"] = UniformlyAcceleratedMotion()
+
+            else:
+                properties["angularMotion"] = self._fromFabricAngularMotion(
+                    objectDict["lge"]["motion"]["angle"]
+                )
+                properties["vectorialMotion"] = self._fromFabricVectorialMotion(
+                    objectDict["lge"]["motion"]["vector"]
+                )
+
+            return properties
 
         else:
-            properties["angularMotion"] = self._fromFabricAngularMotion(
-                objectDict["lge"]["motion"]["angle"]
-            )
-            properties["vectorialMotion"] = self._fromFabricVectorialMotion(
-                objectDict["lge"]["motion"]["vector"]
-            )
-
-        return properties
+            raise TooOld()
 
     def _fromFabricFill(self, fabricFill: "dict | str") -> Fill:
         """Créé et retourne une méthode de remplissage à partir de la propriété 'fill' d'un objet exporté de la librairie http://fabricjs.com/."""
@@ -387,11 +415,11 @@ class ObjectFactory:
 
     def finishLine(self) -> FinishLine:
         """Nom explicite"""
-        return self._finishLine
+        return self._gatesByPosition[0][0]
 
     def gates(self) -> List[Gate]:
         """Nom explicite"""
-        return list(gate for gate in self.objects() if isinstance(gate, Gate))
+        return itertools.chain(*(gates for gates in self._gatesByPosition.values()))
 
     def clean(self, elapsedTime: float) -> None:
         """A appeler à la fin de chaque frame, supprime les objets devenus inutiles ou obsolètes"""
@@ -404,27 +432,45 @@ class ObjectFactory:
             self._objects.pop(obj.formID())
 
 
-class ObjectCountError(RuntimeError):
+class InvalidWorld(BaseException):
     """Classe pour les erreurs dans le fabric json."""
-
-    _type: str
-    _requiredCount: int
-    _foundCount: int
-
-    def __init__(self, objectType: str, requiredCount: int, foundCount: int) -> None:
-        self._type = objectType
-        self._requiredCount = requiredCount
-        self._foundCount = foundCount
 
     def message(self) -> str:
         """Message de l'erreur."""
-        if self._requiredCount == 1:
-            if self._foundCount == 1:
-                return f"{self._requiredCount} {self._type} was expected but {self._foundCount} was found"
-            else:
-                return f"{self._requiredCount} {self._type} was expected but {self._foundCount} were found"
+        return "Invalid world!"
+
+
+class ObjectCountError(InvalidWorld):
+    """Classe pour les erreurs dans le fabric json."""
+
+    _message: str
+
+    def __init__(self, message: str) -> None:
+        super().__init__()
+        self._message = message
+
+    def message(self) -> str:
+        return self._message
+
+
+class PositionError(InvalidWorld):
+    """Erreur dans les positions des gates du circuit donné"""
+
+    _position: int
+
+    def __init__(self, position: int) -> None:
+        super().__init__()
+        self._position = position
+
+    def message(self) -> str:
+        if self._position > 0:
+            return f"This world does not have any gates at position {self._position}!"
         else:
-            if self._foundCount == 1:
-                return f"{self._requiredCount} {self._type} were expected but {self._foundCount} was found"
-            else:
-                return f"{self._requiredCount} {self._type} were expected but {self._foundCount} were found"
+            return "One of the gate of this world has a position lower than 1, which is illegal!"
+
+
+class TooOld(InvalidWorld):
+    """Version du monde plus supportée"""
+
+    def message(self) -> str:
+        return "This world is too old, it must be re-saved in the world editor."
