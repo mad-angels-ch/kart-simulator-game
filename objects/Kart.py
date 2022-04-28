@@ -53,7 +53,7 @@ class Kart(Polygon):
         super().__init__(**kwargs)
         self._onBurned = kwargs["onBurned"]
         self._onCompletedAllLaps = kwargs["onCompletedAllLaps"]
-        self._lastGatePosition = kwargs.get("lastGatePosition",0)
+        self._lastGatePosition = kwargs.get("lastGatePosition", 0)
         self._moving = 0
         self._turning = 0
         self._fireBallsLaunched = 0
@@ -107,6 +107,11 @@ class Kart(Polygon):
         """Retourne vrai si le kart s'est fait brûlé par la lave"""
         return self._burned
 
+    def burn(self) -> None:
+        """Marque un kart comme brûlé"""
+        self._burned = True
+        self._onBurned(self)
+
     def hasCompleted(self) -> bool:
         """Retourne True si le kart a terminé tous ses tours"""
         return self._completed
@@ -125,8 +130,7 @@ class Kart(Polygon):
         super().onCollision(other)
         if other.isSolid():
             if isinstance(other, Lava) or isinstance(other, FireBall):
-                self._burned = True
-                self._onBurned(self)
+                self.burn()
             self.set_angularMotionSpeed(0)
             self.set_angularMotionAcceleration(0)
 
@@ -152,5 +156,11 @@ class Kart(Polygon):
 
     def toMinimalDict(self) -> dict:
         dic = super().toMinimalDict()
-        dic.update({"username": self._username, "image": self._image, "lastGatePosition": self._lastGatePosition})
+        dic.update(
+            {
+                "username": self._username,
+                "image": self._image,
+                "lastGatePosition": self._lastGatePosition,
+            }
+        )
         return dic
