@@ -53,7 +53,7 @@ class Kart(Polygon):
         super().__init__(**kwargs)
         self._onBurned = kwargs["onBurned"]
         self._onCompletedAllLaps = kwargs["onCompletedAllLaps"]
-        self._lastGatePosition = 0
+        self._lastGatePosition = kwargs.get("lastGatePosition",0)
         self._moving = 0
         self._turning = 0
         self._fireBallsLaunched = 0
@@ -90,14 +90,14 @@ class Kart(Polygon):
         """Retourne la position du dernier portillon franchis par ce kart"""
         return self._lastGatePosition
 
-    def set_lastGate(self, newLastGame: "Gate") -> None:
+    def set_lastGate(self, newLastGate: "Gate") -> None:
         """Modifie le dernier portillon que le kart a traversé"""
-        self._lastGatePosition = newLastGame.position()
+        self._lastGatePosition = newLastGate.position()
 
         # import ici pour éviter des imports circulaires
         from .FinishLine import FinishLine
 
-        if isinstance(newLastGame, FinishLine) and newLastGame.completedAllLaps(
+        if isinstance(newLastGate, FinishLine) and newLastGate.completedAllLaps(
             self.formID()
         ):
             self._completed = True
@@ -152,5 +152,5 @@ class Kart(Polygon):
 
     def toMinimalDict(self) -> dict:
         dic = super().toMinimalDict()
-        dic.update({"username": self._username, "image": self._image})
+        dic.update({"username": self._username, "image": self._image, "lastGatePosition": self._lastGatePosition})
         return dic

@@ -116,7 +116,7 @@ class Game:
         return self._factory.burnedKarts()
 
     def finishLine(self) -> FinishLine:
-        """Nom explicit"""
+        """Nom explicite"""
         return self._factory.finishLine()
 
     def gates(self) -> List[Gate]:
