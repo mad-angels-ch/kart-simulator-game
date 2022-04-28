@@ -53,7 +53,7 @@ class Kart(Polygon):
         super().__init__(**kwargs)
         self._onBurned = kwargs["onBurned"]
         self._onCompletedAllLaps = kwargs["onCompletedAllLaps"]
-        self._lastGatePosition = kwargs.get("lastGatePosition",0)
+        self._lastGatePosition = kwargs.get("lastGatePosition", 0)
         self._moving = 0
         self._turning = 0
         self._fireBallsLaunched = 0
@@ -152,5 +152,12 @@ class Kart(Polygon):
 
     def toMinimalDict(self) -> dict:
         dic = super().toMinimalDict()
-        dic.update({"username": self._username, "image": self._image, "lastGatePosition": self._lastGatePosition})
+        dic.update(
+            {
+                "username": self._username,
+                "image": self._image,
+                "lastGatePosition": self._lastGatePosition,
+                "burned": self._burned,
+            }
+        )
         return dic
