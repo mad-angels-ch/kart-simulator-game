@@ -9,6 +9,9 @@ class Pattern(Fill):
     _repeat: str
     _source: str
 
+    def fromDict(fill: dict) -> "Fill":
+        return Pattern(fill["repeat"], fill["source"])
+
     def __init__(self, repeat: str, sourceURL: str) -> None:
         self._repeat = repeat
         self._source = sourceURL
@@ -23,3 +26,8 @@ class Pattern(Fill):
     def source(self) -> str:
         """Retourne la source (URL) de l'image"""
         return self._source
+
+    def toDict(self) -> dict:
+        dic = super().toDict()
+        dic.update({"repeat": self._repeat, "source": self._source})
+        return dic

@@ -1,10 +1,9 @@
 from typing import Tuple
-import math
 
 import lib
 
 from . import motions
-from .fill import Fill, createFill
+from .fill import Fill, Hex, Pattern
 
 
 class Object:
@@ -12,8 +11,11 @@ class Object:
     Ne pas utiliser directement, utiliser les classes filles."""
 
     precision = 1e-6
+    fillClasses = {fill.__name__: fill for fill in [Hex, Pattern]}
+    timeToKeepLastCollided = 1 / 60
 
     _formID: int
+    _name: str
 
     _angle: float
     _center: lib.Point
@@ -26,14 +28,26 @@ class Object:
     _friction: float
 
     _potentialCollisionZone: lib.AlignedRectangle
-    _potentialCollisionZoneUpToDate: bool
+    _potentialCollisionZoneUpToDate: bool = False
     _potentialCollisionZoneTimeInterval: float
 
     _solid: bool
+    _destroy: bool = False
+
+    _lastCollided: "Object" = None
+    _elapsedTimeLastCollision: float = 0
+
+    def fromMinimalDict(obj: dict) -> dict:
+        """Retourne les argument pour reproduire l'objet représenté par le dict python du même format qu'exporté par toMinimalDict()"""
+        obj["fill"] = Object.fillClasses[obj["fill"]["class"]].fromDict(obj["fill"])
+        obj["center"] = lib.Point(obj["center"])
+        return obj
 
     def __init__(self, **kwargs) -> None:
         self._formID = kwargs["formID"]
         self._angle = kwargs.get("angle", 0)
+        self._name = kwargs.get("name", "")
+
         self._center = kwargs.get("center", lib.Point())
         self._angularMotion = kwargs.get(
             "angularMotion", motions.angulars.AngularMotion()
@@ -41,27 +55,32 @@ class Object:
         self._vectorialMotion = kwargs.get(
             "vectorialMotion", motions.vectorials.VectorialMotion()
         )
-        self._fill = kwargs.get("fill", createFill(type="Hex", hexColor="#000000"))
+        self._fill = kwargs.get("fill", Hex("#000000"))
         self._opacity = kwargs.get("opacity", 1)
         self._mass = kwargs.get("mass", 0)
         self._friction = kwargs.get("friction", 0)
-        self._potentialCollisionZoneUpToDate = False
-        self._solid = kwargs.get("isSolid", True)
         self._solid = kwargs.get("isSolid", True)
 
     def __eq__(self, other: "Object") -> bool:
         """Retourne vrai s'il s'agit du même objet"""
-        return self.formID() == other.formID()
+        return other != None and self.formID() == other.formID()
 
     def onEventsRegistered(self, deltaTime: float) -> None:
         """Méthode à surcharger, lancée une fois les évènements traités"""
 
-    def onCollision(self, other: "Object", timeSinceLastFrame: float) -> None:
-        """Méthode à surcharger, lancée lors des collisions"""
+    def onCollision(self, other: "Object") -> None:
+        """Méthode lancé lors des collisions"""
+        self._lastCollided = other
+        self._elapsedTimeLastCollision = 0
 
     def isSolid(self) -> bool:
         """Si vrai, l'objet rebondit sur les autres objets sinon il les traverse"""
         return self._solid
+
+    def name(self) -> str:
+        """Retourne le nom de l'objet.
+        Plusieurs objets peuvent avoir le même nom"""
+        return self._name
 
     def formID(self) -> int:
         """Retourne un identifiant unique pour l'objet. Ne changera jamais."""
@@ -77,7 +96,7 @@ class Object:
         """NE PAS MODIFIER\n
         Retourne le centre de l'objet à l'instant donné."""
         if not deltaTime:
-            return self._center     
+            return self._center
 
         newCenter = lib.Point(self.center())
         newCenter.translate(self.relativePosition(deltaTime))
@@ -126,6 +145,10 @@ class Object:
             + fromRotationCenterAfter
         )
 
+    def speed(self, deltaTime: float = 0) -> lib.Vector:
+        """Retourne la vitesse de translation du centre de l'objet"""
+        return self.speedAtPoint(self.center(deltaTime), deltaTime)
+
     def speedAtPoint(self, point: lib.Point, deltaTime: float = 0) -> lib.Vector:
         """Retourne la vitesse linéaire d'un point donné (tient compte de sa vitesse angulaire)"""
         normal = lib.Vector.fromPoints(self.rotationCenter(), point)
@@ -169,6 +192,11 @@ class Object:
 
         self._angularMotion.updateReferences(deltaTime)
         self._vectorialMotion.updateReferences(deltaTime)
+
+        if self._lastCollided:
+            self._elapsedTimeLastCollision -= deltaTime
+            if self._elapsedTimeLastCollision > self.timeToKeepLastCollided:
+                self._lastCollided = None
 
     def angularMotionSpeed(self, deltaTime: float = 0) -> float:
         """Attention, utilisation avancée uniquement
@@ -254,15 +282,48 @@ class Object:
         Un coefficient négatif signifie que l'objet prend de la vitesse lors des collisions."""
         self._friction = newFriction
 
+    def lastCollided(self, deltaTime: float = 0) -> "Object | None":
+        """Retourne le dernier objet avec lequel celui-ci est entré en collision, s'il existe."""
+        if self._elapsedTimeLastCollision + deltaTime > self.timeToKeepLastCollided:
+            return self._lastCollided
+
     def collides(self, other: "Object", timeInterval: float) -> bool:
         """Retourne vrai si les deux objets se collisionnent dans l'intervalle de temps donné
         Les collisions entres deux objets fixés sont ignorés (ceux qui ont une masse nulle)"""
-        raise RuntimeError("This method should be overwritten")
+        return (self.mass() > 0 or other.mass() > 0) and other != self.lastCollided(
+            timeInterval
+        )
 
     def collisionPointAndTangent(self, other: "Object") -> Tuple[lib.Point, lib.Vector]:
         """Retourne une approximation du point par lequel les deux objets se touchent
         ainsi qu'une approximation d'un vecteur directeur de la tangente passant par ce point"""
-        raise RuntimeError("This method should be overwritten")
+        assert True, "This method should be overwritten"
 
-    def get_parentJsonID(self):
-        return self.formID()//1000000
+    def groupID(self) -> int:
+        """Return the id of this object's group"""
+        from .ObjectFactory import ObjectFactory
+
+        return self.formID() // ObjectFactory.maxObjectsPerGroup
+
+    def destroy(self) -> None:
+        """Demande à être supprimé à la fin de la frame"""
+        self._destroy = True
+
+    def restore(self) -> None:
+        """Demande à ne pas être supprimé à la fin de la frame"""
+        self._destroy = False
+
+    def lastFrame(self) -> bool:
+        """Retourne vrai si l'objet n'existera plus à la prochaine frame"""
+        return self._destroy
+
+    def toMinimalDict(self) -> dict:
+        """Exporte cet objet dans un dict python contant toutes les informations pour reproduire visuellement l'objet"""
+        return {
+            "class": self.__class__.__name__,
+            "formID": self._formID,
+            "angle": self._angle,
+            "center": tuple(self._center),
+            "fill": self._fill.toDict(),
+            "opacity": self._opacity,
+        }

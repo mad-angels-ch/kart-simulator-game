@@ -1,8 +1,15 @@
-import lib
+from typing import TYPE_CHECKING, Callable
 
+import lib
 from .Polygon import Polygon, Object
 from .Lava import Lava
 from .FireBall import FireBall
+
+if TYPE_CHECKING:
+    from .Gate import Gate
+
+onCompletedAllLapsT = Callable[["Kart"], None]
+onBurnedT = Callable[["Kart"], None]
 
 
 class Kart(Polygon):
@@ -24,41 +31,90 @@ class Kart(Polygon):
     # -1 = à droite, 0 = tout droit, 1 = à gauche
     _turning: int
 
-    _lastGate: int
+    _lastGatePosition: int
 
-    _burned: bool
+    _burned: bool = False
+    _completed: bool = False
+
+    _username: str
+    _image: str
+
+    _onBurned: onBurnedT
+    _onCompletedAllLaps: onCompletedAllLapsT
+
+    def fromMinimalDict(obj: dict) -> dict:
+        dic = Polygon.fromMinimalDict(obj)
+        dic.update({"onBurned": lambda k: None, "onCompletedAllLaps": lambda k: None})
+        return dic
 
     def __init__(self, **kwargs) -> None:
         kwargs["mass"] = 1
         kwargs["friction"] = 0.6
         super().__init__(**kwargs)
-        self._lastGate = 0
+        self._onBurned = kwargs["onBurned"]
+        self._onCompletedAllLaps = kwargs["onCompletedAllLaps"]
+        self._lastGatePosition = kwargs.get("lastGatePosition", 0)
         self._moving = 0
         self._turning = 0
-        self._burned = False
         self._fireBallsLaunched = 0
         self._maxFireBalls = kwargs.get("munitions", 5)
-    
+        self._username = kwargs.get("username", "")
+        self._image = kwargs.get("image", "")
+
+    def username(self) -> str:
+        """Retourne le nom d'utilisateur du joueur du kart"""
+        return self._username
+
+    def set_username(self, newUsername: str) -> None:
+        """Nom explicite"""
+        self._username = newUsername
+
+    def image(self) -> str:
+        """Nom de l'image du kart à charger (avec l'extension)"""
+        return self._image
+
+    def set_image(self, newImage) -> None:
+        """Nom explicite"""
+        self._image = newImage
+
     def fireBallsLaunched(self):
         return self._fireBallsLaunched
-    
+
     def maxFireBalls(self):
         return self._maxFireBalls
-    
+
     def add_fireBall(self):
         self._fireBallsLaunched += 1
-    
-    def lastGate(self) -> int:
-        """Retourne le formID du dernier portillon que le kart a traversé"""
-        return self._lastGate
 
-    def set_lastGate(self, newLastGameFormID: int) -> None:
+    def lastGatePosition(self) -> int:
+        """Retourne la position du dernier portillon franchis par ce kart"""
+        return self._lastGatePosition
+
+    def set_lastGate(self, newLastGate: "Gate") -> None:
         """Modifie le dernier portillon que le kart a traversé"""
-        self._lastGate = newLastGameFormID
+        self._lastGatePosition = newLastGate.position()
+
+        # import ici pour éviter des imports circulaires
+        from .FinishLine import FinishLine
+
+        if isinstance(newLastGate, FinishLine) and newLastGate.completedAllLaps(
+            self.formID()
+        ):
+            self._completed = True
+            self._onCompletedAllLaps(self)
 
     def hasBurned(self) -> bool:
         """Retourne vrai si le kart s'est fait brûlé par la lave"""
         return self._burned
+
+    def burn(self) -> None:
+        """Marque un kart comme brûlé"""
+        self._burned = True
+        self._onBurned(self)
+
+    def hasCompleted(self) -> bool:
+        """Retourne True si le kart a terminé tous ses tours"""
+        return self._completed
 
     def request_move(self, direction: int) -> None:
         """Met le kart en mouvement
@@ -70,14 +126,18 @@ class Kart(Polygon):
         -1 = à droite, 0 = tout droit, 1 = à gauche"""
         self._turning = direction
 
-    def onCollision(self, other: "Object", timeSinceLastFrame: float) -> None:
+    def onCollision(self, other: "Object") -> None:
+        super().onCollision(other)
         if other.isSolid():
             if isinstance(other, Lava) or isinstance(other, FireBall):
-                self._burned = True
+                self.burn()
             self.set_angularMotionSpeed(0)
             self.set_angularMotionAcceleration(0)
 
     def onEventsRegistered(self, deltaTime: float) -> None:
+        if self.hasBurned():
+            self._turning = 0
+            self._moving = 0
         targetASpeed = self._turning * self.turningSpeed
         currentASpeed = self.angularMotionSpeed()
         self.set_angularMotionAcceleration(
@@ -93,3 +153,15 @@ class Kart(Polygon):
                 targetVectorialSpeed[i] - currentVectorialSpeed[i]
             ) / self.movingCorrectionTime
         self.set_vectorialMotionAcceleration(acceleration)
+
+    def toMinimalDict(self) -> dict:
+        dic = super().toMinimalDict()
+        dic.update(
+            {
+                "username": self._username,
+                "image": self._image,
+                "lastGatePosition": self._lastGatePosition,
+                "burned": self._burned,
+            }
+        )
+        return dic

@@ -35,7 +35,7 @@ class Circle(Object):
         return super().updatePotentialCollisionZone(timeInterval)
 
     def collides(self, other: "Object", timeInterval: float) -> bool:
-        if not (self.mass() or other.mass()):
+        if not super().collides(other, timeInterval):
             return False
 
         elif isinstance(other, Circle):
@@ -99,3 +99,8 @@ class Circle(Object):
 
         else:
             return other.collisionPointAndTangent(self)
+
+    def toMinimalDict(self) -> dict:
+        dic = super().toMinimalDict()
+        dic.update({"radius": self._radius})
+        return dic

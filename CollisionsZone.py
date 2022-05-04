@@ -1,5 +1,5 @@
 from logging import info
-from typing import List, Tuple
+from typing import Callable, List, Tuple
 import os
 import time
 import math
@@ -8,6 +8,8 @@ from game.objects.Object import Object
 import lib
 
 from . import objects
+
+OnCollisionT = Callable[[Tuple[Object, Object], lib.Point], None]
 
 
 class CollisionsZone:
@@ -50,15 +52,15 @@ class CollisionsZone:
                         if zones[-1].collides(objs[tested]):
                             obj = objs.pop(tested)
                             zones[-1] += obj
-                        #     if not obj.isStatic():
-                        #         tested = 0
+                            #     if not obj.isStatic():
+                            #         tested = 0
                             tested = 0
                         else:
                             tested += 1
                     break
                 tested += 1
             current -= 1
-        
+
         return zones, objs
 
     _timeInterval: float
@@ -67,9 +69,13 @@ class CollisionsZone:
     _dimension: lib.AlignedRectangle
     _movingDimension: lib.AlignedRectangle
     _ignoringList: List[Tuple[objects.Object, objects.Object]]
+    _onCollision: OnCollisionT
 
-    def __init__(self, timeInterval: float, *objectsInside: objects.Object) -> None:
-        super().__init__()
+    def __init__(
+        self,
+        timeInterval: float,
+        *objectsInside: objects.Object,
+    ) -> None:
         self._timeInterval = timeInterval
         self._ignoringList = []
         if len(objectsInside) < 2:
@@ -93,7 +99,6 @@ class CollisionsZone:
                 objectToAdd.potentialCollisionZone(self._timeInterval)
             )
         return self
-    
 
     def collides(self, objectToCheck: objects.Object) -> bool:
         """Retourne vrai si l'objet donné en paramètre se trouve dans la zone."""
@@ -105,7 +110,6 @@ class CollisionsZone:
             return self._dimension.collides(
                 objectToCheck.potentialCollisionZone(self._timeInterval)
             )
-
 
     def _solveFirst(self, timeInterval: float) -> float:
         """Détecte les collions, gère la première est retourne le moment de celle-ci."""
@@ -189,20 +193,20 @@ class CollisionsZone:
                 )
                 other = current
 
+            self._onCollision(lastCollidedObjects, point)
+
         other = 1
         for current in range(2):
-            lastCollidedObjects[current].onCollision(
-                lastCollidedObjects[other], self._checkedInterval + checkedInterval
-            )
+            lastCollidedObjects[current].onCollision(lastCollidedObjects[other])
             other = current
 
         return checkedInterval
 
-    def resolve(self) -> None:
+    def resolve(self, onCollision: OnCollisionT) -> None:
         """Détecte précisément les collisions, gère celles-ci et met les objets à jours"""
         self._checkedInterval = 0
+        self._onCollision = onCollision
         while self._checkedInterval < self._timeInterval:
             self._checkedInterval += self._solveFirst(
                 self._timeInterval - self._checkedInterval
             )
-

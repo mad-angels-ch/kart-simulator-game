@@ -1,3 +1,3 @@
 from .VectorialMotion import VectorialMotion
 from .UniformlyAcceleratedMotion import UniformlyAcceleratedMotion
-from .VectorialMotionFactory import createVectorialMotion
+from .VectorialHarmonicMotion import VectorialHarmonicMotion

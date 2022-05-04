@@ -25,6 +25,11 @@ class Polygon(Object):
     _angleCosSin2Angle: float
     _convex: bool
 
+    def fromMinimalDict(obj: dict) -> dict:
+        dic = Object.fromMinimalDict(obj)
+        dic.update({"vertices": [lib.Vector(v) for v in obj["vertices"]]})
+        return dic
+
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
         self._vertices = kwargs.get(
@@ -128,7 +133,7 @@ class Polygon(Object):
         return super().updatePotentialCollisionZone(timeInterval)
 
     def collides(self, other: "Object", timeInterval: float) -> bool:
-        if not (self.mass() or other.mass()):
+        if not super().collides(other, timeInterval):
             return False
 
         elif isinstance(other, Circle):
@@ -229,3 +234,8 @@ class Polygon(Object):
             listOfVerticesBeforeRotation.append((vertexPoint[0], vertexPoint[1]))
 
         return listOfVerticesBeforeRotation
+
+    def toMinimalDict(self) -> dict:
+        dic = super().toMinimalDict()
+        dic.update({"vertices": [tuple(v) for v in self._vertices]})
+        return dic
